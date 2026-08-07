@@ -1,5 +1,16 @@
 # ripple-ark
 
+## 0.2.0
+
+- Replace the hooks-only facade with Ark-style Ripple compound components for every current
+  official Solid component directory and namespace part.
+- Move all 49 ripple-explore demos into this package and upgrade them for current Zag APIs and TSRX
+  syntax.
+- Add Ripple-native `ark`, locale, environment, interaction, presence, field, fieldset, frame,
+  format, swap, toast, and tree utilities.
+- Publish source `.tsrx` subpaths and verify every machine component through a clean Vite consumer.
+- Add ESLint and Prettier gates using the TSRX plugins.
+
 ## 0.1.1
 
 - Publish portable, non-bundled TypeScript declarations.

@@ -1,8 +1,8 @@
 # ripple-ark
 
-This repository is the Ripple-native binding layer for Zag component machines.
-It owns machine startup, Ripple tracking, prop normalization, and a small set of
-component-domain constructors. Markup, content, icons, and styles belong to consumers.
+This repository is the Ark UI adapter for Ripple. It owns compound TSRX components,
+machine startup, Ripple tracking, prop normalization, framework providers, and demos.
+Styles remain consumer-owned.
 
 ## Commands
 
@@ -11,13 +11,16 @@ Every release must pass a clean-consumer compile against the packed artifact.
 
 ## Boundaries
 
-- Add one `useXxx` hook for every component machine in the current Zag catalog.
-- Keep Zag machines and generic utilities behind this package. Export a named helper
-  only when a real Ripple consumer needs that component-domain capability.
+- Keep every public Ark UI component directory represented by a Ripple subpath.
+- Preserve Ark's namespace vocabulary (`Root`, `Trigger`, `Content`, contexts, and
+  providers) while implementing it with Ripple primitives rather than another framework runtime.
+- Keep one lower-level `useXxx` hook for every current Zag component machine.
 - Hooks return a tracked connected API. The attached `service` exists for nested
   parent/child machines; ordinary consumers should use `api.value`.
 - Static TSRX text is native JSX text. Use expressions for dynamic values and for
   parser-required escapes such as whitespace-only nodes.
+- Regenerate bindings only against a fresh `chakra-ui/ark` snapshot, then run the
+  namespace parity, all-subpath compile, and SSR gates before accepting the result.
 - Comments explain the adapter constraint or trade-off, not the code operation.
 
 ## Current sources

@@ -1,0 +1,737 @@
+[
+	{
+		"directory": "tabs",
+		"symbol": "Tabs",
+		"parts": ["Root", "RootProvider", "Content", "Trigger", "Indicator", "List", "Context"]
+	},
+	{
+		"directory": "drawer",
+		"symbol": "Drawer",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"SwipeArea",
+			"Positioner",
+			"Backdrop",
+			"IndentBackground",
+			"Content",
+			"Trigger",
+			"CloseTrigger",
+			"GrabberIndicator",
+			"Indent",
+			"Grabber",
+			"Title",
+			"Description",
+			"Stack",
+			"Context"
+		]
+	},
+	{
+		"directory": "pagination",
+		"symbol": "Pagination",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"NextTrigger",
+			"FirstTrigger",
+			"LastTrigger",
+			"PrevTrigger",
+			"Item",
+			"Ellipsis",
+			"Context"
+		]
+	},
+	{
+		"directory": "tooltip",
+		"symbol": "Tooltip",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Positioner",
+			"Arrow",
+			"Content",
+			"Trigger",
+			"ArrowTip",
+			"Context"
+		]
+	},
+	{
+		"directory": "date-input",
+		"symbol": "DateInput",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Segment",
+			"Control",
+			"SegmentGroup",
+			"Label",
+			"HiddenInput",
+			"SegmentContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "signature-pad",
+		"symbol": "SignaturePad",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Guide",
+			"HiddenInput",
+			"Label",
+			"ClearTrigger",
+			"Control",
+			"Segment",
+			"Context"
+		]
+	},
+	{
+		"directory": "navigation-menu",
+		"symbol": "NavigationMenu",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Viewport",
+			"List",
+			"Indicator",
+			"Link",
+			"ViewportPositioner",
+			"Content",
+			"Trigger",
+			"ItemIndicator",
+			"Item",
+			"Arrow",
+			"Context"
+		]
+	},
+	{
+		"directory": "progress",
+		"symbol": "Progress",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"CircleRange",
+			"View",
+			"Range",
+			"CircleTrack",
+			"ValueText",
+			"Track",
+			"Circle",
+			"Label",
+			"Context"
+		]
+	},
+	{
+		"directory": "accordion",
+		"symbol": "Accordion",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"ItemIndicator",
+			"ItemContent",
+			"Item",
+			"ItemTrigger",
+			"ItemContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "timer",
+		"symbol": "Timer",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Control",
+			"Item",
+			"Separator",
+			"ActionTrigger",
+			"Area",
+			"Context"
+		]
+	},
+	{
+		"directory": "hover-card",
+		"symbol": "HoverCard",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Trigger",
+			"Content",
+			"Positioner",
+			"Arrow",
+			"ArrowTip",
+			"Context"
+		]
+	},
+	{
+		"directory": "listbox",
+		"symbol": "Listbox",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"ItemGroupLabel",
+			"Input",
+			"Content",
+			"Item",
+			"ValueText",
+			"Empty",
+			"ItemIndicator",
+			"Label",
+			"ItemText",
+			"ItemGroup",
+			"ItemContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "checkbox",
+		"symbol": "Checkbox",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"HiddenInput",
+			"Control",
+			"GroupProvider",
+			"Group",
+			"Label",
+			"Indicator",
+			"Context"
+		]
+	},
+	{
+		"directory": "splitter",
+		"symbol": "Splitter",
+		"parts": ["Root", "RootProvider", "ResizeTriggerIndicator", "ResizeTrigger", "Panel", "Context"]
+	},
+	{
+		"directory": "slider",
+		"symbol": "Slider",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Label",
+			"HiddenInput",
+			"Track",
+			"MarkerGroup",
+			"ValueText",
+			"Range",
+			"Marker",
+			"Thumb",
+			"DraggingIndicator",
+			"Control",
+			"Context"
+		]
+	},
+	{
+		"directory": "rating-group",
+		"symbol": "RatingGroup",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"HiddenInput",
+			"Label",
+			"Control",
+			"Item",
+			"ItemContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "angle-slider",
+		"symbol": "AngleSlider",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Thumb",
+			"ValueText",
+			"Label",
+			"MarkerGroup",
+			"Marker",
+			"HiddenInput",
+			"Control",
+			"Context"
+		]
+	},
+	{
+		"directory": "segment-group",
+		"symbol": "SegmentGroup",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Item",
+			"ItemControl",
+			"ItemText",
+			"Label",
+			"Indicator",
+			"ItemHiddenInput",
+			"ItemContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "number-input",
+		"symbol": "NumberInput",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"ValueText",
+			"Label",
+			"IncrementTrigger",
+			"DecrementTrigger",
+			"Scrubber",
+			"Control",
+			"Input",
+			"Context"
+		]
+	},
+	{
+		"directory": "marquee",
+		"symbol": "Marquee",
+		"parts": ["Root", "RootProvider", "Edge", "Item", "Viewport", "Content", "Context"]
+	},
+	{
+		"directory": "carousel",
+		"symbol": "Carousel",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"NextTrigger",
+			"IndicatorGroup",
+			"ProgressText",
+			"Indicator",
+			"AutoplayIndicator",
+			"PrevTrigger",
+			"AutoplayTrigger",
+			"ItemGroup",
+			"Item",
+			"Control",
+			"Context"
+		]
+	},
+	{
+		"directory": "combobox",
+		"symbol": "Combobox",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"List",
+			"Input",
+			"ItemText",
+			"ClearTrigger",
+			"Positioner",
+			"ItemGroup",
+			"Item",
+			"Content",
+			"Trigger",
+			"Empty",
+			"Label",
+			"ItemIndicator",
+			"Control",
+			"ItemGroupLabel",
+			"ItemContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "toggle-group",
+		"symbol": "ToggleGroup",
+		"parts": ["Root", "RootProvider", "Item", "Context"]
+	},
+	{
+		"directory": "qr-code",
+		"symbol": "QrCode",
+		"parts": ["Root", "RootProvider", "DownloadTrigger", "Overlay", "Frame", "Pattern", "Context"]
+	},
+	{
+		"directory": "password-input",
+		"symbol": "PasswordInput",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Control",
+			"Input",
+			"Indicator",
+			"VisibilityTrigger",
+			"Label",
+			"Context"
+		]
+	},
+	{
+		"directory": "tags-input",
+		"symbol": "TagsInput",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Label",
+			"ClearTrigger",
+			"ItemText",
+			"ItemInput",
+			"Control",
+			"HiddenInput",
+			"ItemPreview",
+			"Input",
+			"Item",
+			"ItemDeleteTrigger",
+			"ItemContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "toggle",
+		"symbol": "Toggle",
+		"parts": ["Root", "RootProvider", "Indicator", "Context"]
+	},
+	{
+		"directory": "dialog",
+		"symbol": "Dialog",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Content",
+			"Title",
+			"Trigger",
+			"Backdrop",
+			"Positioner",
+			"CloseTrigger",
+			"Description",
+			"Context"
+		]
+	},
+	{
+		"directory": "popover",
+		"symbol": "Popover",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Trigger",
+			"Content",
+			"Indicator",
+			"Positioner",
+			"ArrowTip",
+			"Description",
+			"Anchor",
+			"Arrow",
+			"CloseTrigger",
+			"Title",
+			"Context"
+		]
+	},
+	{
+		"directory": "steps",
+		"symbol": "Steps",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"PrevTrigger",
+			"Separator",
+			"NextTrigger",
+			"List",
+			"Progress",
+			"Indicator",
+			"Item",
+			"CompletedContent",
+			"Content",
+			"Trigger",
+			"ItemContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "date-picker",
+		"symbol": "DatePicker",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"WeekNumberCell",
+			"TableHead",
+			"TableRow",
+			"ValueText",
+			"ViewControl",
+			"ViewTrigger",
+			"TableCell",
+			"Control",
+			"Content",
+			"WeekNumberHeaderCell",
+			"Label",
+			"Trigger",
+			"Positioner",
+			"TableCellTrigger",
+			"ClearTrigger",
+			"TableHeader",
+			"NextTrigger",
+			"MonthSelect",
+			"PresetTrigger",
+			"Table",
+			"PrevTrigger",
+			"Input",
+			"YearSelect",
+			"RangeText",
+			"TableBody",
+			"View",
+			"Context"
+		]
+	},
+	{
+		"directory": "scroll-area",
+		"symbol": "ScrollArea",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Thumb",
+			"Scrollbar",
+			"Content",
+			"Viewport",
+			"Corner",
+			"Context"
+		]
+	},
+	{
+		"directory": "editable",
+		"symbol": "Editable",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Label",
+			"SubmitTrigger",
+			"Area",
+			"EditTrigger",
+			"Control",
+			"Input",
+			"Preview",
+			"CancelTrigger",
+			"Context"
+		]
+	},
+	{
+		"directory": "collapsible",
+		"symbol": "Collapsible",
+		"parts": ["Root", "RootProvider", "Trigger", "Content", "Indicator", "Context"]
+	},
+	{
+		"directory": "file-upload",
+		"symbol": "FileUpload",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"ItemSizeText",
+			"Dropzone",
+			"ClearTrigger",
+			"Item",
+			"HiddenInput",
+			"ItemName",
+			"ItemPreview",
+			"ItemGroup",
+			"Trigger",
+			"ItemPreviewImage",
+			"Label",
+			"ItemDeleteTrigger",
+			"Context"
+		]
+	},
+	{
+		"directory": "menu",
+		"symbol": "Menu",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"ArrowTip",
+			"RadioItem",
+			"TriggerItem",
+			"Trigger",
+			"Item",
+			"Content",
+			"ItemGroup",
+			"Indicator",
+			"RadioItemGroup",
+			"Arrow",
+			"Positioner",
+			"ItemIndicator",
+			"ItemGroupLabel",
+			"ContextTrigger",
+			"Separator",
+			"ItemText",
+			"CheckboxItem",
+			"ItemContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "avatar",
+		"symbol": "Avatar",
+		"parts": ["Root", "RootProvider", "Fallback", "Image", "Context"]
+	},
+	{
+		"directory": "switch",
+		"symbol": "Switch",
+		"parts": ["Root", "RootProvider", "Control", "Label", "HiddenInput", "Thumb", "Context"]
+	},
+	{
+		"directory": "tour",
+		"symbol": "Tour",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Title",
+			"Spotlight",
+			"ActionTrigger",
+			"ProgressText",
+			"CloseTrigger",
+			"Arrow",
+			"ArrowTip",
+			"Backdrop",
+			"Description",
+			"Control",
+			"Positioner",
+			"Content",
+			"Actions",
+			"Context"
+		]
+	},
+	{
+		"directory": "tree-view",
+		"symbol": "TreeView",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"BranchText",
+			"ItemIndicator",
+			"Tree",
+			"Item",
+			"Branch",
+			"NodeCheckbox",
+			"BranchTrigger",
+			"NodeRenameInput",
+			"BranchContent",
+			"BranchControl",
+			"BranchIndentGuide",
+			"Label",
+			"BranchIndicator",
+			"ItemText",
+			"NodeContext",
+			"NodeProvider",
+			"NodeCheckboxIndicator",
+			"Context"
+		]
+	},
+	{
+		"directory": "floating-panel",
+		"symbol": "FloatingPanel",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Title",
+			"ResizeTrigger",
+			"DragTrigger",
+			"StageTrigger",
+			"Header",
+			"Body",
+			"Control",
+			"Positioner",
+			"Trigger",
+			"Content",
+			"CloseTrigger",
+			"Context"
+		]
+	},
+	{
+		"directory": "radio-group",
+		"symbol": "RadioGroup",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Label",
+			"ItemText",
+			"ItemControl",
+			"ItemHiddenInput",
+			"Item",
+			"Indicator",
+			"ItemContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "select",
+		"symbol": "Select",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"List",
+			"Trigger",
+			"ItemIndicator",
+			"Indicator",
+			"Content",
+			"HiddenSelect",
+			"Positioner",
+			"ClearTrigger",
+			"Control",
+			"ItemText",
+			"ItemGroup",
+			"ItemGroupLabel",
+			"Item",
+			"ValueText",
+			"Label",
+			"ItemContext",
+			"Context"
+		]
+	},
+	{
+		"directory": "color-picker",
+		"symbol": "ColorPicker",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"Positioner",
+			"ValueSwatch",
+			"FormatSelect",
+			"Swatch",
+			"SwatchGroup",
+			"ChannelSliderThumb",
+			"SwatchTrigger",
+			"View",
+			"EyeDropperTrigger",
+			"ChannelSlider",
+			"Label",
+			"FormatTrigger",
+			"AreaThumb",
+			"Trigger",
+			"Content",
+			"ChannelSliderLabel",
+			"ValueText",
+			"ChannelSliderValueText",
+			"SwatchIndicator",
+			"Control",
+			"ChannelSliderTrack",
+			"ChannelInput",
+			"HiddenInput",
+			"Area",
+			"TransparencyGrid",
+			"AreaBackground",
+			"Context"
+		]
+	},
+	{
+		"directory": "image-cropper",
+		"symbol": "ImageCropper",
+		"parts": ["Root", "RootProvider", "Image", "Selection", "Handle", "Grid", "Viewport", "Context"]
+	},
+	{
+		"directory": "pin-input",
+		"symbol": "PinInput",
+		"parts": ["Root", "RootProvider", "Label", "Control", "Input", "HiddenInput", "Context"]
+	},
+	{
+		"directory": "clipboard",
+		"symbol": "Clipboard",
+		"parts": [
+			"Root",
+			"RootProvider",
+			"ValueText",
+			"Input",
+			"Control",
+			"Trigger",
+			"Indicator",
+			"Label",
+			"Context"
+		]
+	}
+]

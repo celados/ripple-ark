@@ -1,0 +1,64 @@
+import { type RatingGroupApi, useRatingGroup } from '../index.ts';
+import { track, type Tracked } from 'ripple';
+
+export function RatingGroup() @{
+	let api = useRatingGroup({
+		id: 'rating-group',
+		defaultValue: 2.5,
+		allowHalf: true,
+	});
+
+	<>
+		<div {...api.value.getRootProps()}>
+			<label {...api.value.getLabelProps()}>Rate Us:</label>
+			<div {...api.value.getControlProps()}>
+				@for (const index of api.value.items) {
+					<RatingItem api={api} index={index} />
+				}
+			</div>
+			<input {...api.value.getHiddenInputProps()} />
+		</div>
+	</>
+}
+
+function RatingItem(props: { api: Tracked<RatingGroupApi>; index: number }) @{
+	const state = track(() => props.api.value.getItemState({ index: props.index }));
+
+	<span {...props.api.value.getItemProps({ index: props.index })}>
+		@if (state.value.half) {
+			<HalfStar />
+		} @else {
+			<Star />
+		}
+	</span>
+}
+
+function HalfStar() @{
+	<>
+		<svg viewBox="0 0 273 260" data-part="star">
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M135.977 214.086L52.1294 259.594L69.6031 165.229L0 99.1561L95.1465 86.614L135.977 1.04785V214.086Z"
+				fill="currentColor"
+			/>
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M135.977 213.039L219.826 258.546L202.352 164.181L271.957 98.1082L176.808 85.5661L135.977 0V213.039Z"
+				fill="#bdbdbd"
+			/>
+		</svg>
+	</>
+}
+
+function Star() @{
+	<>
+		<svg viewBox="0 0 273 260" data-part="star">
+			<path
+				d="M136.5 0L177.83 86.614L272.977 99.1561L203.374 165.229L220.847 259.594L136.5 213.815L52.1528 259.594L69.6265 165.229L0.0233917 99.1561L95.1699 86.614L136.5 0Z"
+				fill="currentColor"
+			/>
+		</svg>
+	</>
+}

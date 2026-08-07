@@ -1,17 +1,24 @@
 # ripple-ark
 
-Ripple-native bindings for the current [Zag JS component machines](https://zagjs.com/components/overview).
+Ark UI bindings for Ripple. The package maps Ark's compound component API to TSRX while keeping Zag
+machines reactive through Ripple `Tracked` values.
 
-The package owns machine startup, Ripple reactivity, and prop normalization. Applications own markup,
-content, styling, collections, and icons.
+```tsrx
+import { Accordion } from '@celados/ripple-ark/accordion';
 
-```ts
-import { useAccordion } from "@celados/ripple-ark";
-
-const api = useAccordion({ id: "settings" });
+export function Settings() @{
+	<Accordion.Root id="settings" defaultValue={['profile']}>
+		<Accordion.Item value="profile">
+			<Accordion.ItemTrigger>Profile</Accordion.ItemTrigger>
+			<Accordion.ItemContent>Account settings</Accordion.ItemContent>
+		</Accordion.Item>
+	</Accordion.Root>
+}
 ```
 
-`api` is a Ripple `Tracked` value. Read the connected Zag API from `api.value` inside TSRX markup.
+Use component subpaths such as `@celados/ripple-ark/dialog`. The root export also includes the
+lower-level `useXxx` hooks for advanced composition, providers, the `ark` factory, and collection
+helpers. Demos live in `@celados/ripple-ark/demos`; they are dogfooded by ripple-explore.
 
-The package intentionally does not re-export Zag machines or generic Zag helpers. That keeps the
-adapter boundary small and prevents consumers from depending on implementation details.
+This is a Ripple source package. Consumers must compile `.tsrx` through the Ripple TypeScript/Vite
+toolchain; no Solid, React, Vue, or Svelte runtime is included.

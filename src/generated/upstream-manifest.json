@@ -1,0 +1,753 @@
+[
+	{
+		"directory": "tabs",
+		"parts": ["Content", "Indicator", "List", "Trigger", "Context", "Root", "RootProvider"]
+	},
+	{
+		"directory": "drawer",
+		"parts": [
+			"Backdrop",
+			"CloseTrigger",
+			"Content",
+			"Description",
+			"Context",
+			"Indent",
+			"IndentBackground",
+			"Positioner",
+			"Grabber",
+			"GrabberIndicator",
+			"Root",
+			"RootProvider",
+			"Stack",
+			"SwipeArea",
+			"Title",
+			"Trigger"
+		]
+	},
+	{
+		"directory": "pagination",
+		"parts": [
+			"Context",
+			"Ellipsis",
+			"FirstTrigger",
+			"Item",
+			"LastTrigger",
+			"NextTrigger",
+			"PrevTrigger",
+			"Root",
+			"RootProvider"
+		]
+	},
+	{
+		"directory": "tooltip",
+		"parts": [
+			"Arrow",
+			"ArrowTip",
+			"Content",
+			"Context",
+			"Positioner",
+			"Root",
+			"RootProvider",
+			"Trigger"
+		]
+	},
+	{
+		"directory": "date-input",
+		"parts": [
+			"Context",
+			"Label",
+			"Root",
+			"RootProvider",
+			"Segment",
+			"SegmentGroup",
+			"HiddenInput",
+			"Control",
+			"SegmentContext"
+		]
+	},
+	{
+		"directory": "signature-pad",
+		"parts": [
+			"ClearTrigger",
+			"Context",
+			"Control",
+			"Guide",
+			"HiddenInput",
+			"Label",
+			"Root",
+			"RootProvider",
+			"Segment"
+		]
+	},
+	{
+		"directory": "collection",
+		"parts": []
+	},
+	{
+		"directory": "navigation-menu",
+		"parts": [
+			"Arrow",
+			"Content",
+			"Context",
+			"Indicator",
+			"Item",
+			"ItemIndicator",
+			"Link",
+			"List",
+			"Root",
+			"RootProvider",
+			"Trigger",
+			"Viewport",
+			"ViewportPositioner"
+		]
+	},
+	{
+		"directory": "progress",
+		"parts": [
+			"Circle",
+			"CircleRange",
+			"CircleTrack",
+			"Context",
+			"Label",
+			"Range",
+			"Root",
+			"RootProvider",
+			"Track",
+			"ValueText",
+			"View"
+		]
+	},
+	{
+		"directory": "download-trigger",
+		"parts": []
+	},
+	{
+		"directory": "highlight",
+		"parts": []
+	},
+	{
+		"directory": "accordion",
+		"parts": [
+			"Context",
+			"Item",
+			"ItemContent",
+			"ItemContext",
+			"ItemIndicator",
+			"ItemTrigger",
+			"Root",
+			"RootProvider"
+		]
+	},
+	{
+		"directory": "toast",
+		"parts": ["ActionTrigger", "CloseTrigger", "Context", "Description", "Root", "Title"]
+	},
+	{
+		"directory": "timer",
+		"parts": [
+			"ActionTrigger",
+			"Area",
+			"Context",
+			"Control",
+			"Item",
+			"Root",
+			"RootProvider",
+			"Separator"
+		]
+	},
+	{
+		"directory": "swap",
+		"parts": ["Indicator", "Root", "RootProvider"]
+	},
+	{
+		"directory": "hover-card",
+		"parts": [
+			"Arrow",
+			"ArrowTip",
+			"Content",
+			"Context",
+			"Positioner",
+			"Root",
+			"RootProvider",
+			"Trigger"
+		]
+	},
+	{
+		"directory": "listbox",
+		"parts": [
+			"Context",
+			"Content",
+			"Empty",
+			"Input",
+			"Item",
+			"ItemContext",
+			"ItemGroup",
+			"ItemGroupLabel",
+			"ItemIndicator",
+			"ItemText",
+			"Label",
+			"Root",
+			"RootProvider",
+			"ValueText"
+		]
+	},
+	{
+		"directory": "checkbox",
+		"parts": [
+			"Context",
+			"Control",
+			"Group",
+			"GroupProvider",
+			"HiddenInput",
+			"Indicator",
+			"Label",
+			"Root",
+			"RootProvider"
+		]
+	},
+	{
+		"directory": "splitter",
+		"parts": ["Context", "Panel", "ResizeTrigger", "ResizeTriggerIndicator", "Root", "RootProvider"]
+	},
+	{
+		"directory": "slider",
+		"parts": [
+			"Context",
+			"Control",
+			"DraggingIndicator",
+			"HiddenInput",
+			"Label",
+			"Marker",
+			"MarkerGroup",
+			"Range",
+			"Root",
+			"RootProvider",
+			"Thumb",
+			"Track",
+			"ValueText"
+		]
+	},
+	{
+		"directory": "rating-group",
+		"parts": [
+			"Context",
+			"Control",
+			"HiddenInput",
+			"Item",
+			"ItemContext",
+			"Label",
+			"Root",
+			"RootProvider"
+		]
+	},
+	{
+		"directory": "angle-slider",
+		"parts": [
+			"Context",
+			"Root",
+			"RootProvider",
+			"Label",
+			"Control",
+			"Thumb",
+			"MarkerGroup",
+			"Marker",
+			"ValueText",
+			"HiddenInput"
+		]
+	},
+	{
+		"directory": "segment-group",
+		"parts": [
+			"Context",
+			"Indicator",
+			"Item",
+			"ItemContext",
+			"ItemControl",
+			"ItemHiddenInput",
+			"ItemText",
+			"Label",
+			"Root",
+			"RootProvider"
+		]
+	},
+	{
+		"directory": "frame",
+		"parts": []
+	},
+	{
+		"directory": "number-input",
+		"parts": [
+			"Context",
+			"Control",
+			"DecrementTrigger",
+			"IncrementTrigger",
+			"Input",
+			"Label",
+			"Root",
+			"RootProvider",
+			"Scrubber",
+			"ValueText"
+		]
+	},
+	{
+		"directory": "marquee",
+		"parts": ["Content", "Context", "Edge", "Item", "Root", "RootProvider", "Viewport"]
+	},
+	{
+		"directory": "field",
+		"parts": [
+			"Context",
+			"ErrorText",
+			"HelperText",
+			"Input",
+			"Item",
+			"Label",
+			"RequiredIndicator",
+			"Root",
+			"RootProvider",
+			"Select",
+			"Textarea"
+		]
+	},
+	{
+		"directory": "carousel",
+		"parts": [
+			"AutoplayIndicator",
+			"ProgressText",
+			"AutoplayTrigger",
+			"Context",
+			"Control",
+			"Indicator",
+			"IndicatorGroup",
+			"Item",
+			"ItemGroup",
+			"NextTrigger",
+			"PrevTrigger",
+			"Root",
+			"RootProvider"
+		]
+	},
+	{
+		"directory": "combobox",
+		"parts": [
+			"ClearTrigger",
+			"Content",
+			"Empty",
+			"Context",
+			"Control",
+			"Input",
+			"Item",
+			"ItemContext",
+			"ItemGroup",
+			"ItemGroupLabel",
+			"ItemIndicator",
+			"ItemText",
+			"Label",
+			"List",
+			"Positioner",
+			"Root",
+			"RootProvider",
+			"Trigger"
+		]
+	},
+	{
+		"directory": "toggle-group",
+		"parts": ["Context", "Item", "Root", "RootProvider"]
+	},
+	{
+		"directory": "qr-code",
+		"parts": ["Context", "DownloadTrigger", "Frame", "Overlay", "Pattern", "Root", "RootProvider"]
+	},
+	{
+		"directory": "password-input",
+		"parts": [
+			"Context",
+			"Control",
+			"Indicator",
+			"Input",
+			"Label",
+			"Root",
+			"RootProvider",
+			"VisibilityTrigger"
+		]
+	},
+	{
+		"directory": "tags-input",
+		"parts": [
+			"ClearTrigger",
+			"Context",
+			"Control",
+			"HiddenInput",
+			"Input",
+			"Item",
+			"ItemContext",
+			"ItemDeleteTrigger",
+			"ItemInput",
+			"ItemPreview",
+			"ItemText",
+			"Label",
+			"Root",
+			"RootProvider"
+		]
+	},
+	{
+		"directory": "toggle",
+		"parts": ["Context", "Indicator", "Root"]
+	},
+	{
+		"directory": "dialog",
+		"parts": [
+			"Backdrop",
+			"CloseTrigger",
+			"Content",
+			"Context",
+			"Description",
+			"Positioner",
+			"Root",
+			"RootProvider",
+			"Title",
+			"Trigger"
+		]
+	},
+	{
+		"directory": "popover",
+		"parts": [
+			"Anchor",
+			"Arrow",
+			"ArrowTip",
+			"CloseTrigger",
+			"Content",
+			"Context",
+			"Description",
+			"Indicator",
+			"Positioner",
+			"Root",
+			"RootProvider",
+			"Title",
+			"Trigger"
+		]
+	},
+	{
+		"directory": "json-tree-view",
+		"parts": []
+	},
+	{
+		"directory": "presence",
+		"parts": []
+	},
+	{
+		"directory": "steps",
+		"parts": [
+			"CompletedContent",
+			"Content",
+			"Context",
+			"Indicator",
+			"Item",
+			"ItemContext",
+			"List",
+			"NextTrigger",
+			"PrevTrigger",
+			"Progress",
+			"Root",
+			"RootProvider",
+			"Separator",
+			"Trigger"
+		]
+	},
+	{
+		"directory": "date-picker",
+		"parts": [
+			"ClearTrigger",
+			"Content",
+			"Context",
+			"Control",
+			"Input",
+			"Label",
+			"MonthSelect",
+			"NextTrigger",
+			"Positioner",
+			"PresetTrigger",
+			"PrevTrigger",
+			"RangeText",
+			"ValueText",
+			"Root",
+			"RootProvider",
+			"Table",
+			"TableBody",
+			"TableCell",
+			"TableCellTrigger",
+			"TableHead",
+			"TableHeader",
+			"TableRow",
+			"Trigger",
+			"View",
+			"ViewControl",
+			"ViewTrigger",
+			"WeekNumberCell",
+			"WeekNumberHeaderCell",
+			"YearSelect"
+		]
+	},
+	{
+		"directory": "scroll-area",
+		"parts": [
+			"Context",
+			"Content",
+			"Corner",
+			"Root",
+			"RootProvider",
+			"Scrollbar",
+			"Thumb",
+			"Viewport"
+		]
+	},
+	{
+		"directory": "editable",
+		"parts": [
+			"Area",
+			"CancelTrigger",
+			"Context",
+			"Control",
+			"EditTrigger",
+			"Input",
+			"Label",
+			"Preview",
+			"Root",
+			"RootProvider",
+			"SubmitTrigger"
+		]
+	},
+	{
+		"directory": "collapsible",
+		"parts": ["Content", "Context", "Root", "RootProvider", "Trigger", "Indicator"]
+	},
+	{
+		"directory": "client-only",
+		"parts": []
+	},
+	{
+		"directory": "file-upload",
+		"parts": [
+			"ClearTrigger",
+			"Context",
+			"Dropzone",
+			"HiddenInput",
+			"Item",
+			"ItemDeleteTrigger",
+			"ItemGroup",
+			"ItemName",
+			"ItemPreview",
+			"ItemPreviewImage",
+			"ItemSizeText",
+			"Label",
+			"Root",
+			"RootProvider",
+			"Trigger"
+		]
+	},
+	{
+		"directory": "menu",
+		"parts": [
+			"Arrow",
+			"ArrowTip",
+			"CheckboxItem",
+			"Content",
+			"Context",
+			"ContextTrigger",
+			"Indicator",
+			"Item",
+			"ItemContext",
+			"ItemGroup",
+			"ItemGroupLabel",
+			"ItemIndicator",
+			"ItemText",
+			"Positioner",
+			"RadioItem",
+			"RadioItemGroup",
+			"Root",
+			"RootProvider",
+			"Separator",
+			"Trigger",
+			"TriggerItem"
+		]
+	},
+	{
+		"directory": "avatar",
+		"parts": ["Context", "Fallback", "Image", "Root", "RootProvider"]
+	},
+	{
+		"directory": "fieldset",
+		"parts": ["Context", "ErrorText", "HelperText", "Legend", "Root", "RootProvider"]
+	},
+	{
+		"directory": "switch",
+		"parts": ["Context", "Control", "HiddenInput", "Label", "Root", "RootProvider", "Thumb"]
+	},
+	{
+		"directory": "format",
+		"parts": ["Byte", "Number", "RelativeTime", "Time"]
+	},
+	{
+		"directory": "tour",
+		"parts": [
+			"ActionTrigger",
+			"Actions",
+			"Arrow",
+			"ArrowTip",
+			"Backdrop",
+			"CloseTrigger",
+			"Content",
+			"Context",
+			"Control",
+			"Description",
+			"Positioner",
+			"ProgressText",
+			"Root",
+			"Spotlight",
+			"Title"
+		]
+	},
+	{
+		"directory": "tree-view",
+		"parts": [
+			"Branch",
+			"BranchContent",
+			"BranchControl",
+			"BranchIndentGuide",
+			"BranchIndicator",
+			"BranchText",
+			"BranchTrigger",
+			"Context",
+			"Item",
+			"ItemIndicator",
+			"ItemText",
+			"Label",
+			"NodeCheckbox",
+			"NodeCheckboxIndicator",
+			"NodeRenameInput",
+			"NodeContext",
+			"NodeProvider",
+			"Root",
+			"RootProvider",
+			"Tree"
+		]
+	},
+	{
+		"directory": "floating-panel",
+		"parts": [
+			"Body",
+			"CloseTrigger",
+			"Content",
+			"Context",
+			"Control",
+			"DragTrigger",
+			"Header",
+			"Positioner",
+			"ResizeTrigger",
+			"Root",
+			"RootProvider",
+			"StageTrigger",
+			"Title",
+			"Trigger"
+		]
+	},
+	{
+		"directory": "radio-group",
+		"parts": [
+			"Context",
+			"Indicator",
+			"Item",
+			"ItemContext",
+			"ItemControl",
+			"ItemHiddenInput",
+			"ItemText",
+			"Label",
+			"Root",
+			"RootProvider"
+		]
+	},
+	{
+		"directory": "select",
+		"parts": [
+			"ClearTrigger",
+			"Content",
+			"Context",
+			"Control",
+			"HiddenSelect",
+			"Indicator",
+			"Item",
+			"ItemContext",
+			"ItemGroup",
+			"ItemGroupLabel",
+			"ItemIndicator",
+			"ItemText",
+			"Label",
+			"List",
+			"Positioner",
+			"Root",
+			"RootProvider",
+			"Trigger",
+			"ValueText"
+		]
+	},
+	{
+		"directory": "color-picker",
+		"parts": [
+			"Area",
+			"AreaBackground",
+			"AreaThumb",
+			"ChannelInput",
+			"ChannelSlider",
+			"ChannelSliderLabel",
+			"ChannelSliderThumb",
+			"ChannelSliderTrack",
+			"ChannelSliderValueText",
+			"Content",
+			"Context",
+			"Control",
+			"EyeDropperTrigger",
+			"FormatSelect",
+			"FormatTrigger",
+			"HiddenInput",
+			"Label",
+			"Positioner",
+			"Root",
+			"RootProvider",
+			"Swatch",
+			"SwatchGroup",
+			"SwatchIndicator",
+			"SwatchTrigger",
+			"TransparencyGrid",
+			"Trigger",
+			"ValueSwatch",
+			"ValueText",
+			"View"
+		]
+	},
+	{
+		"directory": "image-cropper",
+		"parts": ["Context", "Grid", "Handle", "Image", "Root", "RootProvider", "Selection", "Viewport"]
+	},
+	{
+		"directory": "focus-trap",
+		"parts": []
+	},
+	{
+		"directory": "pin-input",
+		"parts": ["Context", "Control", "HiddenInput", "Input", "Label", "Root", "RootProvider"]
+	},
+	{
+		"directory": "clipboard",
+		"parts": [
+			"Context",
+			"Control",
+			"Indicator",
+			"Input",
+			"Label",
+			"Root",
+			"RootProvider",
+			"Trigger",
+			"ValueText"
+		]
+	}
+]

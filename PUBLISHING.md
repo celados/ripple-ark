@@ -13,7 +13,8 @@ is published only by release tag `vX.Y.Z`.
 ## Release
 
 1. Update `package.json` and `CHANGELOG.md` together.
-2. Run `bun run typecheck`, `bun run test`, and `npm pack --dry-run`.
+2. Run `bun run verify`; this includes typecheck, lint, format, tests, pack inspection, all-subpath
+   compilation, and compound-component SSR.
 3. Commit and push `main`, then publish the matching GitHub Release.
 4. Verify the publish workflow and install the exact version in a clean consumer.
 
