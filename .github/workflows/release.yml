@@ -1,0 +1,73 @@
+name: Publish package
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to npm.celados.com
+    runs-on: celados-linux
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cp .npmrc.ci .npmrc
+          bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Test
+        run: bun run test
+
+      - name: Verify release contract
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION="$(bun -p "require('./package.json').version")"
+          test "$(bun -p "require('./package.json').name")" = "@celados/ripple-ark"
+          test "${{ github.event.release.tag_name }}" = "v$VERSION"
+          npm publish --dry-run --access public
+
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+
+      - name: Verify clean consumer
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION="$(bun -p "require('./package.json').version")"
+          CONSUMER_DIR="$(mktemp -d)"
+          cp .npmrc.ci "$CONSUMER_DIR/.npmrc"
+          cd "$CONSUMER_DIR"
+          bun init -y
+          bun add "@celados/ripple-ark@$VERSION" typescript@5
+          printf 'import { useAccordion, useDrawer } from "@celados/ripple-ark"\nvoid useAccordion\nvoid useDrawer\n' > index.ts
+          bunx tsc --noEmit --moduleResolution bundler --module esnext --target esnext --skipLibCheck index.ts
+          bun -e 'const pkg = await import("@celados/ripple-ark/package.json"); const api = await import("@celados/ripple-ark"); if (typeof api.useAccordion !== "function" || typeof api.useToggle !== "function") process.exit(1); console.log(`${pkg.default.name}@${pkg.default.version} from https://npm.celados.com`)'
