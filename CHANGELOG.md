@@ -1,5 +1,9 @@
 # ripple-ark
 
+## 0.2.3
+
+- Regenerate published demo source text after the Ark adapter migration and guard it against drift.
+
 ## 0.2.2
 
 - Verify the published TSRX source from an explicit Vite entry in a clean registry consumer.

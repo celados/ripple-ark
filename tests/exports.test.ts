@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
+import { demoSources } from '../src/demos/sources.ts';
 
 type ManifestEntry = { directory: string; parts: string[] };
 
@@ -58,6 +59,11 @@ describe('Ark UI upstream parity', () => {
 		const index = readFileSync('src/demos/index.tsrx', 'utf8');
 
 		expect(demos).toHaveLength(49);
-		for (const demo of demos) expect(index).toContain(`'./${demo}'`);
+		for (const demo of demos) {
+			expect(index).toContain(`'./${demo}'`);
+			expect(demoSources[demo.slice(0, -'.tsrx'.length)]).toBe(
+				readFileSync(`src/demos/${demo}`, 'utf8')
+			);
+		}
 	});
 });
