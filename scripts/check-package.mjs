@@ -36,10 +36,10 @@ for (const target of Object.values(packageJson.exports)) {
 	await access(new URL(`..${target.slice(1)}`, import.meta.url));
 }
 
-const { stdout: packOutput } = await execFileAsync('pnpm', ['pack', '--dry-run', '--json'], {
+const { stdout: packOutput } = await execFileAsync('npm', ['pack', '--dry-run', '--json'], {
 	cwd: rootPath,
 });
-const packedPackage = JSON.parse(packOutput);
+const [packedPackage] = JSON.parse(packOutput);
 if (packedPackage.name !== packageJson.name || packedPackage.version !== packageJson.version) {
 	throw new Error('The packed name or version differs from package.json');
 }

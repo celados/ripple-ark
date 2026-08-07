@@ -1,5 +1,9 @@
 # ripple-ark
 
+## 0.2.1
+
+- Make source-package verification portable to the organization release runner.
+
 ## 0.2.0
 
 - Replace the hooks-only facade with Ark-style Ripple compound components for every current
