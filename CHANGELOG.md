@@ -1,5 +1,9 @@
 # ripple-ark
 
+## 0.2.2
+
+- Verify the published TSRX source from an explicit Vite entry in a clean registry consumer.
+
 ## 0.2.1
 
 - Make source-package verification portable to the organization release runner.

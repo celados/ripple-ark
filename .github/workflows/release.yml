@@ -66,6 +66,6 @@ jobs:
           bun init -y
           bun add "@celados/ripple-ark@$VERSION" ripple @ripple-ts/vite-plugin vite
           printf 'import { Accordion } from "@celados/ripple-ark/accordion";\nexport function App() @{\n  <Accordion.Root id="release-check" defaultValue={["first"]}>\n    <Accordion.Item value="first"><Accordion.ItemTrigger>First</Accordion.ItemTrigger><Accordion.ItemContent>Published source</Accordion.ItemContent></Accordion.Item>\n  </Accordion.Root>\n}\n' > index.tsrx
-          printf 'import { ripple } from "@ripple-ts/vite-plugin";\nimport { defineConfig } from "vite";\nexport default defineConfig({ plugins: [ripple()] });\n' > vite.config.ts
-          bunx vite build index.tsrx
+          printf 'import { ripple } from "@ripple-ts/vite-plugin";\nimport { defineConfig } from "vite";\nexport default defineConfig({ build: { rollupOptions: { input: "index.tsrx" } }, plugins: [ripple()] });\n' > vite.config.ts
+          bunx vite build
           VERSION="$VERSION" bun -e 'const pkg = await import("@celados/ripple-ark/package.json"); if (pkg.default.version !== process.env.VERSION) process.exit(1); console.log(`${pkg.default.name}@${pkg.default.version} from https://npm.celados.com`)'

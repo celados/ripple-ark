@@ -1,6 +1,6 @@
 {
 	"name": "@celados/ripple-ark",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "Ark UI components for Ripple, powered by Zag state machines",
 	"keywords": [
 		"ripple",
