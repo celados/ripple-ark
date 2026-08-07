@@ -1,5 +1,9 @@
 # ripple-ark
 
+## 0.2.5
+
+- Verify published packages with the TypeScript major currently supported by TSRX.
+
 ## 0.2.4
 
 - Stop requiring consumers to enable `allowImportingTsExtensions` for package-internal modules.

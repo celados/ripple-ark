@@ -64,7 +64,8 @@ jobs:
           cp .npmrc.ci "$CONSUMER_DIR/.npmrc"
           cd "$CONSUMER_DIR"
           bun init -y
-          bun add "@celados/ripple-ark@$VERSION" ripple @ripple-ts/vite-plugin @tsrx/typescript-plugin typescript vite
+          # TSRX 0.3.x patches TypeScript's compiler entry and does not support the new TS 7 exports map.
+          bun add "@celados/ripple-ark@$VERSION" ripple @ripple-ts/vite-plugin @tsrx/typescript-plugin typescript@5 vite
           printf 'import { Accordion } from "@celados/ripple-ark/accordion";\nexport function App() @{\n  <Accordion.Root id="release-check" defaultValue={["first"]}>\n    <Accordion.Item value="first"><Accordion.ItemTrigger>First</Accordion.ItemTrigger><Accordion.ItemContent>Published source</Accordion.ItemContent></Accordion.Item>\n  </Accordion.Root>\n}\n' > index.tsrx
           printf 'import { ripple } from "@ripple-ts/vite-plugin";\nimport { defineConfig } from "vite";\nexport default defineConfig({ build: { rollupOptions: { input: "index.tsrx" } }, plugins: [ripple()] });\n' > vite.config.ts
           printf '{"compilerOptions":{"target":"ESNext","module":"ESNext","moduleResolution":"bundler","jsx":"preserve","jsxImportSource":"ripple","noEmit":true,"skipLibCheck":true},"include":["index.tsrx"]}\n' > tsconfig.json
