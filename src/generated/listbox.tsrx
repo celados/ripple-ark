@@ -15,26 +15,26 @@ type Hook = typeof useListbox;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const listboxItemGroupProps = new RippleContext<Record<string, any> | null>(null);
-const listboxItemProps = new RippleContext<Record<string, any> | null>(null);
+const listboxItemGroupProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const listboxItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [],
 
 	useMachine: useListbox as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const ItemGroupLabel = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const ItemGroupLabel = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemGroupLabelProps',
 	inheritedProps: listboxItemGroupProps,
 });
-export const Input = createPart({
+export const Input = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getInputProps',
@@ -43,8 +43,12 @@ export const Input = createPart({
 		'keyboardPriority',
 	],
 });
-export const Content = createPart({ context, defaultTag: 'div', getter: 'getContentProps' });
-export const Item = createPart({
+export const Content = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getContentProps',
+});
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
@@ -54,30 +58,38 @@ export const Item = createPart({
 	],
 	provideProps: listboxItemProps,
 });
-export const ValueText = createPart({ context, defaultTag: 'span', getter: 'getValueTextProps' });
-export const Empty = createPart({ context, defaultTag: 'div' });
-export const ItemIndicator = createPart({
+export const ValueText = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'span',
+	getter: 'getValueTextProps',
+});
+export const Empty = /*#__PURE__*/ createPart({ context, defaultTag: 'div' });
+export const ItemIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemIndicatorProps',
 	inheritedProps: listboxItemProps,
 });
-export const Label = createPart({ context, defaultTag: 'span', getter: 'getLabelProps' });
-export const ItemText = createPart({
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'span',
+	getter: 'getLabelProps',
+});
+export const ItemText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemTextProps',
 	inheritedProps: listboxItemProps,
 });
-export const ItemGroup = createPart({
+export const ItemGroup = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemGroupProps',
 	provideProps: listboxItemGroupProps,
 });
-export const ItemContext = createItemContext(context, listboxItemProps);
+export const ItemContext = /*#__PURE__*/ createItemContext(context, listboxItemProps);
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

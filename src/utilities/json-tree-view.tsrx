@@ -45,7 +45,7 @@ export function useJsonTreeView(props: UseJsonTreeViewProps): JsonTreeApi {
 	});
 }
 
-const context = new RippleContext<JsonTreeApi | null>(null);
+const context = /*#__PURE__*/ new RippleContext<JsonTreeApi | null>(null);
 
 export type JsonTreeViewRootProps =
 	UseJsonTreeViewProps & {

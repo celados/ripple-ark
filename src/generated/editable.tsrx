@@ -15,9 +15,9 @@ type Hook = typeof useEditable;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -52,29 +52,49 @@ export const Root = createRoot({
 
 	useMachine: useEditable as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const SubmitTrigger = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const SubmitTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getSubmitTriggerProps',
 });
-export const Area = createPart({ context, defaultTag: 'div', getter: 'getAreaProps' });
-export const EditTrigger = createPart({
+export const Area = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getAreaProps',
+});
+export const EditTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getEditTriggerProps',
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const Input = createPart({ context, defaultTag: 'input', getter: 'getInputProps' });
-export const Preview = createPart({ context, defaultTag: 'span', getter: 'getPreviewProps' });
-export const CancelTrigger = createPart({
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const Input = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'input',
+	getter: 'getInputProps',
+});
+export const Preview = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'span',
+	getter: 'getPreviewProps',
+});
+export const CancelTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getCancelTriggerProps',
 });
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

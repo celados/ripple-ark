@@ -15,9 +15,9 @@ type Hook = typeof useCarousel;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -45,19 +45,19 @@ export const Root = createRoot({
 
 	useMachine: useCarousel as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const NextTrigger = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const NextTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getNextTriggerProps',
 });
-export const IndicatorGroup = createPart({
+export const IndicatorGroup = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getIndicatorGroupProps',
 });
-export const ProgressText = createPart({ context, defaultTag: 'span' });
-export const Indicator = createPart({
+export const ProgressText = /*#__PURE__*/ createPart({ context, defaultTag: 'span' });
+export const Indicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getIndicatorProps',
@@ -66,19 +66,23 @@ export const Indicator = createPart({
 		'readOnly',
 	],
 });
-export const AutoplayIndicator = createPart({ context, defaultTag: 'span' });
-export const PrevTrigger = createPart({
+export const AutoplayIndicator = /*#__PURE__*/ createPart({ context, defaultTag: 'span' });
+export const PrevTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getPrevTriggerProps',
 });
-export const AutoplayTrigger = createPart({
+export const AutoplayTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getAutoplayTriggerProps',
 });
-export const ItemGroup = createPart({ context, defaultTag: 'div', getter: 'getItemGroupProps' });
-export const Item = createPart({
+export const ItemGroup = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getItemGroupProps',
+});
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
@@ -87,9 +91,13 @@ export const Item = createPart({
 		'snapAlign',
 	],
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

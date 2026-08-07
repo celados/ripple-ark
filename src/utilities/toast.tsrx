@@ -10,7 +10,7 @@ export const createToaster = <T = Children,>(props: CreateToasterProps): CreateT
 	toast.createStore(props);
 
 type ToastApi = ReturnType<typeof useToast>;
-const context = new RippleContext<ToastApi | null>(null);
+const context = /*#__PURE__*/ new RippleContext<ToastApi | null>(null);
 
 type ToastActorProps = {
 	value: ToastOptions;

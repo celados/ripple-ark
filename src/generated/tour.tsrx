@@ -15,18 +15,26 @@ type Hook = typeof useTour;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	configKeys: [],
 
 	useMachine: useTour as any,
 });
-export const RootProvider = createRootProvider({ context });
-export const Title = createPart({ context, defaultTag: 'h2', getter: 'getTitleProps' });
-export const Spotlight = createPart({ context, defaultTag: 'div', getter: 'getSpotlightProps' });
-export const ActionTrigger = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context });
+export const Title = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'h2',
+	getter: 'getTitleProps',
+});
+export const Spotlight = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getSpotlightProps',
+});
+export const ActionTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getActionTriggerProps',
@@ -34,27 +42,47 @@ export const ActionTrigger = createPart({
 		'action',
 	],
 });
-export const ProgressText = createPart({
+export const ProgressText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getProgressTextProps',
 });
-export const CloseTrigger = createPart({
+export const CloseTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getCloseTriggerProps',
 });
-export const Arrow = createPart({ context, defaultTag: 'div', getter: 'getArrowProps' });
-export const ArrowTip = createPart({ context, defaultTag: 'div', getter: 'getArrowTipProps' });
-export const Backdrop = createPart({ context, defaultTag: 'div', getter: 'getBackdropProps' });
-export const Description = createPart({
+export const Arrow = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getArrowProps',
+});
+export const ArrowTip = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getArrowTipProps',
+});
+export const Backdrop = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getBackdropProps',
+});
+export const Description = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getDescriptionProps',
 });
-export const Control = createPart({ context, defaultTag: 'div' });
-export const Positioner = createPart({ context, defaultTag: 'div', getter: 'getPositionerProps' });
-export const Content = createPart({ context, defaultTag: 'div', getter: 'getContentProps' });
+export const Control = /*#__PURE__*/ createPart({ context, defaultTag: 'div' });
+export const Positioner = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getPositionerProps',
+});
+export const Content = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getContentProps',
+});
 
 export function Actions(props: { children: (actions: Tracked<AnyRecord[]>) => Children }) @{
 	const api = context.get();
@@ -65,7 +93,7 @@ export function Actions(props: { children: (actions: Tracked<AnyRecord[]>) => Ch
 		render(actions);
 	}
 }
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

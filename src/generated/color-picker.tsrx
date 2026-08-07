@@ -15,14 +15,14 @@ type Hook = typeof useColorPicker;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const colorPickerSwatchProps = new RippleContext<Record<string, any> | null>(null);
-const colorPickerFormatProps = new RippleContext<Record<string, any> | null>(null);
-const colorPickerChannelProps = new RippleContext<Record<string, any> | null>(null);
-const colorPickerAreaProps = new RippleContext<Record<string, any> | null>(null);
+const colorPickerSwatchProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const colorPickerFormatProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const colorPickerChannelProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const colorPickerAreaProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -56,9 +56,13 @@ export const Root = createRoot({
 
 	useMachine: useColorPicker as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const Positioner = createPart({ context, defaultTag: 'div', getter: 'getPositionerProps' });
-export const ValueSwatch = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const Positioner = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getPositionerProps',
+});
+export const ValueSwatch = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getSwatchProps',
@@ -67,12 +71,12 @@ export const ValueSwatch = createPart({
 	],
 	provideProps: colorPickerSwatchProps,
 });
-export const FormatSelect = createPart({
+export const FormatSelect = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'select',
 	getter: 'getFormatSelectProps',
 });
-export const Swatch = createPart({
+export const Swatch = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getSwatchProps',
@@ -82,18 +86,18 @@ export const Swatch = createPart({
 	],
 	provideProps: colorPickerSwatchProps,
 });
-export const SwatchGroup = createPart({
+export const SwatchGroup = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getSwatchGroupProps',
 });
-export const ChannelSliderThumb = createPart({
+export const ChannelSliderThumb = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getChannelSliderThumbProps',
 	inheritedProps: colorPickerFormatProps,
 });
-export const SwatchTrigger = createPart({
+export const SwatchTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getSwatchTriggerProps',
@@ -102,7 +106,7 @@ export const SwatchTrigger = createPart({
 		'disabled',
 	],
 });
-export const View = createPart({
+export const View = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	propKeys: [
@@ -110,12 +114,12 @@ export const View = createPart({
 	],
 	provideProps: colorPickerFormatProps,
 });
-export const EyeDropperTrigger = createPart({
+export const EyeDropperTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getEyeDropperTriggerProps',
 });
-export const ChannelSlider = createPart({
+export const ChannelSlider = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getChannelSliderProps',
@@ -126,27 +130,39 @@ export const ChannelSlider = createPart({
 	provideProps: colorPickerChannelProps,
 	inheritedProps: colorPickerFormatProps,
 });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const FormatTrigger = createPart({
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const FormatTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getFormatTriggerProps',
 });
-export const AreaThumb = createPart({
+export const AreaThumb = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getAreaThumbProps',
 	inheritedProps: colorPickerAreaProps,
 });
-export const Trigger = createPart({ context, defaultTag: 'button', getter: 'getTriggerProps' });
-export const Content = createPart({ context, defaultTag: 'div', getter: 'getContentProps' });
-export const ChannelSliderLabel = createPart({
+export const Trigger = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'button',
+	getter: 'getTriggerProps',
+});
+export const Content = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getContentProps',
+});
+export const ChannelSliderLabel = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'label',
 	getter: 'getChannelSliderLabelProps',
 	inheritedProps: colorPickerChannelProps,
 });
-export const ValueText = createPart({
+export const ValueText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getValueTextProps',
@@ -154,26 +170,30 @@ export const ValueText = createPart({
 		'format',
 	],
 });
-export const ChannelSliderValueText = createPart({
+export const ChannelSliderValueText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getChannelSliderValueTextProps',
 	inheritedProps: colorPickerChannelProps,
 });
-export const SwatchIndicator = createPart({
+export const SwatchIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getSwatchIndicatorProps',
 	inheritedProps: colorPickerSwatchProps,
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const ChannelSliderTrack = createPart({
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const ChannelSliderTrack = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getChannelSliderTrackProps',
 	inheritedProps: colorPickerFormatProps,
 });
-export const ChannelInput = createPart({
+export const ChannelInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getChannelInputProps',
@@ -182,12 +202,12 @@ export const ChannelInput = createPart({
 		'orientation',
 	],
 });
-export const HiddenInput = createPart({
+export const HiddenInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getHiddenInputProps',
 });
-export const Area = createPart({
+export const Area = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getAreaProps',
@@ -197,7 +217,7 @@ export const Area = createPart({
 	],
 	provideProps: colorPickerAreaProps,
 });
-export const TransparencyGrid = createPart({
+export const TransparencyGrid = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getTransparencyGridProps',
@@ -205,14 +225,14 @@ export const TransparencyGrid = createPart({
 		'size',
 	],
 });
-export const AreaBackground = createPart({
+export const AreaBackground = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getAreaBackgroundProps',
 	inheritedProps: colorPickerAreaProps,
 });
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

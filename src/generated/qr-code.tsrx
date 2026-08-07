@@ -15,9 +15,9 @@ type Hook = typeof useQrCode;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -32,8 +32,8 @@ export const Root = createRoot({
 
 	useMachine: useQrCode as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const DownloadTrigger = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const DownloadTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getDownloadTriggerProps',
@@ -43,11 +43,23 @@ export const DownloadTrigger = createPart({
 		'quality',
 	],
 });
-export const Overlay = createPart({ context, defaultTag: 'div', getter: 'getOverlayProps' });
-export const Frame = createPart({ context, defaultTag: 'svg', getter: 'getFrameProps' });
-export const Pattern = createPart({ context, defaultTag: 'path', getter: 'getPatternProps' });
+export const Overlay = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getOverlayProps',
+});
+export const Frame = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'svg',
+	getter: 'getFrameProps',
+});
+export const Pattern = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'path',
+	getter: 'getPatternProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

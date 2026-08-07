@@ -15,9 +15,9 @@ type Hook = typeof useDatePicker;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -68,26 +68,34 @@ export const Root = createRoot({
 
 	useMachine: useDatePicker as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const WeekNumberCell = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const WeekNumberCell = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'td',
 	getter: 'getWeekNumberCellProps',
 });
-export const TableHead = createPart({ context, defaultTag: 'thead', getter: 'getTableHeadProps' });
-export const TableRow = createPart({ context, defaultTag: 'tr', getter: 'getTableRowProps' });
-export const ValueText = createPart({ context, defaultTag: 'span' });
-export const ViewControl = createPart({
+export const TableHead = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'thead',
+	getter: 'getTableHeadProps',
+});
+export const TableRow = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'tr',
+	getter: 'getTableRowProps',
+});
+export const ValueText = /*#__PURE__*/ createPart({ context, defaultTag: 'span' });
+export const ViewControl = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getViewControlProps',
 });
-export const ViewTrigger = createPart({
+export const ViewTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getViewTriggerProps',
 });
-export const TableCell = createPart({
+export const TableCell = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'td',
 	propKeys: [
@@ -97,34 +105,58 @@ export const TableCell = createPart({
 		'columns',
 	],
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const Content = createPart({ context, defaultTag: 'div', getter: 'getContentProps' });
-export const WeekNumberHeaderCell = createPart({
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const Content = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getContentProps',
+});
+export const WeekNumberHeaderCell = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'th',
 	getter: 'getWeekNumberHeaderCellProps',
 });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const Trigger = createPart({ context, defaultTag: 'button', getter: 'getTriggerProps' });
-export const Positioner = createPart({ context, defaultTag: 'div', getter: 'getPositionerProps' });
-export const TableCellTrigger = createPart({ context, defaultTag: 'div' });
-export const ClearTrigger = createPart({
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const Trigger = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'button',
+	getter: 'getTriggerProps',
+});
+export const Positioner = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getPositionerProps',
+});
+export const TableCellTrigger = /*#__PURE__*/ createPart({ context, defaultTag: 'div' });
+export const ClearTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getClearTriggerProps',
 });
-export const TableHeader = createPart({ context, defaultTag: 'th', getter: 'getTableHeaderProps' });
-export const NextTrigger = createPart({
+export const TableHeader = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'th',
+	getter: 'getTableHeaderProps',
+});
+export const NextTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getNextTriggerProps',
 });
-export const MonthSelect = createPart({
+export const MonthSelect = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'select',
 	getter: 'getMonthSelectProps',
 });
-export const PresetTrigger = createPart({
+export const PresetTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getPresetTriggerProps',
@@ -132,13 +164,17 @@ export const PresetTrigger = createPart({
 		'value',
 	],
 });
-export const Table = createPart({ context, defaultTag: 'table', getter: 'getTableProps' });
-export const PrevTrigger = createPart({
+export const Table = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'table',
+	getter: 'getTableProps',
+});
+export const PrevTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getPrevTriggerProps',
 });
-export const Input = createPart({
+export const Input = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getInputProps',
@@ -147,16 +183,24 @@ export const Input = createPart({
 		'fixOnBlur',
 	],
 });
-export const YearSelect = createPart({
+export const YearSelect = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'select',
 	getter: 'getYearSelectProps',
 });
-export const RangeText = createPart({ context, defaultTag: 'div', getter: 'getRangeTextProps' });
-export const TableBody = createPart({ context, defaultTag: 'tbody', getter: 'getTableBodyProps' });
-export const View = createPart({ context, defaultTag: 'div' });
+export const RangeText = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getRangeTextProps',
+});
+export const TableBody = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'tbody',
+	getter: 'getTableBodyProps',
+});
+export const View = /*#__PURE__*/ createPart({ context, defaultTag: 'div' });
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

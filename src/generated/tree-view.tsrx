@@ -15,93 +15,101 @@ type Hook = typeof useTreeView;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const treeViewNodeProps = new RippleContext<Record<string, any> | null>(null);
+const treeViewNodeProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [],
 
 	useMachine: useTreeView as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const BranchText = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const BranchText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getBranchTextProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const ItemIndicator = createPart({
+export const ItemIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemIndicatorProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const Tree = createPart({ context, defaultTag: 'div', getter: 'getTreeProps' });
-export const Item = createPart({
+export const Tree = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getTreeProps',
+});
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const Branch = createPart({
+export const Branch = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getBranchProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const NodeCheckbox = createPart({
+export const NodeCheckbox = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getNodeCheckboxProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const BranchTrigger = createPart({
+export const BranchTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getBranchTriggerProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const NodeRenameInput = createPart({
+export const NodeRenameInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getNodeRenameInputProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const BranchContent = createPart({
+export const BranchContent = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getBranchContentProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const BranchControl = createPart({
+export const BranchControl = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getBranchControlProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const BranchIndentGuide = createPart({
+export const BranchIndentGuide = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getBranchIndentGuideProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const Label = createPart({ context, defaultTag: 'h3', getter: 'getLabelProps' });
-export const BranchIndicator = createPart({
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'h3',
+	getter: 'getLabelProps',
+});
+export const BranchIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getBranchIndicatorProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const ItemText = createPart({
+export const ItemText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getItemTextProps',
 	inheritedProps: treeViewNodeProps,
 });
-export const NodeContext = createItemContext(context, treeViewNodeProps);
+export const NodeContext = /*#__PURE__*/ createItemContext(context, treeViewNodeProps);
 export function NodeProvider(props: ArkPartProps & { indexPath: number[]; node: unknown }) @{
 	const { indexPath, node, children } = props;
 	treeViewNodeProps.set({ indexPath, node });
@@ -135,7 +143,7 @@ export function NodeCheckboxIndicator(props: {
 		}
 	}
 }
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

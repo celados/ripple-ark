@@ -15,11 +15,11 @@ type Hook = typeof useTagsInput;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const tagsInputItemProps = new RippleContext<Record<string, any> | null>(null);
+const tagsInputItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -59,39 +59,51 @@ export const Root = createRoot({
 
 	useMachine: useTagsInput as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const ClearTrigger = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const ClearTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getClearTriggerProps',
 });
-export const ItemText = createPart({
+export const ItemText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getItemTextProps',
 	inheritedProps: tagsInputItemProps,
 });
-export const ItemInput = createPart({
+export const ItemInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getItemInputProps',
 	inheritedProps: tagsInputItemProps,
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const HiddenInput = createPart({
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const HiddenInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getHiddenInputProps',
 });
-export const ItemPreview = createPart({
+export const ItemPreview = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemPreviewProps',
 	inheritedProps: tagsInputItemProps,
 });
-export const Input = createPart({ context, defaultTag: 'input', getter: 'getInputProps' });
-export const Item = createPart({
+export const Input = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'input',
+	getter: 'getInputProps',
+});
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
@@ -102,15 +114,15 @@ export const Item = createPart({
 	],
 	provideProps: tagsInputItemProps,
 });
-export const ItemDeleteTrigger = createPart({
+export const ItemDeleteTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getItemDeleteTriggerProps',
 	inheritedProps: tagsInputItemProps,
 });
-export const ItemContext = createItemContext(context, tagsInputItemProps);
+export const ItemContext = /*#__PURE__*/ createItemContext(context, tagsInputItemProps);
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

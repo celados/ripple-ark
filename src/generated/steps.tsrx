@@ -15,11 +15,11 @@ type Hook = typeof useSteps;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const stepsItemProps = new RippleContext<Record<string, any> | null>(null);
+const stepsItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -39,32 +39,40 @@ export const Root = createRoot({
 
 	useMachine: useSteps as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const PrevTrigger = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const PrevTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getPrevTriggerProps',
 });
-export const Separator = createPart({
+export const Separator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getSeparatorProps',
 	inheritedProps: stepsItemProps,
 });
-export const NextTrigger = createPart({
+export const NextTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getNextTriggerProps',
 });
-export const List = createPart({ context, defaultTag: 'div', getter: 'getListProps' });
-export const Progress = createPart({ context, defaultTag: 'div', getter: 'getProgressProps' });
-export const Indicator = createPart({
+export const List = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getListProps',
+});
+export const Progress = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getProgressProps',
+});
+export const Indicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getIndicatorProps',
 	inheritedProps: stepsItemProps,
 });
-export const Item = createPart({
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
@@ -73,12 +81,12 @@ export const Item = createPart({
 	],
 	provideProps: stepsItemProps,
 });
-export const CompletedContent = createPart({
+export const CompletedContent = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getContentProps',
 });
-export const Content = createPart({
+export const Content = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getContentProps',
@@ -86,15 +94,15 @@ export const Content = createPart({
 		'index',
 	],
 });
-export const Trigger = createPart({
+export const Trigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getTriggerProps',
 	inheritedProps: stepsItemProps,
 });
-export const ItemContext = createItemContext(context, stepsItemProps);
+export const ItemContext = /*#__PURE__*/ createItemContext(context, stepsItemProps);
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

@@ -7,7 +7,7 @@ export function useSwap(props: UseSwapProps = {}) {
 }
 
 type SwapValue = ReturnType<typeof useSwap>;
-const context = new RippleContext<SwapValue | null>(null);
+const context = /*#__PURE__*/ new RippleContext<SwapValue | null>(null);
 
 export type SwapRootProps =
 	Omit<JSX.IntrinsicElements['span'], 'children'> & UseSwapProps & {

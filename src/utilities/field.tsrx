@@ -93,7 +93,7 @@ export function useField(props: UseFieldProps): Tracked<FieldApi> {
 	});
 }
 
-const context = new RippleContext<Tracked<FieldApi> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<FieldApi> | null>(null);
 
 export type FieldRootProps =
 	Omit<JSX.IntrinsicElements['div'], 'id' | 'children'> & UseFieldProps & {

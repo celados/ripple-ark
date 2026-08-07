@@ -15,9 +15,9 @@ type Hook = typeof useToggle;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'button',
 	configKeys: [
@@ -29,10 +29,14 @@ export const Root = createRoot({
 
 	useMachine: useToggle as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'button' });
-export const Indicator = createPart({ context, defaultTag: 'div', getter: 'getIndicatorProps' });
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'button' });
+export const Indicator = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getIndicatorProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

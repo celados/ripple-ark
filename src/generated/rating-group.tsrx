@@ -15,11 +15,11 @@ type Hook = typeof useRatingGroup;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const ratingGroupItemProps = new RippleContext<Record<string, any> | null>(null);
+const ratingGroupItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -42,15 +42,23 @@ export const Root = createRoot({
 
 	useMachine: useRatingGroup as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const HiddenInput = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const HiddenInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getHiddenInputProps',
 });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const Item = createPart({
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getItemProps',
@@ -59,9 +67,9 @@ export const Item = createPart({
 	],
 	provideProps: ratingGroupItemProps,
 });
-export const ItemContext = createItemContext(context, ratingGroupItemProps);
+export const ItemContext = /*#__PURE__*/ createItemContext(context, ratingGroupItemProps);
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

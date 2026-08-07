@@ -15,9 +15,9 @@ type Hook = typeof useTimer;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -35,9 +35,13 @@ export const Root = createRoot({
 
 	useMachine: useTimer as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const Item = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
@@ -45,8 +49,12 @@ export const Item = createPart({
 		'type',
 	],
 });
-export const Separator = createPart({ context, defaultTag: 'div', getter: 'getSeparatorProps' });
-export const ActionTrigger = createPart({
+export const Separator = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getSeparatorProps',
+});
+export const ActionTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getActionTriggerProps',
@@ -54,9 +62,13 @@ export const ActionTrigger = createPart({
 		'action',
 	],
 });
-export const Area = createPart({ context, defaultTag: 'div', getter: 'getAreaProps' });
+export const Area = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getAreaProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

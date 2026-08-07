@@ -15,11 +15,11 @@ type Hook = typeof useRadioGroup;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const radioGroupItemProps = new RippleContext<Record<string, any> | null>(null);
+const radioGroupItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -39,27 +39,31 @@ export const Root = createRoot({
 
 	useMachine: useRadioGroup as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const Label = createPart({ context, defaultTag: 'span', getter: 'getLabelProps' });
-export const ItemText = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'span',
+	getter: 'getLabelProps',
+});
+export const ItemText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getItemTextProps',
 	inheritedProps: radioGroupItemProps,
 });
-export const ItemControl = createPart({
+export const ItemControl = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemControlProps',
 	inheritedProps: radioGroupItemProps,
 });
-export const ItemHiddenInput = createPart({
+export const ItemHiddenInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getItemHiddenInputProps',
 	inheritedProps: radioGroupItemProps,
 });
-export const Item = createPart({
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'label',
 	getter: 'getItemProps',
@@ -70,10 +74,14 @@ export const Item = createPart({
 	],
 	provideProps: radioGroupItemProps,
 });
-export const Indicator = createPart({ context, defaultTag: 'div', getter: 'getIndicatorProps' });
-export const ItemContext = createItemContext(context, radioGroupItemProps);
+export const Indicator = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getIndicatorProps',
+});
+export const ItemContext = /*#__PURE__*/ createItemContext(context, radioGroupItemProps);
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

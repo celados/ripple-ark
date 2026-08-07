@@ -15,11 +15,13 @@ type Hook = typeof useSplitter;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const splitterResizeTriggerProps = new RippleContext<Record<string, any> | null>(null);
+const splitterResizeTriggerProps = /*#__PURE__*/ new RippleContext<
+	Record<string, any> | null
+>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -41,13 +43,13 @@ export const Root = createRoot({
 
 	useMachine: useSplitter as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const ResizeTriggerIndicator = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const ResizeTriggerIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	inheritedProps: splitterResizeTriggerProps,
 });
-export const ResizeTrigger = createPart({
+export const ResizeTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getResizeTriggerProps',
@@ -57,7 +59,7 @@ export const ResizeTrigger = createPart({
 	],
 	provideProps: splitterResizeTriggerProps,
 });
-export const Panel = createPart({
+export const Panel = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getPanelProps',
@@ -66,7 +68,7 @@ export const Panel = createPart({
 	],
 });
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

@@ -15,9 +15,9 @@ type Hook = typeof useSignaturePad;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -38,9 +38,13 @@ export const Root = createRoot({
 
 	useMachine: useSignaturePad as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const Guide = createPart({ context, defaultTag: 'div', getter: 'getGuideProps' });
-export const HiddenInput = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const Guide = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getGuideProps',
+});
+export const HiddenInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getHiddenInputProps',
@@ -48,16 +52,28 @@ export const HiddenInput = createPart({
 		'value',
 	],
 });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const ClearTrigger = createPart({
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const ClearTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getClearTriggerProps',
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const Segment = createPart({ context, defaultTag: 'svg', getter: 'getSegmentProps' });
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const Segment = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'svg',
+	getter: 'getSegmentProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

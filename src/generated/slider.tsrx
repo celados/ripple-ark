@@ -15,11 +15,11 @@ type Hook = typeof useSlider;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const sliderThumbProps = new RippleContext<Record<string, any> | null>(null);
+const sliderThumbProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -52,23 +52,39 @@ export const Root = createRoot({
 
 	useMachine: useSlider as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const HiddenInput = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const HiddenInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getHiddenInputProps',
 	inheritedProps: sliderThumbProps,
 });
-export const Track = createPart({ context, defaultTag: 'div', getter: 'getTrackProps' });
-export const MarkerGroup = createPart({
+export const Track = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getTrackProps',
+});
+export const MarkerGroup = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getMarkerGroupProps',
 });
-export const ValueText = createPart({ context, defaultTag: 'span', getter: 'getValueTextProps' });
-export const Range = createPart({ context, defaultTag: 'div', getter: 'getRangeProps' });
-export const Marker = createPart({
+export const ValueText = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'span',
+	getter: 'getValueTextProps',
+});
+export const Range = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getRangeProps',
+});
+export const Marker = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getMarkerProps',
@@ -76,7 +92,7 @@ export const Marker = createPart({
 		'value',
 	],
 });
-export const Thumb = createPart({
+export const Thumb = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getThumbProps',
@@ -86,15 +102,19 @@ export const Thumb = createPart({
 	],
 	provideProps: sliderThumbProps,
 });
-export const DraggingIndicator = createPart({
+export const DraggingIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getDraggingIndicatorProps',
 	inheritedProps: sliderThumbProps,
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

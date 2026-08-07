@@ -15,11 +15,11 @@ type Hook = typeof useAccordion;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const accordionItemProps = new RippleContext<Record<string, any> | null>(null);
+const accordionItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -37,20 +37,20 @@ export const Root = createRoot({
 
 	useMachine: useAccordion as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const ItemIndicator = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const ItemIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemIndicatorProps',
 	inheritedProps: accordionItemProps,
 });
-export const ItemContent = createPart({
+export const ItemContent = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemContentProps',
 	inheritedProps: accordionItemProps,
 });
-export const Item = createPart({
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
@@ -60,15 +60,15 @@ export const Item = createPart({
 	],
 	provideProps: accordionItemProps,
 });
-export const ItemTrigger = createPart({
+export const ItemTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getItemTriggerProps',
 	inheritedProps: accordionItemProps,
 });
-export const ItemContext = createItemContext(context, accordionItemProps);
+export const ItemContext = /*#__PURE__*/ createItemContext(context, accordionItemProps);
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

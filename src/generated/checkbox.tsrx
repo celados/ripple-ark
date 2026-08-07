@@ -15,9 +15,9 @@ type Hook = typeof useCheckbox;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'label',
 	configKeys: [
@@ -37,21 +37,25 @@ export const Root = createRoot({
 
 	useMachine: useCheckbox as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'label' });
-export const HiddenInput = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'label' });
+export const HiddenInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getHiddenInputProps',
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const GroupProvider = createPart({
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const GroupProvider = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	propKeys: [
 		'value',
 	],
 });
-export const Group = createPart({
+export const Group = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	propKeys: [
@@ -65,8 +69,12 @@ export const Group = createPart({
 		'maxSelectedValues',
 	],
 });
-export const Label = createPart({ context, defaultTag: 'span', getter: 'getLabelProps' });
-export const Indicator = createPart({
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'span',
+	getter: 'getLabelProps',
+});
+export const Indicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getIndicatorProps',
@@ -75,7 +83,7 @@ export const Indicator = createPart({
 	],
 });
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

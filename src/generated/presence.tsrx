@@ -8,7 +8,7 @@ type PresenceApi =
 		setNode: (node: HTMLElement | null) => void;
 		presenceProps: Record<string, unknown>;
 	}>;
-const context = new RippleContext<PresenceApi | null>(null);
+const context = /*#__PURE__*/ new RippleContext<PresenceApi | null>(null);
 
 export type PresenceRootProps =
 	Omit<JSX.IntrinsicElements['div'], 'children'> & {

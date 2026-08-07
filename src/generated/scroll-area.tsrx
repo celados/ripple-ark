@@ -15,9 +15,9 @@ type Hook = typeof useScrollArea;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -27,9 +27,13 @@ export const Root = createRoot({
 
 	useMachine: useScrollArea as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const Thumb = createPart({ context, defaultTag: 'div', getter: 'getThumbProps' });
-export const Scrollbar = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const Thumb = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getThumbProps',
+});
+export const Scrollbar = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getScrollbarProps',
@@ -37,11 +41,23 @@ export const Scrollbar = createPart({
 		'orientation',
 	],
 });
-export const Content = createPart({ context, defaultTag: 'div', getter: 'getContentProps' });
-export const Viewport = createPart({ context, defaultTag: 'div', getter: 'getViewportProps' });
-export const Corner = createPart({ context, defaultTag: 'div', getter: 'getCornerProps' });
+export const Content = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getContentProps',
+});
+export const Viewport = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getViewportProps',
+});
+export const Corner = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getCornerProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

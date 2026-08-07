@@ -15,9 +15,9 @@ type Hook = typeof useNumberInput;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -54,24 +54,44 @@ export const Root = createRoot({
 
 	useMachine: useNumberInput as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const ValueText = createPart({ context, defaultTag: 'span', getter: 'getValueTextProps' });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const IncrementTrigger = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const ValueText = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'span',
+	getter: 'getValueTextProps',
+});
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const IncrementTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getIncrementTriggerProps',
 });
-export const DecrementTrigger = createPart({
+export const DecrementTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getDecrementTriggerProps',
 });
-export const Scrubber = createPart({ context, defaultTag: 'div', getter: 'getScrubberProps' });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const Input = createPart({ context, defaultTag: 'input', getter: 'getInputProps' });
+export const Scrubber = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getScrubberProps',
+});
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const Input = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'input',
+	getter: 'getInputProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

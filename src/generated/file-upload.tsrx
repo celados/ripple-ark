@@ -15,12 +15,12 @@ type Hook = typeof useFileUpload;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const fileUploadItemProps = new RippleContext<Record<string, any> | null>(null);
-const fileUploadItemGroupProps = new RippleContext<Record<string, any> | null>(null);
+const fileUploadItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const fileUploadItemGroupProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -52,14 +52,14 @@ export const Root = createRoot({
 
 	useMachine: useFileUpload as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const ItemSizeText = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const ItemSizeText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemSizeTextProps',
 	inheritedProps: fileUploadItemProps,
 });
-export const Dropzone = createPart({
+export const Dropzone = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getDropzoneProps',
@@ -67,12 +67,12 @@ export const Dropzone = createPart({
 		'disableClick',
 	],
 });
-export const ClearTrigger = createPart({
+export const ClearTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getClearTriggerProps',
 });
-export const Item = createPart({
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'li',
 	getter: 'getItemProps',
@@ -82,24 +82,24 @@ export const Item = createPart({
 	provideProps: fileUploadItemProps,
 	inheritedProps: fileUploadItemGroupProps,
 });
-export const HiddenInput = createPart({
+export const HiddenInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getHiddenInputProps',
 });
-export const ItemName = createPart({
+export const ItemName = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemNameProps',
 	inheritedProps: fileUploadItemProps,
 });
-export const ItemPreview = createPart({
+export const ItemPreview = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemPreviewProps',
 	inheritedProps: fileUploadItemProps,
 });
-export const ItemGroup = createPart({
+export const ItemGroup = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'ul',
 	getter: 'getItemGroupProps',
@@ -108,22 +108,30 @@ export const ItemGroup = createPart({
 	],
 	provideProps: fileUploadItemGroupProps,
 });
-export const Trigger = createPart({ context, defaultTag: 'button', getter: 'getTriggerProps' });
-export const ItemPreviewImage = createPart({
+export const Trigger = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'button',
+	getter: 'getTriggerProps',
+});
+export const ItemPreviewImage = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'img',
 	getter: 'getItemPreviewImageProps',
 	inheritedProps: fileUploadItemProps,
 });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const ItemDeleteTrigger = createPart({
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const ItemDeleteTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getItemDeleteTriggerProps',
 	inheritedProps: fileUploadItemProps,
 });
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

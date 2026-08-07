@@ -15,11 +15,13 @@ type Hook = typeof useDateInput;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const dateInputSegmentGroupProps = new RippleContext<Record<string, any> | null>(null);
+const dateInputSegmentGroupProps = /*#__PURE__*/ new RippleContext<
+	Record<string, any> | null
+>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -57,22 +59,30 @@ export const Root = createRoot({
 
 	useMachine: useDateInput as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const Segment = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const Segment = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getSegmentProps',
 	inheritedProps: dateInputSegmentGroupProps,
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const SegmentGroup = createPart({
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const SegmentGroup = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getSegmentGroupProps',
 	provideProps: dateInputSegmentGroupProps,
 });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const HiddenInput = createPart({
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const HiddenInput = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'input',
 	getter: 'getHiddenInputProps',
@@ -92,7 +102,7 @@ export function SegmentContext(props: { children: (segment: AnyRecord) => Childr
 		</>
 	}
 }
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

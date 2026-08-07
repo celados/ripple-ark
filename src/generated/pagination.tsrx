@@ -15,9 +15,9 @@ type Hook = typeof usePagination;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'nav',
 	configKeys: [
@@ -39,28 +39,28 @@ export const Root = createRoot({
 
 	useMachine: usePagination as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'nav' });
-export const NextTrigger = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'nav' });
+export const NextTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getNextTriggerProps',
 });
-export const FirstTrigger = createPart({
+export const FirstTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getFirstTriggerProps',
 });
-export const LastTrigger = createPart({
+export const LastTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getLastTriggerProps',
 });
-export const PrevTrigger = createPart({
+export const PrevTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getPrevTriggerProps',
 });
-export const Item = createPart({
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getItemProps',
@@ -69,7 +69,7 @@ export const Item = createPart({
 		'type',
 	],
 });
-export const Ellipsis = createPart({
+export const Ellipsis = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getEllipsisProps',
@@ -78,7 +78,7 @@ export const Ellipsis = createPart({
 	],
 });
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

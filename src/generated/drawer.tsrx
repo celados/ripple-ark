@@ -16,11 +16,11 @@ type Hook = typeof useDrawer;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
-const drawerStackStore = new RippleContext<DrawerStack | null>(null);
-const drawerStackApi = new RippleContext<Tracked<AnyRecord> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+const drawerStackStore = /*#__PURE__*/ new RippleContext<DrawerStack | null>(null);
+const drawerStackApi = /*#__PURE__*/ new RippleContext<Tracked<AnyRecord> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	configKeys: [
 		'id',
@@ -60,16 +60,28 @@ export const Root = createRoot({
 
 	useMachine: useDrawer as any,
 });
-export const RootProvider = createRootProvider({ context });
-export const SwipeArea = createPart({ context, defaultTag: 'div', getter: 'getSwipeAreaProps' });
-export const Positioner = createPart({ context, defaultTag: 'div', getter: 'getPositionerProps' });
-export const Backdrop = createPart({ context, defaultTag: 'div', getter: 'getBackdropProps' });
-export const IndentBackground = createExternalPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context });
+export const SwipeArea = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getSwipeAreaProps',
+});
+export const Positioner = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getPositionerProps',
+});
+export const Backdrop = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getBackdropProps',
+});
+export const IndentBackground = /*#__PURE__*/ createExternalPart({
 	context: drawerStackApi,
 	defaultTag: 'div',
 	getter: 'getIndentBackgroundProps',
 });
-export const Content = createPart({
+export const Content = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getContentProps',
@@ -77,7 +89,7 @@ export const Content = createPart({
 		'draggable',
 	],
 });
-export const Trigger = createPart({
+export const Trigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getTriggerProps',
@@ -85,24 +97,32 @@ export const Trigger = createPart({
 		'value',
 	],
 });
-export const CloseTrigger = createPart({
+export const CloseTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getCloseTriggerProps',
 });
-export const GrabberIndicator = createPart({
+export const GrabberIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getGrabberIndicatorProps',
 });
-export const Indent = createExternalPart({
+export const Indent = /*#__PURE__*/ createExternalPart({
 	context: drawerStackApi,
 	defaultTag: 'div',
 	getter: 'getIndentProps',
 });
-export const Grabber = createPart({ context, defaultTag: 'div', getter: 'getGrabberProps' });
-export const Title = createPart({ context, defaultTag: 'h2', getter: 'getTitleProps' });
-export const Description = createPart({
+export const Grabber = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getGrabberProps',
+});
+export const Title = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'h2',
+	getter: 'getTitleProps',
+});
+export const Description = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getDescriptionProps',
@@ -126,7 +146,7 @@ export function Stack(props: { children?: Children | Children[] }) @{
 		props.children;
 	}
 }
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

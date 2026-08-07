@@ -15,11 +15,11 @@ type Hook = typeof useMenu;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const menuItemProps = new RippleContext<Record<string, any> | null>(null);
+const menuItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	configKeys: [
 		'anchorPoint',
@@ -51,9 +51,13 @@ export const Root = createRoot({
 
 	useMachine: useMenu as any,
 });
-export const RootProvider = createRootProvider({ context });
-export const ArrowTip = createPart({ context, defaultTag: 'div', getter: 'getArrowTipProps' });
-export const RadioItem = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context });
+export const ArrowTip = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getArrowTipProps',
+});
+export const RadioItem = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getOptionItemProps',
@@ -65,8 +69,12 @@ export const RadioItem = createPart({
 	],
 	provideProps: menuItemProps,
 });
-export const TriggerItem = createPart({ context, defaultTag: 'div', provideProps: menuItemProps });
-export const Trigger = createPart({
+export const TriggerItem = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	provideProps: menuItemProps,
+});
+export const Trigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getTriggerProps',
@@ -74,7 +82,7 @@ export const Trigger = createPart({
 		'value',
 	],
 });
-export const Item = createPart({
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
@@ -87,8 +95,12 @@ export const Item = createPart({
 	],
 	provideProps: menuItemProps,
 });
-export const Content = createPart({ context, defaultTag: 'div', getter: 'getContentProps' });
-export const ItemGroup = createPart({
+export const Content = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getContentProps',
+});
+export const ItemGroup = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemGroupProps',
@@ -96,8 +108,12 @@ export const ItemGroup = createPart({
 		'id',
 	],
 });
-export const Indicator = createPart({ context, defaultTag: 'div', getter: 'getIndicatorProps' });
-export const RadioItemGroup = createPart({
+export const Indicator = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getIndicatorProps',
+});
+export const RadioItemGroup = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemGroupProps',
@@ -107,32 +123,44 @@ export const RadioItemGroup = createPart({
 		'value',
 	],
 });
-export const Arrow = createPart({ context, defaultTag: 'div', getter: 'getArrowProps' });
-export const Positioner = createPart({ context, defaultTag: 'div', getter: 'getPositionerProps' });
-export const ItemIndicator = createPart({
+export const Arrow = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getArrowProps',
+});
+export const Positioner = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getPositionerProps',
+});
+export const ItemIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemIndicatorProps',
 	inheritedProps: menuItemProps,
 });
-export const ItemGroupLabel = createPart({
+export const ItemGroupLabel = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemGroupLabelProps',
 });
-export const ContextTrigger = createPart({
+export const ContextTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getContextTriggerProps',
 });
-export const Separator = createPart({ context, defaultTag: 'hr', getter: 'getSeparatorProps' });
-export const ItemText = createPart({
+export const Separator = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'hr',
+	getter: 'getSeparatorProps',
+});
+export const ItemText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemTextProps',
 	inheritedProps: menuItemProps,
 });
-export const CheckboxItem = createPart({
+export const CheckboxItem = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getOptionItemProps',
@@ -146,9 +174,9 @@ export const CheckboxItem = createPart({
 	],
 	provideProps: menuItemProps,
 });
-export const ItemContext = createItemContext(context, menuItemProps);
+export const ItemContext = /*#__PURE__*/ createItemContext(context, menuItemProps);
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

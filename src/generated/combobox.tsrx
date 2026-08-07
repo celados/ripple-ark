@@ -15,40 +15,52 @@ type Hook = typeof useCombobox;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const comboboxItemProps = new RippleContext<Record<string, any> | null>(null);
-const comboboxItemGroupProps = new RippleContext<Record<string, any> | null>(null);
+const comboboxItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const comboboxItemGroupProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [],
 
 	useMachine: useCombobox as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const List = createPart({ context, defaultTag: 'div', getter: 'getListProps' });
-export const Input = createPart({ context, defaultTag: 'input', getter: 'getInputProps' });
-export const ItemText = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const List = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getListProps',
+});
+export const Input = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'input',
+	getter: 'getInputProps',
+});
+export const ItemText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getItemTextProps',
 	inheritedProps: comboboxItemProps,
 });
-export const ClearTrigger = createPart({
+export const ClearTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getClearTriggerProps',
 });
-export const Positioner = createPart({ context, defaultTag: 'div', getter: 'getPositionerProps' });
-export const ItemGroup = createPart({
+export const Positioner = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getPositionerProps',
+});
+export const ItemGroup = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemGroupProps',
 	provideProps: comboboxItemGroupProps,
 });
-export const Item = createPart({
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
@@ -58,8 +70,12 @@ export const Item = createPart({
 	],
 	provideProps: comboboxItemProps,
 });
-export const Content = createPart({ context, defaultTag: 'div', getter: 'getContentProps' });
-export const Trigger = createPart({
+export const Content = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getContentProps',
+});
+export const Trigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getTriggerProps',
@@ -67,24 +83,32 @@ export const Trigger = createPart({
 		'focusable',
 	],
 });
-export const Empty = createPart({ context, defaultTag: 'div' });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const ItemIndicator = createPart({
+export const Empty = /*#__PURE__*/ createPart({ context, defaultTag: 'div' });
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const ItemIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemIndicatorProps',
 	inheritedProps: comboboxItemProps,
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const ItemGroupLabel = createPart({
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const ItemGroupLabel = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemGroupLabelProps',
 	inheritedProps: comboboxItemGroupProps,
 });
-export const ItemContext = createItemContext(context, comboboxItemProps);
+export const ItemContext = /*#__PURE__*/ createItemContext(context, comboboxItemProps);
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

@@ -15,60 +15,84 @@ type Hook = typeof useSelect;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const selectItemProps = new RippleContext<Record<string, any> | null>(null);
-const selectItemGroupProps = new RippleContext<Record<string, any> | null>(null);
+const selectItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const selectItemGroupProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [],
 
 	useMachine: useSelect as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const List = createPart({ context, defaultTag: 'div', getter: 'getListProps' });
-export const Trigger = createPart({ context, defaultTag: 'button', getter: 'getTriggerProps' });
-export const ItemIndicator = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const List = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getListProps',
+});
+export const Trigger = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'button',
+	getter: 'getTriggerProps',
+});
+export const ItemIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemIndicatorProps',
 	inheritedProps: selectItemProps,
 });
-export const Indicator = createPart({ context, defaultTag: 'div', getter: 'getIndicatorProps' });
-export const Content = createPart({ context, defaultTag: 'div', getter: 'getContentProps' });
-export const HiddenSelect = createPart({
+export const Indicator = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getIndicatorProps',
+});
+export const Content = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getContentProps',
+});
+export const HiddenSelect = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'select',
 	getter: 'getHiddenSelectProps',
 });
-export const Positioner = createPart({ context, defaultTag: 'div', getter: 'getPositionerProps' });
-export const ClearTrigger = createPart({
+export const Positioner = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getPositionerProps',
+});
+export const ClearTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getClearTriggerProps',
 });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const ItemText = createPart({
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const ItemText = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'span',
 	getter: 'getItemTextProps',
 	inheritedProps: selectItemProps,
 });
-export const ItemGroup = createPart({
+export const ItemGroup = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemGroupProps',
 	provideProps: selectItemGroupProps,
 });
-export const ItemGroupLabel = createPart({
+export const ItemGroupLabel = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemGroupLabelProps',
 	inheritedProps: selectItemGroupProps,
 });
-export const Item = createPart({
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
@@ -78,11 +102,19 @@ export const Item = createPart({
 	],
 	provideProps: selectItemProps,
 });
-export const ValueText = createPart({ context, defaultTag: 'span', getter: 'getValueTextProps' });
-export const Label = createPart({ context, defaultTag: 'label', getter: 'getLabelProps' });
-export const ItemContext = createItemContext(context, selectItemProps);
+export const ValueText = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'span',
+	getter: 'getValueTextProps',
+});
+export const Label = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'label',
+	getter: 'getLabelProps',
+});
+export const ItemContext = /*#__PURE__*/ createItemContext(context, selectItemProps);
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

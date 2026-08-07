@@ -1,5 +1,11 @@
 # ripple-ark
 
+## 0.2.6
+
+- Annotate module-scope factory calls as pure so bundlers can tree-shake unused
+  components; importing one component no longer drags every Zag machine into
+  the consumer bundle.
+
 ## 0.2.5
 
 - Verify published packages with the TypeScript major currently supported by TSRX.

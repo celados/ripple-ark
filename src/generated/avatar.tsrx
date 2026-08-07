@@ -15,9 +15,9 @@ type Hook = typeof useAvatar;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'div',
 	configKeys: [
@@ -28,11 +28,19 @@ export const Root = createRoot({
 
 	useMachine: useAvatar as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'div' });
-export const Fallback = createPart({ context, defaultTag: 'span', getter: 'getFallbackProps' });
-export const Image = createPart({ context, defaultTag: 'img', getter: 'getImageProps' });
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
+export const Fallback = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'span',
+	getter: 'getFallbackProps',
+});
+export const Image = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'img',
+	getter: 'getImageProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

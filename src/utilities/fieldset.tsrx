@@ -54,7 +54,7 @@ export function useFieldset(props: UseFieldsetProps): Tracked<FieldsetApi> {
 	});
 }
 
-export const fieldsetContext = new RippleContext<Tracked<FieldsetApi> | null>(null);
+export const fieldsetContext = /*#__PURE__*/ new RippleContext<Tracked<FieldsetApi> | null>(null);
 
 export type FieldsetRootProps =
 	Omit<JSX.IntrinsicElements['fieldset'], 'id' | 'children'> & UseFieldsetProps & {

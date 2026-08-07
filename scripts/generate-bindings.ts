@@ -77,8 +77,8 @@ export function NodeCheckboxIndicator(props: { children?: Children; indeterminat
 };
 
 const specialPrelude: Record<string, string> = {
-	drawer: `const drawerStackStore = new RippleContext<DrawerStack | null>(null);
-const drawerStackApi = new RippleContext<Tracked<AnyRecord> | null>(null);`,
+	drawer: `const drawerStackStore = /*#__PURE__*/ new RippleContext<DrawerStack | null>(null);
+const drawerStackApi = /*#__PURE__*/ new RippleContext<Tracked<AnyRecord> | null>(null);`,
 };
 
 const specialNames: Record<string, string[]> = {
@@ -192,7 +192,7 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 	const contextDeclarations = [...contexts]
 		.map(
 			(name) =>
-				`const ${name[0].toLowerCase() + name.slice(1)}Props = new RippleContext<Record<string, any> | null>(null);`
+				`const ${name[0].toLowerCase() + name.slice(1)}Props = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);`
 		)
 		.join('\n');
 	const itemContextDeclarations = [...contexts]
@@ -203,14 +203,14 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 		.filter((entry): entry is { name: string; alias: string } => Boolean(entry.alias))
 		.map(({ name, alias }) => {
 			const variable = `${name[0].toLowerCase() + name.slice(1)}Props`;
-			return `export const ${alias} = createItemContext(context, ${variable});`;
+			return `export const ${alias} = /*#__PURE__*/ createItemContext(context, ${variable});`;
 		})
 		.join('\n');
 	const partDeclarations = parts
 		.map((part) => {
 			if (directory.name === 'drawer' && ['Indent', 'IndentBackground'].includes(part.partName)) {
 				const getter = part.partName === 'Indent' ? 'getIndentProps' : 'getIndentBackgroundProps';
-				return `export const ${part.partName} = createExternalPart({ context: drawerStackApi, defaultTag: 'div', getter: '${getter}' });`;
+				return `export const ${part.partName} = /*#__PURE__*/ createExternalPart({ context: drawerStackApi, defaultTag: 'div', getter: '${getter}' });`;
 			}
 			const fields = [
 				`context`,
@@ -224,7 +224,7 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 					? `inheritedProps: ${part.inherit[0].toLowerCase() + part.inherit.slice(1)}Props`
 					: undefined,
 			].filter(Boolean);
-			return `export const ${part.partName} = createPart({ ${fields.join(', ')} });`;
+			return `export const ${part.partName} = /*#__PURE__*/ createPart({ ${fields.join(', ')} });`;
 		})
 		.join('\n');
 	const itemContextNames = [...contexts]
@@ -247,21 +247,21 @@ type Hook = typeof ${hook};
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 ${specialPrelude[directory.name] ?? ''}
 ${contextDeclarations}
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	${rootTag ? `defaultTag: '${rootTag}',\n\t` : ''}configKeys: ${literal(configKeys)},
 	${directory.name === 'drawer' ? 'defaultMachineProps: () => ({ stack: drawerStackStore.get() ?? undefined }),\n\t' : ''}
 	useMachine: ${hook} as any,
 });
-export const RootProvider = createRootProvider({ context${rootTag ? `, defaultTag: '${rootTag}'` : ''} });
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context${rootTag ? `, defaultTag: '${rootTag}'` : ''} });
 ${partDeclarations}
 ${itemContextDeclarations}
 ${specialDeclarations[directory.name] ?? ''}
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

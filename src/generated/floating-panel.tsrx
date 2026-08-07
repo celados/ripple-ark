@@ -15,9 +15,9 @@ type Hook = typeof useFloatingPanel;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	configKeys: [
 		'allowOverflow',
@@ -56,9 +56,13 @@ export const Root = createRoot({
 
 	useMachine: useFloatingPanel as any,
 });
-export const RootProvider = createRootProvider({ context });
-export const Title = createPart({ context, defaultTag: 'h2', getter: 'getTitleProps' });
-export const ResizeTrigger = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context });
+export const Title = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'h2',
+	getter: 'getTitleProps',
+});
+export const ResizeTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getResizeTriggerProps',
@@ -66,12 +70,12 @@ export const ResizeTrigger = createPart({
 		'axis',
 	],
 });
-export const DragTrigger = createPart({
+export const DragTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getDragTriggerProps',
 });
-export const StageTrigger = createPart({
+export const StageTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getStageTriggerProps',
@@ -79,19 +83,43 @@ export const StageTrigger = createPart({
 		'stage',
 	],
 });
-export const Header = createPart({ context, defaultTag: 'div', getter: 'getHeaderProps' });
-export const Body = createPart({ context, defaultTag: 'div', getter: 'getBodyProps' });
-export const Control = createPart({ context, defaultTag: 'div', getter: 'getControlProps' });
-export const Positioner = createPart({ context, defaultTag: 'div', getter: 'getPositionerProps' });
-export const Trigger = createPart({ context, defaultTag: 'button', getter: 'getTriggerProps' });
-export const Content = createPart({ context, defaultTag: 'div', getter: 'getContentProps' });
-export const CloseTrigger = createPart({
+export const Header = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getHeaderProps',
+});
+export const Body = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getBodyProps',
+});
+export const Control = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getControlProps',
+});
+export const Positioner = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getPositionerProps',
+});
+export const Trigger = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'button',
+	getter: 'getTriggerProps',
+});
+export const Content = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getContentProps',
+});
+export const CloseTrigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getCloseTriggerProps',
 });
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

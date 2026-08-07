@@ -65,249 +65,249 @@ export const useAccordion: MachineHook<
 	MachineProps<accordion.Machine>,
 	accordion.Api<PropTypes>,
 	accordion.Service
-> = createMachineHook(accordion.machine, accordion.connect);
+> = /*#__PURE__*/ createMachineHook(accordion.machine, accordion.connect);
 export const useAngleSlider: MachineHook<
 	MachineProps<angleSlider.Machine>,
 	angleSlider.Api<PropTypes>,
 	angleSlider.Service
-> = createMachineHook(angleSlider.machine, angleSlider.connect);
+> = /*#__PURE__*/ createMachineHook(angleSlider.machine, angleSlider.connect);
 export const useAvatar: MachineHook<
 	MachineProps<avatar.Machine>,
 	avatar.Api<PropTypes>,
 	avatar.Service
-> = createMachineHook(avatar.machine, avatar.connect);
+> = /*#__PURE__*/ createMachineHook(avatar.machine, avatar.connect);
 export const useCarousel: MachineHook<
 	MachineProps<carousel.Machine>,
 	carousel.Api<PropTypes>,
 	carousel.Service
-> = createMachineHook(carousel.machine, carousel.connect);
+> = /*#__PURE__*/ createMachineHook(carousel.machine, carousel.connect);
 export const useCascadeSelect: MachineHook<
 	MachineProps<cascadeSelect.Machine>,
 	cascadeSelect.Api<PropTypes>,
 	cascadeSelect.Service
-> = createMachineHook(cascadeSelect.machine, cascadeSelect.connect);
+> = /*#__PURE__*/ createMachineHook(cascadeSelect.machine, cascadeSelect.connect);
 export const useCheckbox: MachineHook<
 	MachineProps<checkbox.Machine>,
 	checkbox.Api<PropTypes>,
 	checkbox.Service
-> = createMachineHook(checkbox.machine, checkbox.connect);
+> = /*#__PURE__*/ createMachineHook(checkbox.machine, checkbox.connect);
 export const useClipboard: MachineHook<
 	MachineProps<clipboard.Machine>,
 	clipboard.Api<PropTypes>,
 	clipboard.Service
-> = createMachineHook(clipboard.machine, clipboard.connect);
+> = /*#__PURE__*/ createMachineHook(clipboard.machine, clipboard.connect);
 export const useCollapsible: MachineHook<
 	MachineProps<collapsible.Machine>,
 	collapsible.Api<PropTypes>,
 	collapsible.Service
-> = createMachineHook(collapsible.machine, collapsible.connect);
+> = /*#__PURE__*/ createMachineHook(collapsible.machine, collapsible.connect);
 export const useColorPicker: MachineHook<
 	MachineProps<colorPicker.Machine>,
 	colorPicker.Api<PropTypes>,
 	colorPicker.Service
-> = createMachineHook(colorPicker.machine, colorPicker.connect);
+> = /*#__PURE__*/ createMachineHook(colorPicker.machine, colorPicker.connect);
 export const useCombobox: MachineHook<
 	MachineProps<combobox.Machine>,
 	combobox.Api<PropTypes>,
 	combobox.Service
-> = createMachineHook(combobox.machine, combobox.connect);
+> = /*#__PURE__*/ createMachineHook(combobox.machine, combobox.connect);
 export const useDateInput: MachineHook<
 	MachineProps<dateInput.Machine>,
 	dateInput.Api<PropTypes>,
 	dateInput.Service
-> = createMachineHook(dateInput.machine, dateInput.connect);
+> = /*#__PURE__*/ createMachineHook(dateInput.machine, dateInput.connect);
 export const useDatePicker: MachineHook<
 	MachineProps<datePicker.Machine>,
 	datePicker.Api<PropTypes>,
 	datePicker.Service
-> = createMachineHook(datePicker.machine, datePicker.connect);
+> = /*#__PURE__*/ createMachineHook(datePicker.machine, datePicker.connect);
 export const useDialog: MachineHook<
 	MachineProps<dialog.Machine>,
 	dialog.Api<PropTypes>,
 	dialog.Service
-> = createMachineHook(dialog.machine, dialog.connect);
+> = /*#__PURE__*/ createMachineHook(dialog.machine, dialog.connect);
 export const useDrawer: MachineHook<
 	MachineProps<drawer.Machine>,
 	drawer.Api<PropTypes>,
 	drawer.Service
-> = createMachineHook(drawer.machine, drawer.connect);
+> = /*#__PURE__*/ createMachineHook(drawer.machine, drawer.connect);
 export const useEditable: MachineHook<
 	MachineProps<editable.Machine>,
 	editable.Api<PropTypes>,
 	editable.Service
-> = createMachineHook(editable.machine, editable.connect);
+> = /*#__PURE__*/ createMachineHook(editable.machine, editable.connect);
 export const useFileUpload: MachineHook<
 	MachineProps<fileUpload.Machine>,
 	fileUpload.Api<PropTypes>,
 	fileUpload.Service
-> = createMachineHook(fileUpload.machine, fileUpload.connect);
+> = /*#__PURE__*/ createMachineHook(fileUpload.machine, fileUpload.connect);
 export const useFloatingPanel: MachineHook<
 	MachineProps<floatingPanel.Machine>,
 	floatingPanel.Api<PropTypes>,
 	floatingPanel.Service
-> = createMachineHook(floatingPanel.machine, floatingPanel.connect);
+> = /*#__PURE__*/ createMachineHook(floatingPanel.machine, floatingPanel.connect);
 export const useHoverCard: MachineHook<
 	MachineProps<hoverCard.Machine>,
 	hoverCard.Api<PropTypes>,
 	hoverCard.Service
-> = createMachineHook(hoverCard.machine, hoverCard.connect);
+> = /*#__PURE__*/ createMachineHook(hoverCard.machine, hoverCard.connect);
 export const useImageCropper: MachineHook<
 	MachineProps<imageCropper.Machine>,
 	imageCropper.Api<PropTypes>,
 	imageCropper.Service
-> = createMachineHook(imageCropper.machine, imageCropper.connect);
+> = /*#__PURE__*/ createMachineHook(imageCropper.machine, imageCropper.connect);
 export const useListbox: MachineHook<
 	MachineProps<listbox.Machine>,
 	listbox.Api<PropTypes>,
 	listbox.Service
-> = createMachineHook(listbox.machine, listbox.connect);
+> = /*#__PURE__*/ createMachineHook(listbox.machine, listbox.connect);
 export const useMarquee: MachineHook<
 	MachineProps<marquee.Machine>,
 	marquee.Api<PropTypes>,
 	marquee.Service
-> = createMachineHook(marquee.machine, marquee.connect);
+> = /*#__PURE__*/ createMachineHook(marquee.machine, marquee.connect);
 export const useMenu: MachineHook<
 	MachineProps<menu.Machine>,
 	menu.Api<PropTypes>,
 	menu.Service
-> = createMachineHook(menu.machine, menu.connect);
+> = /*#__PURE__*/ createMachineHook(menu.machine, menu.connect);
 export const useNavigationMenu: MachineHook<
 	MachineProps<navigationMenu.Machine>,
 	navigationMenu.Api<PropTypes>,
 	navigationMenu.Service
-> = createMachineHook(navigationMenu.machine, navigationMenu.connect);
+> = /*#__PURE__*/ createMachineHook(navigationMenu.machine, navigationMenu.connect);
 export const useNumberInput: MachineHook<
 	MachineProps<numberInput.Machine>,
 	numberInput.Api<PropTypes>,
 	numberInput.Service
-> = createMachineHook(numberInput.machine, numberInput.connect);
+> = /*#__PURE__*/ createMachineHook(numberInput.machine, numberInput.connect);
 export const usePagination: MachineHook<
 	MachineProps<pagination.Machine>,
 	pagination.Api<PropTypes>,
 	pagination.Service
-> = createMachineHook(pagination.machine, pagination.connect);
+> = /*#__PURE__*/ createMachineHook(pagination.machine, pagination.connect);
 export const usePasswordInput: MachineHook<
 	MachineProps<passwordInput.Machine>,
 	passwordInput.Api<PropTypes>,
 	passwordInput.Service
-> = createMachineHook(passwordInput.machine, passwordInput.connect);
+> = /*#__PURE__*/ createMachineHook(passwordInput.machine, passwordInput.connect);
 export const usePinInput: MachineHook<
 	MachineProps<pinInput.Machine>,
 	pinInput.Api<PropTypes>,
 	pinInput.Service
-> = createMachineHook(pinInput.machine, pinInput.connect);
+> = /*#__PURE__*/ createMachineHook(pinInput.machine, pinInput.connect);
 export const usePopover: MachineHook<
 	MachineProps<popover.Machine>,
 	popover.Api<PropTypes>,
 	popover.Service
-> = createMachineHook(popover.machine, popover.connect);
+> = /*#__PURE__*/ createMachineHook(popover.machine, popover.connect);
 export const usePresence: MachineHook<
 	MachineProps<presence.Machine>,
 	presence.Api,
 	presence.Service
-> = createMachineHook(presence.machine, presence.connect);
+> = /*#__PURE__*/ createMachineHook(presence.machine, presence.connect);
 export const useProgress: MachineHook<
 	MachineProps<progress.Machine>,
 	progress.Api<PropTypes>,
 	progress.Service
-> = createMachineHook(progress.machine, progress.connect);
+> = /*#__PURE__*/ createMachineHook(progress.machine, progress.connect);
 export const useQrCode: MachineHook<
 	MachineProps<qrCode.Machine>,
 	qrCode.Api<PropTypes>,
 	qrCode.Service
-> = createMachineHook(qrCode.machine, qrCode.connect);
+> = /*#__PURE__*/ createMachineHook(qrCode.machine, qrCode.connect);
 export const useRadioGroup: MachineHook<
 	MachineProps<radioGroup.Machine>,
 	radioGroup.Api<PropTypes>,
 	radioGroup.Service
-> = createMachineHook(radioGroup.machine, radioGroup.connect);
+> = /*#__PURE__*/ createMachineHook(radioGroup.machine, radioGroup.connect);
 export const useRatingGroup: MachineHook<
 	MachineProps<ratingGroup.Machine>,
 	ratingGroup.Api<PropTypes>,
 	ratingGroup.Service
-> = createMachineHook(ratingGroup.machine, ratingGroup.connect);
+> = /*#__PURE__*/ createMachineHook(ratingGroup.machine, ratingGroup.connect);
 export const useScrollArea: MachineHook<
 	MachineProps<scrollArea.Machine>,
 	scrollArea.Api<PropTypes>,
 	scrollArea.Service
-> = createMachineHook(scrollArea.machine, scrollArea.connect);
+> = /*#__PURE__*/ createMachineHook(scrollArea.machine, scrollArea.connect);
 export const useSelect: MachineHook<
 	MachineProps<select.Machine>,
 	select.Api<PropTypes>,
 	select.Service
-> = createMachineHook(select.machine, select.connect);
+> = /*#__PURE__*/ createMachineHook(select.machine, select.connect);
 export const useSignaturePad: MachineHook<
 	MachineProps<signaturePad.Machine>,
 	signaturePad.Api<PropTypes>,
 	signaturePad.Service
-> = createMachineHook(signaturePad.machine, signaturePad.connect);
+> = /*#__PURE__*/ createMachineHook(signaturePad.machine, signaturePad.connect);
 export const useSlider: MachineHook<
 	MachineProps<slider.Machine>,
 	slider.Api<PropTypes>,
 	slider.Service
-> = createMachineHook(slider.machine, slider.connect);
+> = /*#__PURE__*/ createMachineHook(slider.machine, slider.connect);
 export const useSplitter: MachineHook<
 	MachineProps<splitter.Machine>,
 	splitter.Api<PropTypes>,
 	splitter.Service
-> = createMachineHook(splitter.machine, splitter.connect);
+> = /*#__PURE__*/ createMachineHook(splitter.machine, splitter.connect);
 export const useSteps: MachineHook<
 	MachineProps<steps.Machine>,
 	steps.Api<PropTypes>,
 	steps.Service
-> = createMachineHook(steps.machine, steps.connect);
+> = /*#__PURE__*/ createMachineHook(steps.machine, steps.connect);
 export const useSwitch: MachineHook<
 	MachineProps<switchMachine.Machine>,
 	switchMachine.Api<PropTypes>,
 	switchMachine.Service
-> = createMachineHook(switchMachine.machine, switchMachine.connect);
+> = /*#__PURE__*/ createMachineHook(switchMachine.machine, switchMachine.connect);
 export const useTabs: MachineHook<
 	MachineProps<tabs.Machine>,
 	tabs.Api<PropTypes>,
 	tabs.Service
-> = createMachineHook(tabs.machine, tabs.connect);
+> = /*#__PURE__*/ createMachineHook(tabs.machine, tabs.connect);
 export const useTagsInput: MachineHook<
 	MachineProps<tagsInput.Machine>,
 	tagsInput.Api<PropTypes>,
 	tagsInput.Service
-> = createMachineHook(tagsInput.machine, tagsInput.connect);
+> = /*#__PURE__*/ createMachineHook(tagsInput.machine, tagsInput.connect);
 export const useTimer: MachineHook<
 	MachineProps<timer.Machine>,
 	timer.Api<PropTypes>,
 	timer.Service
-> = createMachineHook(timer.machine, timer.connect);
+> = /*#__PURE__*/ createMachineHook(timer.machine, timer.connect);
 export const useToast: MachineHook<
 	MachineProps<toast.Machine>,
 	toast.Api<PropTypes>,
 	toast.Service
-> = createMachineHook(toast.machine, toast.connect);
+> = /*#__PURE__*/ createMachineHook(toast.machine, toast.connect);
 export const useToastGroup: MachineHook<
 	MachineProps<toast.GroupMachine>,
 	toast.GroupApi<PropTypes>,
 	toast.GroupService
-> = createMachineHook(toast.group.machine, toast.group.connect);
+> = /*#__PURE__*/ createMachineHook(toast.group.machine, toast.group.connect);
 export const useToggle: MachineHook<
 	MachineProps<toggle.Machine>,
 	toggle.Api<PropTypes>,
 	toggle.Service
-> = createMachineHook(toggle.machine, toggle.connect);
+> = /*#__PURE__*/ createMachineHook(toggle.machine, toggle.connect);
 export const useToggleGroup: MachineHook<
 	MachineProps<toggleGroup.Machine>,
 	toggleGroup.Api<PropTypes>,
 	toggleGroup.Service
-> = createMachineHook(toggleGroup.machine, toggleGroup.connect);
+> = /*#__PURE__*/ createMachineHook(toggleGroup.machine, toggleGroup.connect);
 export const useTooltip: MachineHook<
 	MachineProps<tooltip.Machine>,
 	tooltip.Api<PropTypes>,
 	tooltip.Service
-> = createMachineHook(tooltip.machine, tooltip.connect);
+> = /*#__PURE__*/ createMachineHook(tooltip.machine, tooltip.connect);
 export const useTour: MachineHook<
 	MachineProps<tour.Machine>,
 	tour.Api<PropTypes>,
 	tour.Service
-> = createMachineHook(tour.machine, tour.connect);
+> = /*#__PURE__*/ createMachineHook(tour.machine, tour.connect);
 export const useTreeView: MachineHook<
 	MachineProps<treeView.Machine>,
 	treeView.Api<PropTypes>,
 	treeView.Service
-> = createMachineHook(treeView.machine, treeView.connect);
+> = /*#__PURE__*/ createMachineHook(treeView.machine, treeView.connect);

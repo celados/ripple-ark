@@ -15,12 +15,14 @@ type Hook = typeof useNavigationMenu;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const navigationMenuViewportProps = new RippleContext<Record<string, any> | null>(null);
-const navigationMenuItemProps = new RippleContext<Record<string, any> | null>(null);
+const navigationMenuViewportProps = /*#__PURE__*/ new RippleContext<
+	Record<string, any> | null
+>(null);
+const navigationMenuItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	defaultTag: 'nav',
 	configKeys: [
@@ -40,22 +42,30 @@ export const Root = createRoot({
 
 	useMachine: useNavigationMenu as any,
 });
-export const RootProvider = createRootProvider({ context, defaultTag: 'nav' });
-export const Viewport = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'nav' });
+export const Viewport = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getViewportProps',
 	inheritedProps: navigationMenuViewportProps,
 });
-export const List = createPart({ context, defaultTag: 'div', getter: 'getListProps' });
-export const Indicator = createPart({ context, defaultTag: 'div', getter: 'getIndicatorProps' });
-export const Link = createPart({
+export const List = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getListProps',
+});
+export const Indicator = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getIndicatorProps',
+});
+export const Link = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'a',
 	getter: 'getLinkProps',
 	inheritedProps: navigationMenuItemProps,
 });
-export const ViewportPositioner = createPart({
+export const ViewportPositioner = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getViewportPositionerProps',
@@ -64,33 +74,37 @@ export const ViewportPositioner = createPart({
 	],
 	provideProps: navigationMenuViewportProps,
 });
-export const Content = createPart({
+export const Content = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getContentProps',
 	inheritedProps: navigationMenuItemProps,
 });
-export const Trigger = createPart({
+export const Trigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getTriggerProps',
 	inheritedProps: navigationMenuItemProps,
 });
-export const ItemIndicator = createPart({
+export const ItemIndicator = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemIndicatorProps',
 	inheritedProps: navigationMenuItemProps,
 });
-export const Item = createPart({
+export const Item = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'div',
 	getter: 'getItemProps',
 	provideProps: navigationMenuItemProps,
 });
-export const Arrow = createPart({ context, defaultTag: 'div', getter: 'getArrowProps' });
+export const Arrow = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getArrowProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };

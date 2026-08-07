@@ -15,9 +15,9 @@ type Hook = typeof useHoverCard;
 type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
-const context = new RippleContext<Tracked<Api> | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = createRoot({
+export const Root = /*#__PURE__*/ createRoot({
 	context,
 	configKeys: [
 		'closeDelay',
@@ -39,8 +39,8 @@ export const Root = createRoot({
 
 	useMachine: useHoverCard as any,
 });
-export const RootProvider = createRootProvider({ context });
-export const Trigger = createPart({
+export const RootProvider = /*#__PURE__*/ createRootProvider({ context });
+export const Trigger = /*#__PURE__*/ createPart({
 	context,
 	defaultTag: 'button',
 	getter: 'getTriggerProps',
@@ -48,12 +48,28 @@ export const Trigger = createPart({
 		'value',
 	],
 });
-export const Content = createPart({ context, defaultTag: 'div', getter: 'getContentProps' });
-export const Positioner = createPart({ context, defaultTag: 'div', getter: 'getPositionerProps' });
-export const Arrow = createPart({ context, defaultTag: 'div', getter: 'getArrowProps' });
-export const ArrowTip = createPart({ context, defaultTag: 'div', getter: 'getArrowTipProps' });
+export const Content = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getContentProps',
+});
+export const Positioner = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getPositionerProps',
+});
+export const Arrow = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getArrowProps',
+});
+export const ArrowTip = /*#__PURE__*/ createPart({
+	context,
+	defaultTag: 'div',
+	getter: 'getArrowTipProps',
+});
 
-export const Context = createApiContext(context);
+export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
 export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
