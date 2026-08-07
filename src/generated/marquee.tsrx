@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useMarquee } from '../components.ts';
+import { useMarquee } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

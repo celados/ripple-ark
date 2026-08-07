@@ -1,4 +1,4 @@
-import { useSignaturePad } from '../index.ts';
+import { useSignaturePad } from '../index';
 import { LuRotateCcw } from '../internal/lucide-icons.tsrx';
 
 export function SignaturePad() @{

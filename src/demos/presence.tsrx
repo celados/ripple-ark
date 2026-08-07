@@ -1,4 +1,4 @@
-import { usePresence } from '../index.ts';
+import { usePresence } from '../index';
 import { track } from 'ripple';
 
 export function Presence() @{

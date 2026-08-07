@@ -1,4 +1,4 @@
-import { useAvatar } from '../index.ts';
+import { useAvatar } from '../index';
 
 const name = 'John Doe';
 const src = 'https://avatar.iran.liara.run/public/10';

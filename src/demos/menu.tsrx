@@ -1,4 +1,4 @@
-import { useMenu } from '../index.ts';
+import { useMenu } from '../index';
 import { Portal } from 'ripple';
 import { LuChevronDown } from '../internal/lucide-icons.tsrx';
 

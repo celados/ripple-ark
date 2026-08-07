@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useSignaturePad } from '../components.ts';
+import { useSignaturePad } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

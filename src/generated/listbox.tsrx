@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useListbox } from '../components.ts';
+import { useListbox } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

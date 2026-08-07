@@ -1,6 +1,6 @@
 import * as toast from '@zag-js/toast';
 import { Context as RippleContext, type Children } from 'ripple';
-import { useToast, useToastGroup } from '../components.ts';
+import { useToast, useToastGroup } from '../components';
 
 export type CreateToasterProps = Partial<toast.StoreProps> & { placement: toast.Placement };
 export type CreateToasterReturn<T = Children> = toast.Store<T>;

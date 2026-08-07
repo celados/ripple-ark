@@ -1,4 +1,4 @@
-import { useNumberInput } from '../index.ts';
+import { useNumberInput } from '../index';
 import { LuChevronUp, LuChevronDown } from '../internal/lucide-icons.tsrx';
 
 export function NumberInput() @{

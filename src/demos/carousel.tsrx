@@ -1,4 +1,4 @@
-import { useCarousel } from '../index.ts';
+import { useCarousel } from '../index';
 import { LuChevronLeft, LuChevronRight } from '../internal/lucide-icons.tsrx';
 
 const items = [

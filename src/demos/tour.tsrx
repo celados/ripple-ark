@@ -1,4 +1,4 @@
-import { useTour } from '../index.ts';
+import { useTour } from '../index';
 import type { StepDetails } from '@zag-js/tour';
 import { Portal } from 'ripple';
 import { LuX } from '../internal/lucide-icons.tsrx';

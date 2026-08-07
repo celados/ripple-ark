@@ -1,4 +1,4 @@
-import { useDatePicker } from '../index.ts';
+import { useDatePicker } from '../index';
 import { Portal } from 'ripple';
 import { LuCalendarDays, LuChevronLeft, LuChevronRight } from '../internal/lucide-icons.tsrx';
 

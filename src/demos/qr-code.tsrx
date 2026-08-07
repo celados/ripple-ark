@@ -1,4 +1,4 @@
-import { useQrCode } from '../index.ts';
+import { useQrCode } from '../index';
 
 export function QrCode() @{
 	let api = useQrCode({

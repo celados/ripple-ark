@@ -1,4 +1,4 @@
-import { useMenu } from '../index.ts';
+import { useMenu } from '../index';
 
 export function ContextMenu() @{
 	let api = useMenu({

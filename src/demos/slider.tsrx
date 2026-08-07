@@ -1,4 +1,4 @@
-import { useSlider } from '../index.ts';
+import { useSlider } from '../index';
 
 export function Slider() @{
 	let api = useSlider({

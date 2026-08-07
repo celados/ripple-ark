@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useTreeView } from '../components.ts';
+import { useTreeView } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

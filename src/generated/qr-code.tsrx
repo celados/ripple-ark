@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useQrCode } from '../components.ts';
+import { useQrCode } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

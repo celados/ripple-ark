@@ -1,4 +1,4 @@
-import { useRadioGroup } from '../index.ts';
+import { useRadioGroup } from '../index';
 
 export function RadioGroup() @{
 	let api = useRadioGroup({

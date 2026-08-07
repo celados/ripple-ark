@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useToggleGroup } from '../components.ts';
+import { useToggleGroup } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

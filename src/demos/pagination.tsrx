@@ -1,4 +1,4 @@
-import { usePagination } from '../index.ts';
+import { usePagination } from '../index';
 import { LuChevronLeft, LuChevronRight } from '../internal/lucide-icons.tsrx';
 
 export function Pagination() @{

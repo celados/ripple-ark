@@ -1,4 +1,4 @@
-import { useSwitch } from '../index.ts';
+import { useSwitch } from '../index';
 
 export function Switch() @{
 	let api = useSwitch({

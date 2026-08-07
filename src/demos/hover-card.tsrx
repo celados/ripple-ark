@@ -1,4 +1,4 @@
-import { useHoverCard } from '../index.ts';
+import { useHoverCard } from '../index';
 import { Portal } from 'ripple';
 
 export function HoverCard() @{

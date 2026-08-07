@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useRatingGroup } from '../components.ts';
+import { useRatingGroup } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

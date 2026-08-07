@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useTooltip } from '../components.ts';
+import { useTooltip } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

@@ -1,4 +1,4 @@
-import { createListboxCollection, useListbox } from '../index.ts';
+import { createListboxCollection, useListbox } from '../index';
 
 export function Listbox() @{
 	const collection = createListboxCollection({

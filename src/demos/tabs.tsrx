@@ -1,4 +1,4 @@
-import { useTabs } from '../index.ts';
+import { useTabs } from '../index';
 
 export function Tabs() @{
 	let api = useTabs({

@@ -1,4 +1,4 @@
-import { useCollapsible } from '../index.ts';
+import { useCollapsible } from '../index';
 
 export function Collapsible() @{
 	let api = useCollapsible({

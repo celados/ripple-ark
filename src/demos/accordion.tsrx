@@ -1,4 +1,4 @@
-import { useAccordion } from '../index.ts';
+import { useAccordion } from '../index';
 
 const data = [
 	{ id: 'home', label: 'Home' },

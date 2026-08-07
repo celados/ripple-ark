@@ -1,5 +1,10 @@
 # ripple-ark
 
+## 0.2.4
+
+- Stop requiring consumers to enable `allowImportingTsExtensions` for package-internal modules.
+- Add a clean TSRX TypeScript consumer gate before publishing.
+
 ## 0.2.3
 
 - Regenerate published demo source text after the Ark adapter migration and guard it against drift.

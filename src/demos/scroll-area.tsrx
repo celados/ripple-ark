@@ -1,4 +1,4 @@
-import { useScrollArea } from '../index.ts';
+import { useScrollArea } from '../index';
 
 export function ScrollArea() @{
 	let api = useScrollArea({

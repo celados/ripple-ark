@@ -1,4 +1,4 @@
-import { usePasswordInput } from '../index.ts';
+import { usePasswordInput } from '../index';
 import { LuEye, LuEyeOff } from '../internal/lucide-icons.tsrx';
 
 export function PasswordInput() @{

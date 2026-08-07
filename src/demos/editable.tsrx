@@ -1,4 +1,4 @@
-import { useEditable } from '../index.ts';
+import { useEditable } from '../index';
 
 export function Editable() @{
 	let api = useEditable({

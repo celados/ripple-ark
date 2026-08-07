@@ -1,7 +1,7 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 import { connectStack, createStack, type DrawerStack } from '@zag-js/drawer';
 import { normalizeProps } from '@celados/ripple-zag';
-import { useDrawer } from '../components.ts';
+import { useDrawer } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
-import { demoSources } from '../src/demos/sources.ts';
+import { demoSources } from '../src/demos/sources';
 
 type ManifestEntry = { directory: string; parts: string[] };
 

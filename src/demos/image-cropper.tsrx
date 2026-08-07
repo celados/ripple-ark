@@ -1,4 +1,4 @@
-import { imageCropperHandles, useImageCropper } from '../index.ts';
+import { imageCropperHandles, useImageCropper } from '../index';
 import { track } from 'ripple';
 
 export function ImageCropper() @{

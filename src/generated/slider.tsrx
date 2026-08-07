@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useSlider } from '../components.ts';
+import { useSlider } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useSplitter } from '../components.ts';
+import { useSplitter } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

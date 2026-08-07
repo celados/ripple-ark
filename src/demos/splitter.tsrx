@@ -1,4 +1,4 @@
-import { useSplitter } from '../index.ts';
+import { useSplitter } from '../index';
 
 export function Splitter() @{
 	let api = useSplitter({

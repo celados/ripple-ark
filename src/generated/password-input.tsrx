@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { usePasswordInput } from '../components.ts';
+import { usePasswordInput } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

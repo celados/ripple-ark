@@ -1,4 +1,4 @@
-import { useTagsInput } from '../index.ts';
+import { useTagsInput } from '../index';
 import { LuX } from '../internal/lucide-icons.tsrx';
 
 export function TagsInput() @{

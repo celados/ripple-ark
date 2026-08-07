@@ -1,4 +1,4 @@
-import { createComboboxCollection, useCombobox } from '../index.ts';
+import { createComboboxCollection, useCombobox } from '../index';
 import { mergeProps } from '@zag-js/core';
 import { createFilter } from '@zag-js/i18n-utils';
 import { track, Portal } from 'ripple';

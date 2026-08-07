@@ -1,4 +1,4 @@
-import { parseColor, useColorPicker } from '../index.ts';
+import { parseColor, useColorPicker } from '../index';
 import { Portal } from 'ripple';
 import { LuPipette } from '../internal/lucide-icons.tsrx';
 

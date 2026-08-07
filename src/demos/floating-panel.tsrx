@@ -1,4 +1,4 @@
-import { useFloatingPanel } from '../index.ts';
+import { useFloatingPanel } from '../index';
 import { Portal } from 'ripple';
 import { LuX, LuMinus, LuMaximize2, LuArrowDownLeft } from '../internal/lucide-icons.tsrx';
 

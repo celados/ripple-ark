@@ -1,4 +1,4 @@
-import { useSteps } from '../index.ts';
+import { useSteps } from '../index';
 
 export function Steps() @{
 	let api = useSteps({

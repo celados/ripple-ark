@@ -1,4 +1,4 @@
-import { useDialog } from '../index.ts';
+import { useDialog } from '../index';
 import { Portal } from 'ripple';
 import { LuX } from '../internal/lucide-icons.tsrx';
 

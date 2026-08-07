@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useFloatingPanel } from '../components.ts';
+import { useFloatingPanel } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

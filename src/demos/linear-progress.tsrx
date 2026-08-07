@@ -1,4 +1,4 @@
-import { useProgress } from '../index.ts';
+import { useProgress } from '../index';
 
 export function LinearProgress() @{
 	let api = useProgress({

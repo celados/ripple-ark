@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"jsx": "preserve",
+		"jsxImportSource": "ripple",
+		"noEmit": true,
+		"skipLibCheck": true
+	},
+	"include": ["all-components.ts", "source-consumer.tsrx"]
+}

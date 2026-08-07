@@ -1,4 +1,4 @@
-import { useClipboard } from '../index.ts';
+import { useClipboard } from '../index';
 import { LuCheck, LuClipboardCopy } from '../internal/lucide-icons.tsrx';
 
 export function Clipboard() @{

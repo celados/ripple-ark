@@ -1,4 +1,4 @@
-import { usePopover } from '../index.ts';
+import { usePopover } from '../index';
 import { Portal } from 'ripple';
 import { LuX } from '../internal/lucide-icons.tsrx';
 

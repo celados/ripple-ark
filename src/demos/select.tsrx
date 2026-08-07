@@ -1,4 +1,4 @@
-import { createSelectCollection, useSelect } from '../index.ts';
+import { createSelectCollection, useSelect } from '../index';
 import { Portal } from 'ripple';
 import { LuChevronDown, LuCheck } from '../internal/lucide-icons.tsrx';
 

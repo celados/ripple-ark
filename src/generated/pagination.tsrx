@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { usePagination } from '../components.ts';
+import { usePagination } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

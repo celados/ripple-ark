@@ -6,8 +6,8 @@ import {
 	type JsonNode,
 } from '@zag-js/json-tree-utils';
 import { Context as RippleContext, track, type Children, type Tracked } from 'ripple';
-import { useTreeView } from '../components.ts';
-import { createTreeCollection } from './collection.ts';
+import { useTreeView } from '../components';
+import { createTreeCollection } from './collection';
 
 export type UseJsonTreeViewProps = {
 	id: string;

@@ -1,4 +1,4 @@
-import { useCheckbox } from '../index.ts';
+import { useCheckbox } from '../index';
 
 export function Checkbox() @{
 	let api = useCheckbox({

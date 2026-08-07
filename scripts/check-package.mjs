@@ -16,6 +16,9 @@ const consumerPath = fileURLToPath(
 const allComponentsPath = fileURLToPath(
 	new URL('../tests/fixtures/all-components.ts', import.meta.url)
 );
+const consumerTsconfigPath = fileURLToPath(
+	new URL('../tests/fixtures/tsconfig.json', import.meta.url)
+);
 const packageJson = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
 
 if (
@@ -47,6 +50,10 @@ const packedFiles = packedPackage.files.map((file) => file.path);
 if (packedFiles.some((file) => file.startsWith('dist/'))) {
 	throw new Error('The source package must not contain dist output');
 }
+
+// Consumers should not need a package-specific TypeScript escape hatch merely
+// because this source package uses ordinary internal TypeScript modules.
+await execFileAsync('tsrx-tsc', ['--noEmit', '-p', consumerTsconfigPath], { cwd: rootPath });
 
 const clientOutput = await build({
 	build: {

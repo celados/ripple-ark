@@ -1,5 +1,5 @@
 import { effect, Context as RippleContext, track, type Children, type Tracked } from 'ripple';
-import { usePresence } from '../components.ts';
+import { usePresence } from '../components';
 
 type PresenceApi =
 	Tracked<{

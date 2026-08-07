@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useNavigationMenu } from '../components.ts';
+import { useNavigationMenu } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

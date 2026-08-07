@@ -1,4 +1,4 @@
-import { useAngleSlider } from '../index.ts';
+import { useAngleSlider } from '../index';
 
 export function AngleSlider() @{
 	let api = useAngleSlider({

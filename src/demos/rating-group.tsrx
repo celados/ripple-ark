@@ -1,4 +1,4 @@
-import { type RatingGroupApi, useRatingGroup } from '../index.ts';
+import { type RatingGroupApi, useRatingGroup } from '../index';
 import { track, type Tracked } from 'ripple';
 
 export function RatingGroup() @{

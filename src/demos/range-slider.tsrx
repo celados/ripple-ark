@@ -1,4 +1,4 @@
-import { useSlider } from '../index.ts';
+import { useSlider } from '../index';
 
 export function RangeSlider() @{
 	let api = useSlider({

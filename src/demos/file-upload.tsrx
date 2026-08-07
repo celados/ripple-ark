@@ -1,4 +1,4 @@
-import { useFileUpload } from '../index.ts';
+import { useFileUpload } from '../index';
 import { LuX } from '../internal/lucide-icons.tsrx';
 
 export function FileUpload() @{

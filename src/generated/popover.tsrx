@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { usePopover } from '../components.ts';
+import { usePopover } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

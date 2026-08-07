@@ -240,7 +240,7 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 	];
 	const source = `import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 ${extraImports[directory.name] ?? ''}
-import { ${hook} } from '../components.ts';
+import { ${hook} } from '../components';
 import { createApiContext, createExternalPart, createItemContext, createPart, createRoot, createRootProvider, type ArkPartProps } from '../binding-runtime.tsrx';
 
 type Hook = typeof ${hook};

@@ -1,6 +1,6 @@
-import { createToaster, useToast, useToastGroup } from '../index.ts';
+import { createToaster, useToast, useToastGroup } from '../index';
 import { track, Portal } from 'ripple';
-import { trackSplit } from '../internal/track-split.ts';
+import { trackSplit } from '../internal/track-split';
 import {
 	LuX,
 	LuInfo,

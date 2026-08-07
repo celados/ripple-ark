@@ -1,5 +1,5 @@
 import { Context as RippleContext, type Tracked } from 'ripple';
-import { useCascadeSelect } from '../components.ts';
+import { useCascadeSelect } from '../components';
 import {
 	createApiContext,
 	createPart,

@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useAngleSlider } from '../components.ts';
+import { useAngleSlider } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

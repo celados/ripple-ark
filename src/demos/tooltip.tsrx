@@ -1,4 +1,4 @@
-import { useTooltip } from '../index.ts';
+import { useTooltip } from '../index';
 import { Portal } from 'ripple';
 
 export function Tooltip() @{

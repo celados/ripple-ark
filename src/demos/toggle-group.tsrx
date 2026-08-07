@@ -1,4 +1,4 @@
-import { useToggleGroup } from '../index.ts';
+import { useToggleGroup } from '../index';
 import { LuBold, LuItalic, LuUnderline } from '../internal/lucide-icons.tsrx';
 
 export function ToggleGroup() @{

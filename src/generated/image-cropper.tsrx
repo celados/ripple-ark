@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useImageCropper } from '../components.ts';
+import { useImageCropper } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useScrollArea } from '../components.ts';
+import { useScrollArea } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

@@ -1,4 +1,4 @@
-import { usePinInput } from '../index.ts';
+import { usePinInput } from '../index';
 
 export function PinInput() @{
 	let api = usePinInput({

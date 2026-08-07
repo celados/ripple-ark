@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useDatePicker } from '../components.ts';
+import { useDatePicker } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

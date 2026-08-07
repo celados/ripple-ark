@@ -1,10 +1,6 @@
-import {
-	createCascadeSelectCollection,
-	type CascadeSelectApi,
-	useCascadeSelect,
-} from '../index.ts';
+import { createCascadeSelectCollection, type CascadeSelectApi, useCascadeSelect } from '../index';
 import { track, Portal } from 'ripple';
-import { trackSplit } from '../internal/track-split.ts';
+import { trackSplit } from '../internal/track-split';
 import { LuChevronDown, LuChevronRight, LuCheck, LuX } from '../internal/lucide-icons.tsrx';
 
 export function CascadeSelect() @{

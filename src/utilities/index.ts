@@ -1,5 +1,5 @@
 export * from './client-only.tsrx';
-export * from './collection.ts';
+export * from './collection';
 export * from './download-trigger.tsrx';
 export * from './field.tsrx';
 export * from './fieldset.tsrx';

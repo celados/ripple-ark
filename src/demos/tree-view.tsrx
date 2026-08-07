@@ -1,6 +1,6 @@
-import { createTreeCollection, useTreeView } from '../index.ts';
+import { createTreeCollection, useTreeView } from '../index';
 import { track } from 'ripple';
-import { trackSplit } from '../internal/track-split.ts';
+import { trackSplit } from '../internal/track-split';
 import { LuFile, LuFolder, LuChevronRight } from '../internal/lucide-icons.tsrx';
 
 export function TreeView() @{

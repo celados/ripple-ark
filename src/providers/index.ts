@@ -1,3 +1,3 @@
 export * from './environment.tsrx';
-export * from './interaction.ts';
+export * from './interaction';
 export * from './locale.tsrx';

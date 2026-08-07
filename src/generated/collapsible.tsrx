@@ -1,6 +1,6 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
-import { useCollapsible } from '../components.ts';
+import { useCollapsible } from '../components';
 import {
 	createApiContext,
 	createExternalPart,

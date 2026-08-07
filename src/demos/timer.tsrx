@@ -1,4 +1,4 @@
-import { parseTimerDuration, useTimer } from '../index.ts';
+import { parseTimerDuration, useTimer } from '../index';
 
 export function Timer() @{
 	let api = useTimer({
