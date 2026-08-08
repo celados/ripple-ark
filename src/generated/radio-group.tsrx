@@ -3,94 +3,119 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { useRadioGroup } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useRadioGroup;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 const radioGroupItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	defaultTag: 'div',
-	configKeys: [
-		'defaultValue',
-		'disabled',
-		'form',
-		'id',
-		'ids',
-		'invalid',
-		'name',
-		'onValueChange',
-		'orientation',
-		'readOnly',
-		'required',
-		'value',
-	],
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'defaultValue',
+				'disabled',
+				'form',
+				'id',
+				'ids',
+				'invalid',
+				'name',
+				'onValueChange',
+				'orientation',
+				'readOnly',
+				'required',
+				'value',
+			],
 
-	useMachine: useRadioGroup as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
-export const Label = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'span',
-	getter: 'getLabelProps',
-});
-export const ItemText = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'span',
-	getter: 'getItemTextProps',
-	inheritedProps: radioGroupItemProps,
-});
-export const ItemControl = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getItemControlProps',
-	inheritedProps: radioGroupItemProps,
-});
-export const ItemHiddenInput = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'input',
-	getter: 'getItemHiddenInputProps',
-	inheritedProps: radioGroupItemProps,
-});
-export const Item = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'label',
-	getter: 'getItemProps',
-	propKeys: [
-		'value',
-		'disabled',
-		'invalid',
-	],
-	provideProps: radioGroupItemProps,
-});
-export const Indicator = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getIndicatorProps',
-});
+			useMachine: useRadioGroup as any,
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Label(props: LabelProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
+	<span {...mergedProps.value}>{children}</span>
+}
+export function ItemText(props: ItemTextProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{ context, getter: 'getItemTextProps', inheritedProps: radioGroupItemProps },
+		props,
+	);
+	<span {...mergedProps.value}>{children}</span>
+}
+export function ItemControl(props: ItemControlProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{ context, getter: 'getItemControlProps', inheritedProps: radioGroupItemProps },
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function ItemHiddenInput(props: ItemHiddenInputProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{ context, getter: 'getItemHiddenInputProps', inheritedProps: radioGroupItemProps },
+		props,
+	);
+	<input {...mergedProps.value} />
+}
+export function Item(props: ItemProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getItemProps',
+			propKeys: [
+				'value',
+				'disabled',
+				'invalid',
+			],
+			provideProps: radioGroupItemProps,
+		},
+		props,
+	);
+	<label {...mergedProps.value}>{children}</label>
+}
+export function Indicator(props: IndicatorProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
 export const ItemContext = /*#__PURE__*/ createItemContext(context, radioGroupItemProps);
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type LabelProps = ArkPartProps;
-export type ItemTextProps = ArkPartProps;
-export type ItemControlProps = ArkPartProps;
-export type ItemHiddenInputProps = ArkPartProps;
-export type ItemProps = ArkPartProps;
-export type IndicatorProps = ArkPartProps;
+export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type LabelProps = PartProps<'span', Api['getLabelProps']>;
+export type ItemTextProps = ArkPartProps<'span'>;
+export type ItemControlProps = ArkPartProps<'div'>;
+export type ItemHiddenInputProps = ArkPartProps<'input'>;
+export type ItemProps = PartProps<'label', Api['getItemProps']>;
+export type IndicatorProps = PartProps<'div', Api['getIndicatorProps']>;
 
 export const RadioGroup = {
 	Root,

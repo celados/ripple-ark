@@ -1,120 +1,108 @@
 import { mergeProps } from '@zag-js/core';
-import { Context, track, type Children, type DynamicElementType, type Tracked } from 'ripple';
+import { Context, track, type Children, type Tracked } from 'ripple';
 
 type AnyRecord = Record<string, any>;
+type ChildrenProps = { children?: Children | Children[] };
+export type ComponentProps = ChildrenProps;
 
-export type ArkPartProps =
-	AnyRecord & {
-		as?: DynamicElementType;
+type ElementType = keyof JSX.IntrinsicElements;
+type RemoveIndexSignature<T> =
+	{ [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K] };
+type OpenAttributes = { [name: string]: any };
+type NativePartProps<T extends ElementType> =
+	RemoveIndexSignature<JSX.IntrinsicElements[T]> & {
 		children?: Children | Children[];
 	};
+export type ArkPartProps<T extends ElementType = 'div'> = NativePartProps<T> & OpenAttributes;
+export type GetterProps<T> =
+	T extends (...args: infer TArgs) => unknown
+		? TArgs extends [infer TFirst, ...unknown[]] ? NonNullable<TFirst> : Record<never, never>
+		: Record<never, never>;
+export type PartProps<T extends ElementType, TGetter = never> =
+	Omit<NativePartProps<T>, keyof GetterProps<TGetter>> & GetterProps<TGetter> & OpenAttributes;
 
-type BindingContext = Context<Tracked<AnyRecord> | null>;
+type BindingContext<TApi extends object = AnyRecord> = Context<Tracked<TApi> | null>;
 
-type RootOptions = {
-	context: BindingContext;
-	defaultTag?: DynamicElementType;
+type RootOptions<TApi extends object> = {
+	context: BindingContext<TApi>;
 	defaultMachineProps?: () => AnyRecord;
 	configKeys: readonly string[];
-	useMachine: (props: AnyRecord) => Tracked<AnyRecord>;
+	useMachine: (props: AnyRecord) => Tracked<TApi>;
 };
 
-type PartOptions = {
-	context: BindingContext;
-	defaultTag: DynamicElementType;
-	getter?: string;
+export type PartOptions<TApi extends object> = {
+	context: BindingContext<TApi>;
+	getter?: Extract<keyof TApi, string>;
 	propKeys?: readonly string[];
 	inheritedProps?: Context<AnyRecord | null>;
 	provideProps?: Context<AnyRecord | null>;
 };
 
-function splitProps(props: ArkPartProps, keys: readonly string[]) {
+function splitProps(props: ChildrenProps, keys: readonly string[]) {
 	const selected: AnyRecord = {};
 	const local: AnyRecord = {};
 	for (const [key, value] of Object.entries(props)) {
-		if (key === 'as' || key === 'children') continue;
+		if (key === 'children') continue;
 		if (keys.includes(key)) selected[key] = value;
 		else local[key] = value;
 	}
 	return [selected, local] as const;
 }
 
-function useBindingContext(context: BindingContext) {
+function useBindingContext<TApi extends object>(context: BindingContext<TApi>) {
 	const api = context.get();
 	if (!api) throw new Error('Ark part must be rendered inside its Root or RootProvider');
 	return api;
 }
 
-export function createRoot(options: RootOptions) {
-	return function Root(props: ArkPartProps) @{
-		const { as = options.defaultTag, children } = props;
-		const [machineProps, localProps] = splitProps(props, options.configKeys);
-		const api = options.useMachine({ ...options.defaultMachineProps?.(), ...machineProps });
-		options.context.set(api);
-		// Zag's merge composes handlers, refs, class names, and styles. Object spread
-		// would silently replace machine behavior when consumers add their own props.
-		const mergedProps = track(() => mergeProps(api.value.getRootProps?.(), localProps));
-
-		<>
-			@if (as) {
-				<{as} {...mergedProps.value}>{children}</{as}>
-			} @else {
-				{
-					children;
-				}
-			}
-		</>
-	};
+export function useRootProps<TApi extends object>(
+	options: RootOptions<TApi>,
+	props: ChildrenProps,
+) {
+	const [machineProps, localProps] = splitProps(props, options.configKeys);
+	const api = options.useMachine({ ...options.defaultMachineProps?.(), ...machineProps });
+	options.context.set(api);
+	// Zag's merge composes handlers, refs, class names, and styles. Object spread
+	// would silently replace machine behavior when consumers add their own props.
+	return track(() => mergeProps((api.value as AnyRecord).getRootProps?.(), localProps));
 }
 
-export function createRootProvider(options: Omit<RootOptions, 'configKeys' | 'useMachine'>) {
-	return function RootProvider(props: ArkPartProps & { value: Tracked<AnyRecord> }) @{
-		const { as = options.defaultTag, children, value, ...localProps } = props;
-		options.context.set(value);
-		const mergedProps = track(() => mergeProps(value.value.getRootProps?.(), localProps));
-
-		<>
-			@if (as) {
-				<{as} {...mergedProps.value}>{children}</{as}>
-			} @else {
-				{
-					children;
-				}
-			}
-		</>
-	};
+export function useRootProviderProps<TApi extends object>(
+	options: Pick<RootOptions<TApi>, 'context'>,
+	props: ChildrenProps & { value: Tracked<TApi> },
+) {
+	const { children: _children, value, ...localProps } = props;
+	options.context.set(value);
+	return track(() => mergeProps((value.value as AnyRecord).getRootProps?.(), localProps));
 }
 
-export function createPart(options: PartOptions) {
-	return function Part(props: ArkPartProps) @{
-		const { as = options.defaultTag, children } = props;
-		const api = useBindingContext(options.context);
-		const [ownProps, localProps] = splitProps(props, options.propKeys ?? []);
-		const machineProps = { ...(options.inheritedProps?.get() ?? {}), ...ownProps };
-		options.provideProps?.set(machineProps);
-		const mergedProps = track(
-			() => mergeProps(options.getter ? api.value[options.getter](machineProps) : {}, localProps),
-		);
-
-		<{as} {...mergedProps.value}>{children}</{as}>
-	};
+export function usePartProps<TApi extends object>(
+	options: PartOptions<TApi>,
+	props: ChildrenProps,
+) {
+	const api = useBindingContext(options.context);
+	const [ownProps, localProps] = splitProps(props, options.propKeys ?? []);
+	const machineProps = { ...(options.inheritedProps?.get() ?? {}), ...ownProps };
+	options.provideProps?.set(machineProps);
+	return track(() => {
+		const getter = options.getter ? (api.value as AnyRecord)[options.getter] : undefined;
+		return mergeProps(typeof getter === 'function' ? getter(machineProps) : {}, localProps);
+	});
 }
 
-export function createExternalPart(options: Pick<PartOptions, 'defaultTag' | 'getter'> & {
-	context: BindingContext;
-}) {
-	return function ExternalPart(props: ArkPartProps) @{
-		const { as = options.defaultTag, children, ...localProps } = props;
-		const api = useBindingContext(options.context);
-		const mergedProps = track(
-			() => mergeProps(options.getter ? api.value[options.getter]() : {}, localProps),
-		);
-		<{as} {...mergedProps.value}>{children}</{as}>
-	};
+export function useExternalPartProps<TApi extends object>(
+	options: Pick<PartOptions<TApi>, 'context' | 'getter'>,
+	props: ChildrenProps,
+) {
+	const { children: _children, ...localProps } = props;
+	const api = useBindingContext(options.context);
+	return track(
+		() => mergeProps(options.getter ? (api.value as AnyRecord)[options.getter]() : {}, localProps),
+	);
 }
 
-export function createApiContext(context: BindingContext) {
-	return function ApiContext(props: { children: (api: AnyRecord) => Children }) @{
+export function createApiContext<TApi extends object>(context: BindingContext<TApi>) {
+	return function ApiContext(props: { children: (api: TApi) => Children }) @{
 		const api = useBindingContext(context);
 		const render = props.children;
 		{

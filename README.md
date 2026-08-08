@@ -18,7 +18,11 @@ export function Settings() @{
 
 Use component subpaths such as `@celados/ripple-ark/dialog`. The root export also includes the
 lower-level `useXxx` hooks for advanced composition, providers, the `ark` factory, and collection
-helpers. Demos live in `@celados/ripple-ark/demos`; they are dogfooded by ripple-explore.
+helpers. Ripple Explore owns the documentation examples and consumes these public component
+subpaths, so examples cannot bypass the Ark bindings through package-private demo exports.
+
+Generated parts use their native JSX tags directly. Polymorphism is deliberately opt-in through
+the `ark` factory instead of adding a dynamic `as` prop to every component.
 
 This is a Ripple source package. Consumers must compile `.tsrx` through the Ripple TypeScript/Vite
 toolchain; no Solid, React, Vue, or Svelte runtime is included.

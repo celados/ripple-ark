@@ -3,62 +3,75 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { useCollapsible } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useCollapsible;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	defaultTag: 'div',
-	configKeys: [
-		'collapsedHeight',
-		'collapsedWidth',
-		'defaultOpen',
-		'disabled',
-		'id',
-		'ids',
-		'lazyMount',
-		'onExitComplete',
-		'onOpenChange',
-		'open',
-		'unmountOnExit',
-	],
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'collapsedHeight',
+				'collapsedWidth',
+				'defaultOpen',
+				'disabled',
+				'id',
+				'ids',
+				'lazyMount',
+				'onExitComplete',
+				'onOpenChange',
+				'open',
+				'unmountOnExit',
+			],
 
-	useMachine: useCollapsible as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
-export const Trigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getTriggerProps',
-});
-export const Content = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getContentProps',
-});
-export const Indicator = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getIndicatorProps',
-});
+			useMachine: useCollapsible as any,
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Trigger(props: TriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function Content(props: ContentProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Indicator(props: IndicatorProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type TriggerProps = ArkPartProps;
-export type ContentProps = ArkPartProps;
-export type IndicatorProps = ArkPartProps;
+export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
+export type ContentProps = PartProps<'div', Api['getContentProps']>;
+export type IndicatorProps = PartProps<'div', Api['getIndicatorProps']>;
 
 export const Collapsible = { Root, RootProvider, Trigger, Content, Indicator, Context };

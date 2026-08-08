@@ -1,6 +1,6 @@
 {
 	"name": "@celados/ripple-ark",
-	"version": "0.2.6",
+	"version": "0.3.0",
 	"description": "Ark UI components for Ripple, powered by Zag state machines",
 	"keywords": [
 		"ripple",
@@ -24,8 +24,6 @@
 	],
 	"exports": {
 		".": "./src/index.ts",
-		"./demos": "./src/demos/index.tsrx",
-		"./demo-sources": "./src/demos/sources.ts",
 		"./client-only": "./src/utilities/client-only.tsrx",
 		"./collection": "./src/utilities/collection.ts",
 		"./download-trigger": "./src/utilities/download-trigger.tsrx",
@@ -54,7 +52,6 @@
 		"format:check": "prettier --check .",
 		"source:check": "node scripts/check-package.mjs",
 		"verify": "bun run typecheck && bun run lint && bun run format:check && bun run test && bun run source:check",
-		"generate:demos": "bun scripts/generate-demo-sources.ts",
 		"generate:bindings": "bun scripts/generate-bindings.ts"
 	},
 	"publishConfig": {

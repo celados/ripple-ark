@@ -3,77 +3,100 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { useClipboard } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useClipboard;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	defaultTag: 'div',
-	configKeys: [
-		'defaultValue',
-		'id',
-		'ids',
-		'onStatusChange',
-		'onValueChange',
-		'timeout',
-		'translations',
-		'value',
-	],
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'defaultValue',
+				'id',
+				'ids',
+				'onStatusChange',
+				'onValueChange',
+				'timeout',
+				'translations',
+				'value',
+			],
 
-	useMachine: useClipboard as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
-export const ValueText = /*#__PURE__*/ createPart({ context, defaultTag: 'span' });
-export const Input = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'input',
-	getter: 'getInputProps',
-});
-export const Control = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getControlProps',
-});
-export const Trigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getTriggerProps',
-});
-export const Indicator = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getIndicatorProps',
-	propKeys: [
-		'copied',
-	],
-});
-export const Label = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'label',
-	getter: 'getLabelProps',
-});
+			useMachine: useClipboard as any,
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function ValueText(props: ValueTextProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context }, props);
+	<span {...mergedProps.value}>{children}</span>
+}
+export function Input(props: InputProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getInputProps' }, props);
+	<input {...mergedProps.value} />
+}
+export function Control(props: ControlProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Trigger(props: TriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function Indicator(props: IndicatorProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getIndicatorProps',
+			propKeys: [
+				'copied',
+			],
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Label(props: LabelProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
+	<label {...mergedProps.value}>{children}</label>
+}
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type ValueTextProps = ArkPartProps;
-export type InputProps = ArkPartProps;
-export type ControlProps = ArkPartProps;
-export type TriggerProps = ArkPartProps;
-export type IndicatorProps = ArkPartProps;
-export type LabelProps = ArkPartProps;
+export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type ValueTextProps = ArkPartProps<'span'>;
+export type InputProps = PartProps<'input', Api['getInputProps']>;
+export type ControlProps = PartProps<'div', Api['getControlProps']>;
+export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
+export type IndicatorProps = PartProps<'div', Api['getIndicatorProps']>;
+export type LabelProps = PartProps<'label', Api['getLabelProps']>;
 
 export const Clipboard = {
 	Root,

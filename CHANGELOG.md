@@ -1,5 +1,12 @@
 # ripple-ark
 
+## 0.3.0
+
+- Generate native static TSRX tags for Ark parts instead of making every component polymorphic.
+- Remove the parallel `demos` and `demo-sources` package interfaces; Ripple Explore now consumes
+  the actual compound component bindings.
+- Remove the accidentally committed npm tarball.
+
 ## 0.2.6
 
 - Annotate module-scope factory calls as pure so bundlers can tree-shake unused

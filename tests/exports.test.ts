@@ -1,6 +1,5 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
-import { demoSources } from '../src/demos/sources';
 
 type ManifestEntry = { directory: string; parts: string[] };
 
@@ -52,18 +51,14 @@ describe('Ark UI upstream parity', () => {
 		expect(missing).toEqual([]);
 	});
 
-	test('contains every demo moved from ripple-explore', () => {
-		const demos = readdirSync('src/demos').filter(
-			(file) => file.endsWith('.tsrx') && file !== 'index.tsrx'
-		);
-		const index = readFileSync('src/demos/index.tsrx', 'utf8');
+	test('generates native static tags instead of universal polymorphic parts', () => {
+		const sources = readdirSync('src/generated')
+			.filter((file) => file.endsWith('.tsrx'))
+			.map((file) => readFileSync(`src/generated/${file}`, 'utf8'))
+			.join('\n');
 
-		expect(demos).toHaveLength(49);
-		for (const demo of demos) {
-			expect(index).toContain(`'./${demo}'`);
-			expect(demoSources[demo.slice(0, -'.tsrx'.length)]).toBe(
-				readFileSync(`src/demos/${demo}`, 'utf8')
-			);
-		}
+		expect(sources).not.toMatch(/<\{[A-Za-z_$]/);
+		expect(sources).not.toContain('createPart(');
+		expect(readFileSync('src/binding-runtime.tsrx', 'utf8')).not.toContain('as?:');
 	});
 });

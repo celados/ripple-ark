@@ -3,114 +3,147 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { useCarousel } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useCarousel;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	defaultTag: 'div',
-	configKeys: [
-		'allowMouseDrag',
-		'autoplay',
-		'autoSize',
-		'defaultPage',
-		'id',
-		'ids',
-		'inViewThreshold',
-		'loop',
-		'onAutoplayStatusChange',
-		'onDragStatusChange',
-		'onPageChange',
-		'orientation',
-		'padding',
-		'page',
-		'slideCount',
-		'slidesPerMove',
-		'slidesPerPage',
-		'snapType',
-		'spacing',
-		'translations',
-	],
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'allowMouseDrag',
+				'autoplay',
+				'autoSize',
+				'defaultPage',
+				'id',
+				'ids',
+				'inViewThreshold',
+				'loop',
+				'onAutoplayStatusChange',
+				'onDragStatusChange',
+				'onPageChange',
+				'orientation',
+				'padding',
+				'page',
+				'slideCount',
+				'slidesPerMove',
+				'slidesPerPage',
+				'snapType',
+				'spacing',
+				'translations',
+			],
 
-	useMachine: useCarousel as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
-export const NextTrigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getNextTriggerProps',
-});
-export const IndicatorGroup = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getIndicatorGroupProps',
-});
-export const ProgressText = /*#__PURE__*/ createPart({ context, defaultTag: 'span' });
-export const Indicator = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getIndicatorProps',
-	propKeys: [
-		'index',
-		'readOnly',
-	],
-});
-export const AutoplayIndicator = /*#__PURE__*/ createPart({ context, defaultTag: 'span' });
-export const PrevTrigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getPrevTriggerProps',
-});
-export const AutoplayTrigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getAutoplayTriggerProps',
-});
-export const ItemGroup = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getItemGroupProps',
-});
-export const Item = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getItemProps',
-	propKeys: [
-		'index',
-		'snapAlign',
-	],
-});
-export const Control = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getControlProps',
-});
+			useMachine: useCarousel as any,
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function NextTrigger(props: NextTriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getNextTriggerProps' }, props);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function IndicatorGroup(props: IndicatorGroupProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getIndicatorGroupProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function ProgressText(props: ProgressTextProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context }, props);
+	<span {...mergedProps.value}>{children}</span>
+}
+export function Indicator(props: IndicatorProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getIndicatorProps',
+			propKeys: [
+				'index',
+				'readOnly',
+			],
+		},
+		props,
+	);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function AutoplayIndicator(props: AutoplayIndicatorProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context }, props);
+	<span {...mergedProps.value}>{children}</span>
+}
+export function PrevTrigger(props: PrevTriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getPrevTriggerProps' }, props);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function AutoplayTrigger(props: AutoplayTriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getAutoplayTriggerProps' }, props);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function ItemGroup(props: ItemGroupProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getItemGroupProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Item(props: ItemProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getItemProps',
+			propKeys: [
+				'index',
+				'snapAlign',
+			],
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Control(props: ControlProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type NextTriggerProps = ArkPartProps;
-export type IndicatorGroupProps = ArkPartProps;
-export type ProgressTextProps = ArkPartProps;
-export type IndicatorProps = ArkPartProps;
-export type AutoplayIndicatorProps = ArkPartProps;
-export type PrevTriggerProps = ArkPartProps;
-export type AutoplayTriggerProps = ArkPartProps;
-export type ItemGroupProps = ArkPartProps;
-export type ItemProps = ArkPartProps;
-export type ControlProps = ArkPartProps;
+export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type NextTriggerProps = PartProps<'button', Api['getNextTriggerProps']>;
+export type IndicatorGroupProps = PartProps<'div', Api['getIndicatorGroupProps']>;
+export type ProgressTextProps = ArkPartProps<'span'>;
+export type IndicatorProps = PartProps<'button', Api['getIndicatorProps']>;
+export type AutoplayIndicatorProps = ArkPartProps<'span'>;
+export type PrevTriggerProps = PartProps<'button', Api['getPrevTriggerProps']>;
+export type AutoplayTriggerProps = PartProps<'button', Api['getAutoplayTriggerProps']>;
+export type ItemGroupProps = PartProps<'div', Api['getItemGroupProps']>;
+export type ItemProps = PartProps<'div', Api['getItemProps']>;
+export type ControlProps = PartProps<'div', Api['getControlProps']>;
 
 export const Carousel = {
 	Root,

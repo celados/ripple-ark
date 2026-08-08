@@ -3,70 +3,83 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { useSwitch } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useSwitch;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	defaultTag: 'label',
-	configKeys: [
-		'checked',
-		'defaultChecked',
-		'disabled',
-		'form',
-		'id',
-		'ids',
-		'invalid',
-		'label',
-		'name',
-		'onCheckedChange',
-		'readOnly',
-		'required',
-		'value',
-	],
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'checked',
+				'defaultChecked',
+				'disabled',
+				'form',
+				'id',
+				'ids',
+				'invalid',
+				'label',
+				'name',
+				'onCheckedChange',
+				'readOnly',
+				'required',
+				'value',
+			],
 
-	useMachine: useSwitch as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'label' });
-export const Control = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'span',
-	getter: 'getControlProps',
-});
-export const Label = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'span',
-	getter: 'getLabelProps',
-});
-export const HiddenInput = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'input',
-	getter: 'getHiddenInputProps',
-});
-export const Thumb = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'span',
-	getter: 'getThumbProps',
-});
+			useMachine: useSwitch as any,
+		},
+		props,
+	);
+	<label {...mergedProps.value}>{children}</label>
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	<label {...mergedProps.value}>{children}</label>
+}
+export function Control(props: ControlProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
+	<span {...mergedProps.value}>{children}</span>
+}
+export function Label(props: LabelProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
+	<span {...mergedProps.value}>{children}</span>
+}
+export function HiddenInput(props: HiddenInputProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
+	<input {...mergedProps.value} />
+}
+export function Thumb(props: ThumbProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getThumbProps' }, props);
+	<span {...mergedProps.value}>{children}</span>
+}
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type ControlProps = ArkPartProps;
-export type LabelProps = ArkPartProps;
-export type HiddenInputProps = ArkPartProps;
-export type ThumbProps = ArkPartProps;
+export type RootProps = ArkPartProps<'label'> & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ArkPartProps<'label'> & { value: ReturnType<Hook> };
+export type ControlProps = PartProps<'span', Api['getControlProps']>;
+export type LabelProps = PartProps<'span', Api['getLabelProps']>;
+export type HiddenInputProps = PartProps<'input', Api['getHiddenInputProps']>;
+export type ThumbProps = PartProps<'span', Api['getThumbProps']>;
 
 export const Switch = { Root, RootProvider, Control, Label, HiddenInput, Thumb, Context };

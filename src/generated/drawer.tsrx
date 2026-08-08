@@ -4,129 +4,165 @@ import { normalizeProps } from '@celados/ripple-zag';
 import { useDrawer } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useDrawer;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 const drawerStackStore = /*#__PURE__*/ new RippleContext<DrawerStack | null>(null);
 const drawerStackApi = /*#__PURE__*/ new RippleContext<Tracked<AnyRecord> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	configKeys: [
-		'id',
-		'ids',
-		'open',
-		'defaultOpen',
-		'onOpenChange',
-		'closeOnInteractOutside',
-		'closeOnEscape',
-		'snapPoints',
-		'swipeDirection',
-		'snapToSequentialPoints',
-		'swipeVelocityThreshold',
-		'closeThreshold',
-		'preventDragOnScroll',
-		'stack',
-		'snapPoint',
-		'defaultSnapPoint',
-		'onSnapPointChange',
-		'modal',
-		'trapFocus',
-		'restoreFocus',
-		'preventScroll',
-		'initialFocusEl',
-		'finalFocusEl',
-		'role',
-		'onInteractOutside',
-		'onEscapeKeyDown',
-		'onPointerDownOutside',
-		'onFocusOutside',
-		'onRequestDismiss',
-		'triggerValue',
-		'defaultTriggerValue',
-		'onTriggerValueChange',
-	],
-	defaultMachineProps: () => ({ stack: drawerStackStore.get() ?? undefined }),
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'id',
+				'ids',
+				'open',
+				'defaultOpen',
+				'onOpenChange',
+				'closeOnInteractOutside',
+				'closeOnEscape',
+				'snapPoints',
+				'swipeDirection',
+				'snapToSequentialPoints',
+				'swipeVelocityThreshold',
+				'closeThreshold',
+				'preventDragOnScroll',
+				'stack',
+				'snapPoint',
+				'defaultSnapPoint',
+				'onSnapPointChange',
+				'modal',
+				'trapFocus',
+				'restoreFocus',
+				'preventScroll',
+				'initialFocusEl',
+				'finalFocusEl',
+				'role',
+				'onInteractOutside',
+				'onEscapeKeyDown',
+				'onPointerDownOutside',
+				'onFocusOutside',
+				'onRequestDismiss',
+				'triggerValue',
+				'defaultTriggerValue',
+				'onTriggerValueChange',
+			],
+			defaultMachineProps: () => ({ stack: drawerStackStore.get() ?? undefined }),
 
-	useMachine: useDrawer as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context });
-export const SwipeArea = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getSwipeAreaProps',
-});
-export const Positioner = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getPositionerProps',
-});
-export const Backdrop = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getBackdropProps',
-});
-export const IndentBackground = /*#__PURE__*/ createExternalPart({
-	context: drawerStackApi,
-	defaultTag: 'div',
-	getter: 'getIndentBackgroundProps',
-});
-export const Content = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getContentProps',
-	propKeys: [
-		'draggable',
-	],
-});
-export const Trigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getTriggerProps',
-	propKeys: [
-		'value',
-	],
-});
-export const CloseTrigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getCloseTriggerProps',
-});
-export const GrabberIndicator = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getGrabberIndicatorProps',
-});
-export const Indent = /*#__PURE__*/ createExternalPart({
-	context: drawerStackApi,
-	defaultTag: 'div',
-	getter: 'getIndentProps',
-});
-export const Grabber = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getGrabberProps',
-});
-export const Title = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'h2',
-	getter: 'getTitleProps',
-});
-export const Description = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getDescriptionProps',
-});
+			useMachine: useDrawer as any,
+		},
+		props,
+	);
+	{
+		children;
+	}
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	{
+		children;
+	}
+}
+export function SwipeArea(props: SwipeAreaProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getSwipeAreaProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Positioner(props: PositionerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Backdrop(props: BackdropProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getBackdropProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function IndentBackground(props: IndentBackgroundProps) @{
+	const children = props.children;
+	const mergedProps = useExternalPartProps(
+		{ context: drawerStackApi, getter: 'getIndentBackgroundProps' },
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Content(props: ContentProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getContentProps',
+			propKeys: [
+				'draggable',
+			],
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Trigger(props: TriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getTriggerProps',
+			propKeys: [
+				'value',
+			],
+		},
+		props,
+	);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function CloseTrigger(props: CloseTriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getCloseTriggerProps' }, props);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function GrabberIndicator(props: GrabberIndicatorProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getGrabberIndicatorProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Indent(props: IndentProps) @{
+	const children = props.children;
+	const mergedProps = useExternalPartProps(
+		{ context: drawerStackApi, getter: 'getIndentProps' },
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Grabber(props: GrabberProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getGrabberProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Title(props: TitleProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
+	<h2 {...mergedProps.value}>{children}</h2>
+}
+export function Description(props: DescriptionProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getDescriptionProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
 
 export function Stack(props: { children?: Children | Children[] }) @{
 	const store = createStack();
@@ -148,20 +184,20 @@ export function Stack(props: { children?: Children | Children[] }) @{
 }
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type SwipeAreaProps = ArkPartProps;
-export type PositionerProps = ArkPartProps;
-export type BackdropProps = ArkPartProps;
-export type IndentBackgroundProps = ArkPartProps;
-export type ContentProps = ArkPartProps;
-export type TriggerProps = ArkPartProps;
-export type CloseTriggerProps = ArkPartProps;
-export type GrabberIndicatorProps = ArkPartProps;
-export type IndentProps = ArkPartProps;
-export type GrabberProps = ArkPartProps;
-export type TitleProps = ArkPartProps;
-export type DescriptionProps = ArkPartProps;
+export type RootProps = ComponentProps & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ComponentProps & { value: ReturnType<Hook> };
+export type SwipeAreaProps = PartProps<'div', Api['getSwipeAreaProps']>;
+export type PositionerProps = PartProps<'div', Api['getPositionerProps']>;
+export type BackdropProps = PartProps<'div', Api['getBackdropProps']>;
+export type IndentBackgroundProps = ArkPartProps<'div'>;
+export type ContentProps = PartProps<'div', Api['getContentProps']>;
+export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
+export type CloseTriggerProps = PartProps<'button', Api['getCloseTriggerProps']>;
+export type GrabberIndicatorProps = PartProps<'div', Api['getGrabberIndicatorProps']>;
+export type IndentProps = ArkPartProps<'div'>;
+export type GrabberProps = PartProps<'div', Api['getGrabberProps']>;
+export type TitleProps = PartProps<'h2', Api['getTitleProps']>;
+export type DescriptionProps = PartProps<'div', Api['getDescriptionProps']>;
 
 export const Drawer = {
 	Root,

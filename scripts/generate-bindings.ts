@@ -116,6 +116,73 @@ function literal(value: unknown) {
 	return JSON.stringify(value, null, '\t');
 }
 
+const voidTags = new Set([
+	'area',
+	'base',
+	'br',
+	'col',
+	'embed',
+	'hr',
+	'img',
+	'input',
+	'link',
+	'meta',
+	'param',
+	'source',
+	'track',
+	'wbr',
+]);
+
+function staticElement(tag: string | undefined) {
+	if (!tag) return '{children}';
+	return voidTags.has(tag)
+		? `<${tag} {...mergedProps.value} />`
+		: `<${tag} {...mergedProps.value}>{children}</${tag}>`;
+}
+
+function partDeclaration(part: {
+	exportName: string;
+	partName: string;
+	tag: string;
+	getter?: string;
+	keys: string[];
+	provide?: string;
+	inherit?: string;
+}) {
+	const fields = [
+		`context`,
+		part.getter ? `getter: '${part.getter}'` : undefined,
+		part.keys.length ? `propKeys: ${literal(part.keys)}` : undefined,
+		part.provide
+			? `provideProps: ${part.provide[0].toLowerCase() + part.provide.slice(1)}Props`
+			: undefined,
+		part.inherit
+			? `inheritedProps: ${part.inherit[0].toLowerCase() + part.inherit.slice(1)}Props`
+			: undefined,
+	].filter(Boolean);
+	return `export function ${part.partName}(props: ${part.partName}Props) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ ${fields.join(', ')} }, props);
+	${staticElement(part.tag)}
+}`;
+}
+
+function publicPartType(part: {
+	partName: string;
+	tag: string;
+	getter?: string;
+	keys: string[];
+	inherit?: string;
+}) {
+	const html = `ArkPartProps<'${part.tag}'>`;
+	if (!part.getter) return html;
+	const getter = `Api['${part.getter}']`;
+	if (!part.inherit) return `PartProps<'${part.tag}', ${getter}>`;
+	if (!part.keys.length) return html;
+	const keys = part.keys.map((key) => `'${key}'`).join(' | ');
+	return `${html} & Pick<GetterProps<${getter}>, Extract<keyof GetterProps<${getter}>, ${keys}>>`;
+}
+
 mkdirSync(outputRoot, { recursive: true });
 
 const generated: { directory: string; symbol: string; parts: string[] }[] = [];
@@ -208,23 +275,33 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 		.join('\n');
 	const partDeclarations = parts
 		.map((part) => {
+			if (directory.name === 'signature-pad' && part.partName === 'Segment') {
+				return `export function Segment(props: SegmentProps) @{
+	const children = props.children;
+	const api = context.get();
+	if (!api) throw new Error('SignaturePad.Segment must be rendered inside SignaturePad.Root');
+	const mergedProps = usePartProps({ context, getter: 'getSegmentProps' }, props);
+	<svg {...mergedProps.value}>
+		<title>Signature</title>
+		@for (const path of api.value.paths) {
+			<path {...api.value.getSegmentPathProps({ path })} />
+		}
+		@if (api.value.currentPath) {
+			<path {...api.value.getSegmentPathProps({ path: api.value.currentPath })} />
+		}
+		{children}
+	</svg>
+}`;
+			}
 			if (directory.name === 'drawer' && ['Indent', 'IndentBackground'].includes(part.partName)) {
 				const getter = part.partName === 'Indent' ? 'getIndentProps' : 'getIndentBackgroundProps';
-				return `export const ${part.partName} = /*#__PURE__*/ createExternalPart({ context: drawerStackApi, defaultTag: 'div', getter: '${getter}' });`;
+				return `export function ${part.partName}(props: ${part.partName}Props) @{
+	const children = props.children;
+	const mergedProps = useExternalPartProps({ context: drawerStackApi, getter: '${getter}' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}`;
 			}
-			const fields = [
-				`context`,
-				`defaultTag: '${part.tag}'`,
-				part.getter ? `getter: '${part.getter}'` : undefined,
-				part.keys.length ? `propKeys: ${literal(part.keys)}` : undefined,
-				part.provide
-					? `provideProps: ${part.provide[0].toLowerCase() + part.provide.slice(1)}Props`
-					: undefined,
-				part.inherit
-					? `inheritedProps: ${part.inherit[0].toLowerCase() + part.inherit.slice(1)}Props`
-					: undefined,
-			].filter(Boolean);
-			return `export const ${part.partName} = /*#__PURE__*/ createPart({ ${fields.join(', ')} });`;
+			return partDeclaration(part);
 		})
 		.join('\n');
 	const itemContextNames = [...contexts]
@@ -241,31 +318,48 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 	const source = `import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 ${extraImports[directory.name] ?? ''}
 import { ${hook} } from '../components';
-import { createApiContext, createExternalPart, createItemContext, createPart, createRoot, createRootProvider, type ArkPartProps } from '../binding-runtime.tsrx';
+import { createApiContext, createItemContext, useExternalPartProps, usePartProps, useRootProps, useRootProviderProps, type ArkPartProps, type ComponentProps, type GetterProps, type PartProps } from '../binding-runtime.tsrx';
 
 type Hook = typeof ${hook};
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 ${specialPrelude[directory.name] ?? ''}
 ${contextDeclarations}
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	${rootTag ? `defaultTag: '${rootTag}',\n\t` : ''}configKeys: ${literal(configKeys)},
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps({
+		context,
+		configKeys: ${literal(configKeys)},
 	${directory.name === 'drawer' ? 'defaultMachineProps: () => ({ stack: drawerStackStore.get() ?? undefined }),\n\t' : ''}
-	useMachine: ${hook} as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context${rootTag ? `, defaultTag: '${rootTag}'` : ''} });
+		useMachine: ${hook} as any,
+	}, props);
+	${staticElement(rootTag)}
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	${staticElement(rootTag)}
+}
 ${partDeclarations}
 ${itemContextDeclarations}
 ${specialDeclarations[directory.name] ?? ''}
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-${parts.map((part) => `export type ${part.partName}Props = ArkPartProps;`).join('\n')}
+export type RootProps = ${rootTag ? `ArkPartProps<'${rootTag}'>` : 'ComponentProps'} & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ${rootTag ? `ArkPartProps<'${rootTag}'>` : 'ComponentProps'} & { value: ReturnType<Hook> };
+${parts
+	.map((part) => {
+		// Drawer indentation belongs to the shared stack API, not to DrawerApi.
+		// Keep its public surface honest instead of naming getters DrawerApi does not own.
+		if (directory.name === 'drawer' && ['Indent', 'IndentBackground'].includes(part.partName)) {
+			return `export type ${part.partName}Props = ArkPartProps<'div'>;`;
+		}
+		return `export type ${part.partName}Props = ${publicPartType(part)};`;
+	})
+	.join('\n')}
 
 export const ${componentName} = { ${namespaceParts.join(', ')} };
 `;

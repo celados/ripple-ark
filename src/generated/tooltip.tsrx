@@ -3,84 +3,108 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { useTooltip } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useTooltip;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	configKeys: [
-		'aria-label',
-		'closeDelay',
-		'closeOnClick',
-		'closeOnEscape',
-		'closeOnPointerDown',
-		'closeOnScroll',
-		'defaultOpen',
-		'disabled',
-		'id',
-		'ids',
-		'interactive',
-		'onOpenChange',
-		'open',
-		'openDelay',
-		'positioning',
-		'triggerValue',
-		'defaultTriggerValue',
-		'onTriggerValueChange',
-	],
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'aria-label',
+				'closeDelay',
+				'closeOnClick',
+				'closeOnEscape',
+				'closeOnPointerDown',
+				'closeOnScroll',
+				'defaultOpen',
+				'disabled',
+				'id',
+				'ids',
+				'interactive',
+				'onOpenChange',
+				'open',
+				'openDelay',
+				'positioning',
+				'triggerValue',
+				'defaultTriggerValue',
+				'onTriggerValueChange',
+			],
 
-	useMachine: useTooltip as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context });
-export const Positioner = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getPositionerProps',
-});
-export const Arrow = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getArrowProps',
-});
-export const Content = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getContentProps',
-});
-export const Trigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getTriggerProps',
-	propKeys: [
-		'value',
-	],
-});
-export const ArrowTip = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getArrowTipProps',
-});
+			useMachine: useTooltip as any,
+		},
+		props,
+	);
+	{
+		children;
+	}
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	{
+		children;
+	}
+}
+export function Positioner(props: PositionerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Arrow(props: ArrowProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getArrowProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Content(props: ContentProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Trigger(props: TriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getTriggerProps',
+			propKeys: [
+				'value',
+			],
+		},
+		props,
+	);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function ArrowTip(props: ArrowTipProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getArrowTipProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type PositionerProps = ArkPartProps;
-export type ArrowProps = ArkPartProps;
-export type ContentProps = ArkPartProps;
-export type TriggerProps = ArkPartProps;
-export type ArrowTipProps = ArkPartProps;
+export type RootProps = ComponentProps & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ComponentProps & { value: ReturnType<Hook> };
+export type PositionerProps = PartProps<'div', Api['getPositionerProps']>;
+export type ArrowProps = PartProps<'div', Api['getArrowProps']>;
+export type ContentProps = PartProps<'div', Api['getContentProps']>;
+export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
+export type ArrowTipProps = PartProps<'div', Api['getArrowTipProps']>;
 
 export const Tooltip = {
 	Root,

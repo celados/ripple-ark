@@ -3,96 +3,127 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { useCheckbox } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useCheckbox;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	defaultTag: 'label',
-	configKeys: [
-		'checked',
-		'defaultChecked',
-		'disabled',
-		'form',
-		'id',
-		'ids',
-		'invalid',
-		'name',
-		'onCheckedChange',
-		'readOnly',
-		'required',
-		'value',
-	],
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'checked',
+				'defaultChecked',
+				'disabled',
+				'form',
+				'id',
+				'ids',
+				'invalid',
+				'name',
+				'onCheckedChange',
+				'readOnly',
+				'required',
+				'value',
+			],
 
-	useMachine: useCheckbox as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'label' });
-export const HiddenInput = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'input',
-	getter: 'getHiddenInputProps',
-});
-export const Control = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getControlProps',
-});
-export const GroupProvider = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	propKeys: [
-		'value',
-	],
-});
-export const Group = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	propKeys: [
-		'defaultValue',
-		'value',
-		'onValueChange',
-		'disabled',
-		'invalid',
-		'readOnly',
-		'name',
-		'maxSelectedValues',
-	],
-});
-export const Label = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'span',
-	getter: 'getLabelProps',
-});
-export const Indicator = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getIndicatorProps',
-	propKeys: [
-		'indeterminate',
-	],
-});
+			useMachine: useCheckbox as any,
+		},
+		props,
+	);
+	<label {...mergedProps.value}>{children}</label>
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	<label {...mergedProps.value}>{children}</label>
+}
+export function HiddenInput(props: HiddenInputProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
+	<input {...mergedProps.value} />
+}
+export function Control(props: ControlProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function GroupProvider(props: GroupProviderProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			propKeys: [
+				'value',
+			],
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Group(props: GroupProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			propKeys: [
+				'defaultValue',
+				'value',
+				'onValueChange',
+				'disabled',
+				'invalid',
+				'readOnly',
+				'name',
+				'maxSelectedValues',
+			],
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Label(props: LabelProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
+	<span {...mergedProps.value}>{children}</span>
+}
+export function Indicator(props: IndicatorProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getIndicatorProps',
+			propKeys: [
+				'indeterminate',
+			],
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type HiddenInputProps = ArkPartProps;
-export type ControlProps = ArkPartProps;
-export type GroupProviderProps = ArkPartProps;
-export type GroupProps = ArkPartProps;
-export type LabelProps = ArkPartProps;
-export type IndicatorProps = ArkPartProps;
+export type RootProps = ArkPartProps<'label'> & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ArkPartProps<'label'> & { value: ReturnType<Hook> };
+export type HiddenInputProps = PartProps<'input', Api['getHiddenInputProps']>;
+export type ControlProps = PartProps<'div', Api['getControlProps']>;
+export type GroupProviderProps = ArkPartProps<'div'>;
+export type GroupProps = ArkPartProps<'div'>;
+export type LabelProps = PartProps<'span', Api['getLabelProps']>;
+export type IndicatorProps = PartProps<'div', Api['getIndicatorProps']>;
 
 export const Checkbox = {
 	Root,

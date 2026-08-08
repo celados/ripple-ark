@@ -3,79 +3,104 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { useTimer } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useTimer;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	defaultTag: 'div',
-	configKeys: [
-		'id',
-		'ids',
-		'autoStart',
-		'interval',
-		'countdown',
-		'startMs',
-		'targetMs',
-		'translations',
-		'onComplete',
-		'onTick',
-	],
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'id',
+				'ids',
+				'autoStart',
+				'interval',
+				'countdown',
+				'startMs',
+				'targetMs',
+				'translations',
+				'onComplete',
+				'onTick',
+			],
 
-	useMachine: useTimer as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
-export const Control = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getControlProps',
-});
-export const Item = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getItemProps',
-	propKeys: [
-		'type',
-	],
-});
-export const Separator = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getSeparatorProps',
-});
-export const ActionTrigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getActionTriggerProps',
-	propKeys: [
-		'action',
-	],
-});
-export const Area = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getAreaProps',
-});
+			useMachine: useTimer as any,
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Control(props: ControlProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Item(props: ItemProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getItemProps',
+			propKeys: [
+				'type',
+			],
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Separator(props: SeparatorProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getSeparatorProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function ActionTrigger(props: ActionTriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getActionTriggerProps',
+			propKeys: [
+				'action',
+			],
+		},
+		props,
+	);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function Area(props: AreaProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getAreaProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type ControlProps = ArkPartProps;
-export type ItemProps = ArkPartProps;
-export type SeparatorProps = ArkPartProps;
-export type ActionTriggerProps = ArkPartProps;
-export type AreaProps = ArkPartProps;
+export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type ControlProps = PartProps<'div', Api['getControlProps']>;
+export type ItemProps = PartProps<'div', Api['getItemProps']>;
+export type SeparatorProps = PartProps<'div', Api['getSeparatorProps']>;
+export type ActionTriggerProps = PartProps<'button', Api['getActionTriggerProps']>;
+export type AreaProps = PartProps<'div', Api['getAreaProps']>;
 
 export const Timer = { Root, RootProvider, Control, Item, Separator, ActionTrigger, Area, Context };

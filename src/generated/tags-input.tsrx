@@ -3,139 +3,166 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { useTagsInput } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useTagsInput;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 const tagsInputItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	defaultTag: 'div',
-	configKeys: [
-		'addOnPaste',
-		'allowDuplicates',
-		'allowOverflow',
-		'autoFocus',
-		'blurBehavior',
-		'defaultInputValue',
-		'defaultValue',
-		'delimiter',
-		'disabled',
-		'editable',
-		'form',
-		'id',
-		'ids',
-		'inputValue',
-		'invalid',
-		'max',
-		'maxLength',
-		'name',
-		'onFocusOutside',
-		'onHighlightChange',
-		'onInputValueChange',
-		'onInteractOutside',
-		'onPointerDownOutside',
-		'onValueChange',
-		'onValueInvalid',
-		'placeholder',
-		'readOnly',
-		'required',
-		'translations',
-		'validate',
-		'value',
-		'sanitizeValue',
-	],
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'addOnPaste',
+				'allowDuplicates',
+				'allowOverflow',
+				'autoFocus',
+				'blurBehavior',
+				'defaultInputValue',
+				'defaultValue',
+				'delimiter',
+				'disabled',
+				'editable',
+				'form',
+				'id',
+				'ids',
+				'inputValue',
+				'invalid',
+				'max',
+				'maxLength',
+				'name',
+				'onFocusOutside',
+				'onHighlightChange',
+				'onInputValueChange',
+				'onInteractOutside',
+				'onPointerDownOutside',
+				'onValueChange',
+				'onValueInvalid',
+				'placeholder',
+				'readOnly',
+				'required',
+				'translations',
+				'validate',
+				'value',
+				'sanitizeValue',
+			],
 
-	useMachine: useTagsInput as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
-export const Label = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'label',
-	getter: 'getLabelProps',
-});
-export const ClearTrigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getClearTriggerProps',
-});
-export const ItemText = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'span',
-	getter: 'getItemTextProps',
-	inheritedProps: tagsInputItemProps,
-});
-export const ItemInput = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'input',
-	getter: 'getItemInputProps',
-	inheritedProps: tagsInputItemProps,
-});
-export const Control = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getControlProps',
-});
-export const HiddenInput = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'input',
-	getter: 'getHiddenInputProps',
-});
-export const ItemPreview = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getItemPreviewProps',
-	inheritedProps: tagsInputItemProps,
-});
-export const Input = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'input',
-	getter: 'getInputProps',
-});
-export const Item = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getItemProps',
-	propKeys: [
-		'disabled',
-		'index',
-		'value',
-	],
-	provideProps: tagsInputItemProps,
-});
-export const ItemDeleteTrigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getItemDeleteTriggerProps',
-	inheritedProps: tagsInputItemProps,
-});
+			useMachine: useTagsInput as any,
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Label(props: LabelProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
+	<label {...mergedProps.value}>{children}</label>
+}
+export function ClearTrigger(props: ClearTriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function ItemText(props: ItemTextProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{ context, getter: 'getItemTextProps', inheritedProps: tagsInputItemProps },
+		props,
+	);
+	<span {...mergedProps.value}>{children}</span>
+}
+export function ItemInput(props: ItemInputProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{ context, getter: 'getItemInputProps', inheritedProps: tagsInputItemProps },
+		props,
+	);
+	<input {...mergedProps.value} />
+}
+export function Control(props: ControlProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function HiddenInput(props: HiddenInputProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
+	<input {...mergedProps.value} />
+}
+export function ItemPreview(props: ItemPreviewProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{ context, getter: 'getItemPreviewProps', inheritedProps: tagsInputItemProps },
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Input(props: InputProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getInputProps' }, props);
+	<input {...mergedProps.value} />
+}
+export function Item(props: ItemProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getItemProps',
+			propKeys: [
+				'disabled',
+				'index',
+				'value',
+			],
+			provideProps: tagsInputItemProps,
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function ItemDeleteTrigger(props: ItemDeleteTriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{ context, getter: 'getItemDeleteTriggerProps', inheritedProps: tagsInputItemProps },
+		props,
+	);
+	<button {...mergedProps.value}>{children}</button>
+}
 export const ItemContext = /*#__PURE__*/ createItemContext(context, tagsInputItemProps);
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type LabelProps = ArkPartProps;
-export type ClearTriggerProps = ArkPartProps;
-export type ItemTextProps = ArkPartProps;
-export type ItemInputProps = ArkPartProps;
-export type ControlProps = ArkPartProps;
-export type HiddenInputProps = ArkPartProps;
-export type ItemPreviewProps = ArkPartProps;
-export type InputProps = ArkPartProps;
-export type ItemProps = ArkPartProps;
-export type ItemDeleteTriggerProps = ArkPartProps;
+export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type LabelProps = PartProps<'label', Api['getLabelProps']>;
+export type ClearTriggerProps = PartProps<'button', Api['getClearTriggerProps']>;
+export type ItemTextProps = ArkPartProps<'span'>;
+export type ItemInputProps = ArkPartProps<'input'>;
+export type ControlProps = PartProps<'div', Api['getControlProps']>;
+export type HiddenInputProps = PartProps<'input', Api['getHiddenInputProps']>;
+export type ItemPreviewProps = ArkPartProps<'div'>;
+export type InputProps = PartProps<'input', Api['getInputProps']>;
+export type ItemProps = PartProps<'div', Api['getItemProps']>;
+export type ItemDeleteTriggerProps = ArkPartProps<'button'>;
 
 export const TagsInput = {
 	Root,

@@ -3,86 +3,116 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { useSignaturePad } from '../components';
 import {
 	createApiContext,
-	createExternalPart,
 	createItemContext,
-	createPart,
-	createRoot,
-	createRootProvider,
+	useExternalPartProps,
+	usePartProps,
+	useRootProps,
+	useRootProviderProps,
 	type ArkPartProps,
+	type ComponentProps,
+	type GetterProps,
+	type PartProps,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useSignaturePad;
-type Api = ReturnType<Hook>['value'];
+export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-export const Root = /*#__PURE__*/ createRoot({
-	context,
-	defaultTag: 'div',
-	configKeys: [
-		'id',
-		'ids',
-		'defaultPaths',
-		'drawing',
-		'disabled',
-		'readOnly',
-		'name',
-		'onDraw',
-		'onDrawEnd',
-		'paths',
-		'readOnly',
-		'required',
-		'translations',
-	],
+export function Root(props: RootProps) @{
+	const children = props.children;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: [
+				'id',
+				'ids',
+				'defaultPaths',
+				'drawing',
+				'disabled',
+				'readOnly',
+				'name',
+				'onDraw',
+				'onDrawEnd',
+				'paths',
+				'readOnly',
+				'required',
+				'translations',
+			],
 
-	useMachine: useSignaturePad as any,
-});
-export const RootProvider = /*#__PURE__*/ createRootProvider({ context, defaultTag: 'div' });
-export const Guide = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getGuideProps',
-});
-export const HiddenInput = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'input',
-	getter: 'getHiddenInputProps',
-	propKeys: [
-		'value',
-	],
-});
-export const Label = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'label',
-	getter: 'getLabelProps',
-});
-export const ClearTrigger = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'button',
-	getter: 'getClearTriggerProps',
-});
-export const Control = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'div',
-	getter: 'getControlProps',
-});
-export const Segment = /*#__PURE__*/ createPart({
-	context,
-	defaultTag: 'svg',
-	getter: 'getSegmentProps',
-});
+			useMachine: useSignaturePad as any,
+		},
+		props,
+	);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function RootProvider(props: RootProviderProps) @{
+	const children = props.children;
+	const mergedProps = useRootProviderProps({ context }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Guide(props: GuideProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getGuideProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function HiddenInput(props: HiddenInputProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getHiddenInputProps',
+			propKeys: [
+				'value',
+			],
+		},
+		props,
+	);
+	<input {...mergedProps.value} />
+}
+export function Label(props: LabelProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
+	<label {...mergedProps.value}>{children}</label>
+}
+export function ClearTrigger(props: ClearTriggerProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
+	<button {...mergedProps.value}>{children}</button>
+}
+export function Control(props: ControlProps) @{
+	const children = props.children;
+	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}
+export function Segment(props: SegmentProps) @{
+	const children = props.children;
+	const api = context.get();
+	if (!api) throw new Error('SignaturePad.Segment must be rendered inside SignaturePad.Root');
+	const mergedProps = usePartProps({ context, getter: 'getSegmentProps' }, props);
+	<svg {...mergedProps.value}>
+		<title>Signature</title>
+		@for (const path of api.value.paths) {
+			<path {...api.value.getSegmentPathProps({ path })} />
+		}
+		@if (api.value.currentPath) {
+			<path {...api.value.getSegmentPathProps({ path: api.value.currentPath })} />
+		}
+		{children}
+	</svg>
+}
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps & { value: ReturnType<Hook> };
-export type GuideProps = ArkPartProps;
-export type HiddenInputProps = ArkPartProps;
-export type LabelProps = ArkPartProps;
-export type ClearTriggerProps = ArkPartProps;
-export type ControlProps = ArkPartProps;
-export type SegmentProps = ArkPartProps;
+export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
+export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type GuideProps = PartProps<'div', Api['getGuideProps']>;
+export type HiddenInputProps = PartProps<'input', Api['getHiddenInputProps']>;
+export type LabelProps = PartProps<'label', Api['getLabelProps']>;
+export type ClearTriggerProps = PartProps<'button', Api['getClearTriggerProps']>;
+export type ControlProps = PartProps<'div', Api['getControlProps']>;
+export type SegmentProps = PartProps<'svg', Api['getSegmentProps']>;
 
 export const SignaturePad = {
 	Root,
