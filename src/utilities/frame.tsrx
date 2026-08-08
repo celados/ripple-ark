@@ -12,7 +12,7 @@ export type FrameProps =
 	};
 
 export function Frame(props: FrameProps) @{
-	const { head, children, onMount, onUnmount, srcdoc = initialSrcdoc, ref, ...localProps } = props;
+	let &{ head, children, onMount, onUnmount, srcdoc = initialSrcdoc, ref, ...localProps } = props;
 	const frame = track<HTMLIFrameElement | null>(null);
 	const bodyTarget = track<HTMLElement | null>(null);
 	const headTarget = track<HTMLElement | null>(null);

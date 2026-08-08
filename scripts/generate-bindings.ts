@@ -38,26 +38,26 @@ const specialDeclarations: Record<string, string> = {
 	drawerStackApi.set(api);
 	{props.children}
 }`,
-	'date-input': `export function SegmentContext(props: { children: (segment: AnyRecord) => Children }) @{
+	'date-input': `export function SegmentContext(props: { render: (segment: AnyRecord) => Children }) @{
 	const api = context.get();
 	const groupProps = dateInputSegmentGroupProps.get();
 	if (!api || !groupProps) throw new Error('DateInput.SegmentContext must be rendered inside SegmentGroup');
-	const segments = track(() => api.value.getSegments(groupProps));
-	const render = props.children;
+	const segments = track(() => api.value.getSegments(groupProps.value));
 	@for (const segment of segments.value; index index) {
-		<>{render({ ...segment, index })}</>
+		const Content = () => props.render({ ...segment, index });
+		<{Content} />
 	}
 }`,
-	tour: `export function Actions(props: { children: (actions: Tracked<AnyRecord[]>) => Children }) @{
+	tour: `export function Actions(props: { render: (actions: Tracked<AnyRecord[]>) => Children }) @{
 	const api = context.get();
 	if (!api) throw new Error('Tour.Actions must be rendered inside Tour.Root');
 	const actions = track(() => api.value.step?.actions ?? []);
-	const render = props.children;
-	{render(actions)}
+	const Content = () => props.render(actions);
+	<{Content} />
 }`,
 	'tree-view': `export function NodeProvider(props: ArkPartProps & { indexPath: number[]; node: unknown }) @{
-	const { indexPath, node, children } = props;
-	treeViewNodeProps.set({ indexPath, node });
+	let &{ indexPath, node, children } = props;
+	treeViewNodeProps.set(track(() => ({ indexPath, node })));
 	{children}
 }
 
@@ -65,7 +65,7 @@ export function NodeCheckboxIndicator(props: { children?: Children; indeterminat
 	const api = context.get();
 	const nodeProps = treeViewNodeProps.get();
 	if (!api || !nodeProps) throw new Error('TreeView.NodeCheckboxIndicator must be rendered inside NodeProvider');
-	const state = track(() => api.value.getNodeState(nodeProps as any));
+	const state = track(() => api.value.getNodeState(nodeProps.value as any));
 	@if (state.value.checked === 'indeterminate' && props.indeterminate) {
 		{props.indeterminate}
 	} @else if (state.value.checked === true && props.children) {
@@ -161,7 +161,7 @@ function partDeclaration(part: {
 			: undefined,
 	].filter(Boolean);
 	return `export function ${part.partName}(props: ${part.partName}Props) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ ${fields.join(', ')} }, props);
 	${staticElement(part.tag)}
 }`;
@@ -259,7 +259,7 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 	const contextDeclarations = [...contexts]
 		.map(
 			(name) =>
-				`const ${name[0].toLowerCase() + name.slice(1)}Props = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);`
+				`const ${name[0].toLowerCase() + name.slice(1)}Props = /*#__PURE__*/ new RippleContext<Tracked<Record<string, any>> | null>(null);`
 		)
 		.join('\n');
 	const itemContextDeclarations = [...contexts]
@@ -277,7 +277,7 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 		.map((part) => {
 			if (directory.name === 'signature-pad' && part.partName === 'Segment') {
 				return `export function Segment(props: SegmentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const api = context.get();
 	if (!api) throw new Error('SignaturePad.Segment must be rendered inside SignaturePad.Root');
 	const mergedProps = usePartProps({ context, getter: 'getSegmentProps' }, props);
@@ -296,7 +296,7 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 			if (directory.name === 'drawer' && ['Indent', 'IndentBackground'].includes(part.partName)) {
 				const getter = part.partName === 'Indent' ? 'getIndentProps' : 'getIndentBackgroundProps';
 				return `export function ${part.partName}(props: ${part.partName}Props) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useExternalPartProps({ context: drawerStackApi, getter: '${getter}' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }`;
@@ -329,7 +329,7 @@ ${specialPrelude[directory.name] ?? ''}
 ${contextDeclarations}
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps({
 		context,
 		configKeys: ${literal(configKeys)},
@@ -339,7 +339,7 @@ export function Root(props: RootProps) @{
 	${staticElement(rootTag)}
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	${staticElement(rootTag)}
 }

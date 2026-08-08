@@ -12,10 +12,10 @@ import {
 
 export type Api = ReturnType<typeof useCascadeSelect>['value'];
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
-const itemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const itemProps = /*#__PURE__*/ new RippleContext<Tracked<Record<string, any>> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -41,7 +41,7 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
@@ -54,42 +54,42 @@ function createStaticPart<T extends keyof JSX.IntrinsicElements>(
 }
 
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, { context, getter: 'getLabelProps' });
 	<label {...mergedProps.value}>{children}</label>
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, { context, getter: 'getControlProps' });
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Trigger(props: TriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, { context, getter: 'getTriggerProps' });
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Indicator(props: IndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, { context, getter: 'getIndicatorProps' });
 	<span {...mergedProps.value}>{children}</span>
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, { context, getter: 'getClearTriggerProps' });
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Positioner(props: PositionerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, { context, getter: 'getPositionerProps' });
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, { context, getter: 'getContentProps' });
 	<div {...mergedProps.value}>{children}</div>
 }
 export function List(props: ListProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, {
 		context,
 		getter: 'getListProps',
@@ -98,7 +98,7 @@ export function List(props: ListProps) @{
 	<ul {...mergedProps.value}>{children}</ul>
 }
 export function Item(props: ItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, {
 		context,
 		getter: 'getItemProps',
@@ -108,7 +108,7 @@ export function Item(props: ItemProps) @{
 	<li {...mergedProps.value}>{children}</li>
 }
 export function ItemText(props: ItemTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, {
 		context,
 		getter: 'getItemTextProps',
@@ -117,7 +117,7 @@ export function ItemText(props: ItemTextProps) @{
 	<span {...mergedProps.value}>{children}</span>
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = createStaticPart(props, {
 		context,
 		getter: 'getItemIndicatorProps',

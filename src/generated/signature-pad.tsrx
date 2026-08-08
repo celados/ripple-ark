@@ -21,7 +21,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -48,17 +48,17 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Guide(props: GuideProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getGuideProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -72,22 +72,22 @@ export function HiddenInput(props: HiddenInputProps) @{
 	<input {...mergedProps.value} />
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<label {...mergedProps.value}>{children}</label>
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Segment(props: SegmentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const api = context.get();
 	if (!api) throw new Error('SignaturePad.Segment must be rendered inside SignaturePad.Root');
 	const mergedProps = usePartProps({ context, getter: 'getSegmentProps' }, props);

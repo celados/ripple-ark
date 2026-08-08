@@ -20,11 +20,15 @@ type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const fileUploadItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
-const fileUploadItemGroupProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const fileUploadItemProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
+const fileUploadItemGroupProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -62,12 +66,12 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemSizeText(props: ItemSizeTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemSizeTextProps', inheritedProps: fileUploadItemProps },
 		props,
@@ -75,7 +79,7 @@ export function ItemSizeText(props: ItemSizeTextProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Dropzone(props: DropzoneProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -89,12 +93,12 @@ export function Dropzone(props: DropzoneProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Item(props: ItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -110,12 +114,12 @@ export function Item(props: ItemProps) @{
 	<li {...mergedProps.value}>{children}</li>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
 	<input {...mergedProps.value} />
 }
 export function ItemName(props: ItemNameProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemNameProps', inheritedProps: fileUploadItemProps },
 		props,
@@ -123,7 +127,7 @@ export function ItemName(props: ItemNameProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemPreview(props: ItemPreviewProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemPreviewProps', inheritedProps: fileUploadItemProps },
 		props,
@@ -131,7 +135,7 @@ export function ItemPreview(props: ItemPreviewProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemGroup(props: ItemGroupProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -146,12 +150,12 @@ export function ItemGroup(props: ItemGroupProps) @{
 	<ul {...mergedProps.value}>{children}</ul>
 }
 export function Trigger(props: TriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function ItemPreviewImage(props: ItemPreviewImageProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemPreviewImageProps', inheritedProps: fileUploadItemProps },
 		props,
@@ -159,12 +163,12 @@ export function ItemPreviewImage(props: ItemPreviewImageProps) @{
 	<img {...mergedProps.value} />
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<label {...mergedProps.value}>{children}</label>
 }
 export function ItemDeleteTrigger(props: ItemDeleteTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemDeleteTriggerProps', inheritedProps: fileUploadItemProps },
 		props,

@@ -21,7 +21,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -38,17 +38,17 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Fallback(props: FallbackProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getFallbackProps' }, props);
 	<span {...mergedProps.value}>{children}</span>
 }
 export function Image(props: ImageProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getImageProps' }, props);
 	<img {...mergedProps.value} />
 }

@@ -21,7 +21,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -42,12 +42,12 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function DownloadTrigger(props: DownloadTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -63,17 +63,17 @@ export function DownloadTrigger(props: DownloadTriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Overlay(props: OverlayProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getOverlayProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Frame(props: FrameProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getFrameProps' }, props);
 	<svg {...mergedProps.value}>{children}</svg>
 }
 export function Pattern(props: PatternProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPatternProps' }, props);
 	<path {...mergedProps.value}>{children}</path>
 }

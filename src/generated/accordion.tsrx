@@ -20,10 +20,12 @@ type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const accordionItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const accordionItemProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -47,12 +49,12 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemIndicatorProps', inheritedProps: accordionItemProps },
 		props,
@@ -60,7 +62,7 @@ export function ItemIndicator(props: ItemIndicatorProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemContent(props: ItemContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemContentProps', inheritedProps: accordionItemProps },
 		props,
@@ -68,7 +70,7 @@ export function ItemContent(props: ItemContentProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Item(props: ItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -84,7 +86,7 @@ export function Item(props: ItemProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemTrigger(props: ItemTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemTriggerProps', inheritedProps: accordionItemProps },
 		props,

@@ -21,7 +21,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -36,24 +36,24 @@ export function Root(props: RootProps) @{
 	}
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	{
 		children;
 	}
 }
 export function Title(props: TitleProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
 	<h2 {...mergedProps.value}>{children}</h2>
 }
 export function Spotlight(props: SpotlightProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getSpotlightProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ActionTrigger(props: ActionTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -67,59 +67,57 @@ export function ActionTrigger(props: ActionTriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function ProgressText(props: ProgressTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getProgressTextProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCloseTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Arrow(props: ArrowProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getArrowProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ArrowTip(props: ArrowTipProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getArrowTipProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Backdrop(props: BackdropProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getBackdropProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Description(props: DescriptionProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getDescriptionProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Positioner(props: PositionerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 
-export function Actions(props: { children: (actions: Tracked<AnyRecord[]>) => Children }) @{
+export function Actions(props: { render: (actions: Tracked<AnyRecord[]>) => Children }) @{
 	const api = context.get();
 	if (!api) throw new Error('Tour.Actions must be rendered inside Tour.Root');
 	const actions = track(() => api.value.step?.actions ?? []);
-	const render = props.children;
-	{
-		render(actions);
-	}
+	const Content = () => props.render(actions);
+	<{Content} />
 }
 export const Context = /*#__PURE__*/ createApiContext(context);
 

@@ -20,10 +20,12 @@ type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const segmentGroupItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const segmentGroupItemProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -49,12 +51,12 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Item(props: ItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -71,7 +73,7 @@ export function Item(props: ItemProps) @{
 	<label {...mergedProps.value}>{children}</label>
 }
 export function ItemControl(props: ItemControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemControlProps', inheritedProps: segmentGroupItemProps },
 		props,
@@ -79,7 +81,7 @@ export function ItemControl(props: ItemControlProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemText(props: ItemTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemTextProps', inheritedProps: segmentGroupItemProps },
 		props,
@@ -87,17 +89,17 @@ export function ItemText(props: ItemTextProps) @{
 	<span {...mergedProps.value}>{children}</span>
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<span {...mergedProps.value}>{children}</span>
 }
 export function Indicator(props: IndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemHiddenInput(props: ItemHiddenInputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemHiddenInputProps', inheritedProps: segmentGroupItemProps },
 		props,

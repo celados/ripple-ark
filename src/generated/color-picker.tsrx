@@ -20,13 +20,21 @@ type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const colorPickerSwatchProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
-const colorPickerFormatProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
-const colorPickerChannelProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
-const colorPickerAreaProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const colorPickerSwatchProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
+const colorPickerFormatProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
+const colorPickerChannelProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
+const colorPickerAreaProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -66,17 +74,17 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Positioner(props: PositionerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ValueSwatch(props: ValueSwatchProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -91,12 +99,12 @@ export function ValueSwatch(props: ValueSwatchProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function FormatSelect(props: FormatSelectProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getFormatSelectProps' }, props);
 	<select {...mergedProps.value}>{children}</select>
 }
 export function Swatch(props: SwatchProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -112,12 +120,12 @@ export function Swatch(props: SwatchProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function SwatchGroup(props: SwatchGroupProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getSwatchGroupProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ChannelSliderThumb(props: ChannelSliderThumbProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getChannelSliderThumbProps', inheritedProps: colorPickerFormatProps },
 		props,
@@ -125,7 +133,7 @@ export function ChannelSliderThumb(props: ChannelSliderThumbProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function SwatchTrigger(props: SwatchTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -140,7 +148,7 @@ export function SwatchTrigger(props: SwatchTriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function View(props: ViewProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -154,12 +162,12 @@ export function View(props: ViewProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function EyeDropperTrigger(props: EyeDropperTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getEyeDropperTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function ChannelSlider(props: ChannelSliderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -176,17 +184,17 @@ export function ChannelSlider(props: ChannelSliderProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<label {...mergedProps.value}>{children}</label>
 }
 export function FormatTrigger(props: FormatTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getFormatTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function AreaThumb(props: AreaThumbProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getAreaThumbProps', inheritedProps: colorPickerAreaProps },
 		props,
@@ -194,17 +202,17 @@ export function AreaThumb(props: AreaThumbProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Trigger(props: TriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Content(props: ContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ChannelSliderLabel(props: ChannelSliderLabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getChannelSliderLabelProps', inheritedProps: colorPickerChannelProps },
 		props,
@@ -212,7 +220,7 @@ export function ChannelSliderLabel(props: ChannelSliderLabelProps) @{
 	<label {...mergedProps.value}>{children}</label>
 }
 export function ValueText(props: ValueTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -226,7 +234,7 @@ export function ValueText(props: ValueTextProps) @{
 	<span {...mergedProps.value}>{children}</span>
 }
 export function ChannelSliderValueText(props: ChannelSliderValueTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getChannelSliderValueTextProps', inheritedProps: colorPickerChannelProps },
 		props,
@@ -234,7 +242,7 @@ export function ChannelSliderValueText(props: ChannelSliderValueTextProps) @{
 	<span {...mergedProps.value}>{children}</span>
 }
 export function SwatchIndicator(props: SwatchIndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getSwatchIndicatorProps', inheritedProps: colorPickerSwatchProps },
 		props,
@@ -242,12 +250,12 @@ export function SwatchIndicator(props: SwatchIndicatorProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ChannelSliderTrack(props: ChannelSliderTrackProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getChannelSliderTrackProps', inheritedProps: colorPickerFormatProps },
 		props,
@@ -255,7 +263,7 @@ export function ChannelSliderTrack(props: ChannelSliderTrackProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ChannelInput(props: ChannelInputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -270,12 +278,12 @@ export function ChannelInput(props: ChannelInputProps) @{
 	<input {...mergedProps.value} />
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
 	<input {...mergedProps.value} />
 }
 export function Area(props: AreaProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -291,7 +299,7 @@ export function Area(props: AreaProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function TransparencyGrid(props: TransparencyGridProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -305,7 +313,7 @@ export function TransparencyGrid(props: TransparencyGridProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function AreaBackground(props: AreaBackgroundProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getAreaBackgroundProps', inheritedProps: colorPickerAreaProps },
 		props,

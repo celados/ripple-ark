@@ -57,8 +57,20 @@ describe('Ark UI upstream parity', () => {
 			.map((file) => readFileSync(`src/generated/${file}`, 'utf8'))
 			.join('\n');
 
-		expect(sources).not.toMatch(/<\{[A-Za-z_$]/);
+		// Render-prop contexts are the deliberate dynamic exception; machine parts
+		// themselves must retain their generated native tags.
+		expect(sources).not.toMatch(/<\{(?:as|dynamicTag)\}/);
 		expect(sources).not.toContain('createPart(');
 		expect(readFileSync('src/binding-runtime.tsrx', 'utf8')).not.toContain('as?:');
+	});
+
+	test('keeps generated component children reactive', () => {
+		const sources = readdirSync('src/generated')
+			.filter((file) => file.endsWith('.tsrx'))
+			.map((file) => readFileSync(`src/generated/${file}`, 'utf8'))
+			.join('\n');
+
+		expect(sources).not.toContain('const children = props.children');
+		expect(sources).toContain('let &{ children } = props');
 	});
 });

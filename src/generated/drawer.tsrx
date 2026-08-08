@@ -24,7 +24,7 @@ const drawerStackStore = /*#__PURE__*/ new RippleContext<DrawerStack | null>(nul
 const drawerStackApi = /*#__PURE__*/ new RippleContext<Tracked<AnyRecord> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -73,29 +73,29 @@ export function Root(props: RootProps) @{
 	}
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	{
 		children;
 	}
 }
 export function SwipeArea(props: SwipeAreaProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getSwipeAreaProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Positioner(props: PositionerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Backdrop(props: BackdropProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getBackdropProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function IndentBackground(props: IndentBackgroundProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useExternalPartProps(
 		{ context: drawerStackApi, getter: 'getIndentBackgroundProps' },
 		props,
@@ -103,7 +103,7 @@ export function IndentBackground(props: IndentBackgroundProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -117,7 +117,7 @@ export function Content(props: ContentProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Trigger(props: TriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -131,17 +131,17 @@ export function Trigger(props: TriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCloseTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function GrabberIndicator(props: GrabberIndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getGrabberIndicatorProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Indent(props: IndentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useExternalPartProps(
 		{ context: drawerStackApi, getter: 'getIndentProps' },
 		props,
@@ -149,17 +149,17 @@ export function Indent(props: IndentProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Grabber(props: GrabberProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getGrabberProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Title(props: TitleProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
 	<h2 {...mergedProps.value}>{children}</h2>
 }
 export function Description(props: DescriptionProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getDescriptionProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }

@@ -25,8 +25,15 @@ export type DownloadTriggerProps =
 	};
 
 export function DownloadTrigger(props: DownloadTriggerProps) @{
-	const { fileName, mimeType, data, onClick, children, ...localProps } = props;
-	const download = useDownload({ fileName, mimeType, data });
+	let &{
+		fileName: _fileName,
+		mimeType: _mimeType,
+		data: _data,
+		onClick,
+		children,
+		...localProps
+	} = props;
+	const download = useDownload(props);
 	const handleClick = (event: MouseEvent) => {
 		if (typeof onClick === 'function') onClick(event as any);
 		if (!event.defaultPrevented) void download.download();

@@ -21,7 +21,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -69,19 +69,19 @@ export function Root(props: RootProps) @{
 	}
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	{
 		children;
 	}
 }
 export function Title(props: TitleProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
 	<h2 {...mergedProps.value}>{children}</h2>
 }
 export function ResizeTrigger(props: ResizeTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -95,12 +95,12 @@ export function ResizeTrigger(props: ResizeTriggerProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function DragTrigger(props: DragTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getDragTriggerProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function StageTrigger(props: StageTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -114,37 +114,37 @@ export function StageTrigger(props: StageTriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Header(props: HeaderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHeaderProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Body(props: BodyProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getBodyProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Positioner(props: PositionerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Trigger(props: TriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Content(props: ContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCloseTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }

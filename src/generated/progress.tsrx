@@ -21,7 +21,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -46,17 +46,17 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function CircleRange(props: CircleRangeProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCircleRangeProps' }, props);
 	<circle {...mergedProps.value}>{children}</circle>
 }
 export function View(props: ViewProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -70,32 +70,32 @@ export function View(props: ViewProps) @{
 	<span {...mergedProps.value}>{children}</span>
 }
 export function Range(props: RangeProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getRangeProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function CircleTrack(props: CircleTrackProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCircleTrackProps' }, props);
 	<circle {...mergedProps.value}>{children}</circle>
 }
 export function ValueText(props: ValueTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getValueTextProps' }, props);
 	<span {...mergedProps.value}>{children}</span>
 }
 export function Track(props: TrackProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTrackProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Circle(props: CircleProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCircleProps' }, props);
 	<svg {...mergedProps.value}>{children}</svg>
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<span {...mergedProps.value}>{children}</span>
 }

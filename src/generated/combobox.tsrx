@@ -20,11 +20,15 @@ type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const comboboxItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
-const comboboxItemGroupProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const comboboxItemProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
+const comboboxItemGroupProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -37,22 +41,22 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function List(props: ListProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getListProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Input(props: InputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getInputProps' }, props);
 	<input {...mergedProps.value} />
 }
 export function ItemText(props: ItemTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemTextProps', inheritedProps: comboboxItemProps },
 		props,
@@ -60,17 +64,17 @@ export function ItemText(props: ItemTextProps) @{
 	<span {...mergedProps.value}>{children}</span>
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Positioner(props: PositionerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemGroup(props: ItemGroupProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemGroupProps', provideProps: comboboxItemGroupProps },
 		props,
@@ -78,7 +82,7 @@ export function ItemGroup(props: ItemGroupProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Item(props: ItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -94,12 +98,12 @@ export function Item(props: ItemProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Trigger(props: TriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -113,17 +117,17 @@ export function Trigger(props: TriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Empty(props: EmptyProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<label {...mergedProps.value}>{children}</label>
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemIndicatorProps', inheritedProps: comboboxItemProps },
 		props,
@@ -131,12 +135,12 @@ export function ItemIndicator(props: ItemIndicatorProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemGroupLabel(props: ItemGroupLabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemGroupLabelProps', inheritedProps: comboboxItemGroupProps },
 		props,

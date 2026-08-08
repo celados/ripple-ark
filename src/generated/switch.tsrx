@@ -21,7 +21,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -48,27 +48,27 @@ export function Root(props: RootProps) @{
 	<label {...mergedProps.value}>{children}</label>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<label {...mergedProps.value}>{children}</label>
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
 	<span {...mergedProps.value}>{children}</span>
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<span {...mergedProps.value}>{children}</span>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
 	<input {...mergedProps.value} />
 }
 export function Thumb(props: ThumbProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getThumbProps' }, props);
 	<span {...mergedProps.value}>{children}</span>
 }

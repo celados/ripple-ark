@@ -21,11 +21,11 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 const splitterResizeTriggerProps = /*#__PURE__*/ new RippleContext<
-	Record<string, any> | null
+	Tracked<Record<string, any>> | null
 >(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -53,17 +53,17 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ResizeTriggerIndicator(props: ResizeTriggerIndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, inheritedProps: splitterResizeTriggerProps }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ResizeTrigger(props: ResizeTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -79,7 +79,7 @@ export function ResizeTrigger(props: ResizeTriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Panel(props: PanelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,

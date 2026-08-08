@@ -21,11 +21,11 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 const dateInputSegmentGroupProps = /*#__PURE__*/ new RippleContext<
-	Record<string, any> | null
+	Tracked<Record<string, any>> | null
 >(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -69,12 +69,12 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Segment(props: SegmentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getSegmentProps', inheritedProps: dateInputSegmentGroupProps },
 		props,
@@ -82,12 +82,12 @@ export function Segment(props: SegmentProps) @{
 	<span {...mergedProps.value}>{children}</span>
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function SegmentGroup(props: SegmentGroupProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getSegmentGroupProps', provideProps: dateInputSegmentGroupProps },
 		props,
@@ -95,28 +95,26 @@ export function SegmentGroup(props: SegmentGroupProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<label {...mergedProps.value}>{children}</label>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
 	<input {...mergedProps.value} />
 }
 
-export function SegmentContext(props: { children: (segment: AnyRecord) => Children }) @{
+export function SegmentContext(props: { render: (segment: AnyRecord) => Children }) @{
 	const api = context.get();
 	const groupProps = dateInputSegmentGroupProps.get();
 	if (
 		!api || !groupProps
 	) throw new Error('DateInput.SegmentContext must be rendered inside SegmentGroup');
-	const segments = track(() => api.value.getSegments(groupProps));
-	const render = props.children;
+	const segments = track(() => api.value.getSegments(groupProps.value));
 	@for (const segment of segments.value; index index) {
-		<>
-			{render({ ...segment, index })}
-		</>
+		const Content = () => props.render({ ...segment, index });
+		<{Content} />
 	}
 }
 export const Context = /*#__PURE__*/ createApiContext(context);

@@ -3,6 +3,7 @@ import {
 	type HighlightChunk,
 	type HighlightWordProps,
 } from '@zag-js/highlight-word';
+import { track } from 'ripple';
 
 export type UseHighlightProps = HighlightWordProps;
 
@@ -16,11 +17,11 @@ export function Highlight(props: HighlightProps) @{
 	if (
 		typeof props.text !== 'string'
 	) throw new Error('[ripple-ark/highlight] text must be a string');
-	const { query, text, ignoreCase, matchAll, exactMatch, ...localProps } = props;
-	const chunks = useHighlight({ query, text, ignoreCase, matchAll, exactMatch });
+	let &{ query, text, ignoreCase, matchAll, exactMatch, ...localProps } = props;
+	const chunks = track(() => useHighlight({ query, text, ignoreCase, matchAll, exactMatch }));
 
 	<>
-		@for (const chunk of chunks) {
+		@for (const chunk of chunks.value) {
 			@if (chunk.match) {
 				<mark {...localProps}>{chunk.text}</mark>
 			} @else {

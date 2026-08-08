@@ -20,10 +20,10 @@ type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const menuItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const menuItemProps = /*#__PURE__*/ new RippleContext<Tracked<Record<string, any>> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -64,19 +64,19 @@ export function Root(props: RootProps) @{
 	}
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	{
 		children;
 	}
 }
 export function ArrowTip(props: ArrowTipProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getArrowTipProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RadioItem(props: RadioItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -94,12 +94,12 @@ export function RadioItem(props: RadioItemProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function TriggerItem(props: TriggerItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, provideProps: menuItemProps }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Trigger(props: TriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -113,7 +113,7 @@ export function Trigger(props: TriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Item(props: ItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -132,12 +132,12 @@ export function Item(props: ItemProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemGroup(props: ItemGroupProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -151,12 +151,12 @@ export function ItemGroup(props: ItemGroupProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Indicator(props: IndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RadioItemGroup(props: RadioItemGroupProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -172,17 +172,17 @@ export function RadioItemGroup(props: RadioItemGroupProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Arrow(props: ArrowProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getArrowProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Positioner(props: PositionerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemIndicatorProps', inheritedProps: menuItemProps },
 		props,
@@ -190,22 +190,22 @@ export function ItemIndicator(props: ItemIndicatorProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemGroupLabel(props: ItemGroupLabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getItemGroupLabelProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ContextTrigger(props: ContextTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getContextTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Separator(props: SeparatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getSeparatorProps' }, props);
 	<hr {...mergedProps.value} />
 }
 export function ItemText(props: ItemTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemTextProps', inheritedProps: menuItemProps },
 		props,
@@ -213,7 +213,7 @@ export function ItemText(props: ItemTextProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function CheckboxItem(props: CheckboxItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,

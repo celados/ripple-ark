@@ -21,12 +21,14 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 const navigationMenuViewportProps = /*#__PURE__*/ new RippleContext<
-	Record<string, any> | null
+	Tracked<Record<string, any>> | null
 >(null);
-const navigationMenuItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const navigationMenuItemProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -52,12 +54,12 @@ export function Root(props: RootProps) @{
 	<nav {...mergedProps.value}>{children}</nav>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<nav {...mergedProps.value}>{children}</nav>
 }
 export function Viewport(props: ViewportProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getViewportProps', inheritedProps: navigationMenuViewportProps },
 		props,
@@ -65,17 +67,17 @@ export function Viewport(props: ViewportProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function List(props: ListProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getListProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Indicator(props: IndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Link(props: LinkProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getLinkProps', inheritedProps: navigationMenuItemProps },
 		props,
@@ -83,7 +85,7 @@ export function Link(props: LinkProps) @{
 	<a {...mergedProps.value}>{children}</a>
 }
 export function ViewportPositioner(props: ViewportPositionerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -98,7 +100,7 @@ export function ViewportPositioner(props: ViewportPositionerProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getContentProps', inheritedProps: navigationMenuItemProps },
 		props,
@@ -106,7 +108,7 @@ export function Content(props: ContentProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Trigger(props: TriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getTriggerProps', inheritedProps: navigationMenuItemProps },
 		props,
@@ -114,7 +116,7 @@ export function Trigger(props: TriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemIndicatorProps', inheritedProps: navigationMenuItemProps },
 		props,
@@ -122,7 +124,7 @@ export function ItemIndicator(props: ItemIndicatorProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Item(props: ItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemProps', provideProps: navigationMenuItemProps },
 		props,
@@ -130,7 +132,7 @@ export function Item(props: ItemProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Arrow(props: ArrowProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getArrowProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }

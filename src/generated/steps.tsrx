@@ -20,10 +20,10 @@ type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const stepsItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const stepsItemProps = /*#__PURE__*/ new RippleContext<Tracked<Record<string, any>> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -49,17 +49,17 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function PrevTrigger(props: PrevTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPrevTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Separator(props: SeparatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getSeparatorProps', inheritedProps: stepsItemProps },
 		props,
@@ -67,22 +67,22 @@ export function Separator(props: SeparatorProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function NextTrigger(props: NextTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getNextTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function List(props: ListProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getListProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Progress(props: ProgressProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getProgressProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Indicator(props: IndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getIndicatorProps', inheritedProps: stepsItemProps },
 		props,
@@ -90,7 +90,7 @@ export function Indicator(props: IndicatorProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Item(props: ItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -105,12 +105,12 @@ export function Item(props: ItemProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function CompletedContent(props: CompletedContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -124,7 +124,7 @@ export function Content(props: ContentProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Trigger(props: TriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getTriggerProps', inheritedProps: stepsItemProps },
 		props,

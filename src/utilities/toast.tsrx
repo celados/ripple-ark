@@ -22,23 +22,20 @@ type ToastActorProps = {
 function ToastActor(props: ToastActorProps) @{
 	const api = useToast({ ...props.value, index: props.index, parent: props.parent });
 	context.set(api);
-	const render = props.render;
-	{
-		render(props.value);
-	}
+	const Content = () => props.render(props.value);
+	<{Content} />
 }
 
 export type ToasterProps =
 	Omit<JSX.IntrinsicElements['div'], 'children' | 'id'> & {
 		id: string;
 		toaster: CreateToasterReturn<any>;
-		children: (value: ToastOptions) => Children;
+		render: (value: ToastOptions) => Children;
 	};
 
 export function Toaster(props: ToasterProps) @{
-	const { id, toaster, children, ...localProps } = props;
+	let &{ id, toaster, render, ...localProps } = props;
 	const group = useToastGroup({ id, store: toaster });
-	const render = children;
 
 	<div {...group.value.getGroupProps()} {...localProps}>
 		@for (const item of group.value.getToasts(); index index; key item.id) {
@@ -77,12 +74,10 @@ export function ToastCloseTrigger(props: JSX.IntrinsicElements['button']) @{
 	const api = useToastContext();
 	<button {...api.value.getCloseTriggerProps()} {...props} />
 }
-export function ToastContext(props: { children: (api: ToastApi['value']) => Children }) @{
+export function ToastContext(props: { render: (api: ToastApi['value']) => Children }) @{
 	const api = useToastContext();
-	const render = props.children;
-	{
-		render(api.value);
-	}
+	const Content = () => props.render(api.value);
+	<{Content} />
 }
 
 export const Toast = {

@@ -21,7 +21,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -78,42 +78,42 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function WeekNumberCell(props: WeekNumberCellProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getWeekNumberCellProps' }, props);
 	<td {...mergedProps.value}>{children}</td>
 }
 export function TableHead(props: TableHeadProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTableHeadProps' }, props);
 	<thead {...mergedProps.value}>{children}</thead>
 }
 export function TableRow(props: TableRowProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTableRowProps' }, props);
 	<tr {...mergedProps.value}>{children}</tr>
 }
 export function ValueText(props: ValueTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context }, props);
 	<span {...mergedProps.value}>{children}</span>
 }
 export function ViewControl(props: ViewControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getViewControlProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ViewTrigger(props: ViewTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getViewTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function TableCell(props: TableCellProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -129,62 +129,62 @@ export function TableCell(props: TableCellProps) @{
 	<td {...mergedProps.value}>{children}</td>
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function WeekNumberHeaderCell(props: WeekNumberHeaderCellProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getWeekNumberHeaderCellProps' }, props);
 	<th {...mergedProps.value}>{children}</th>
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<label {...mergedProps.value}>{children}</label>
 }
 export function Trigger(props: TriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Positioner(props: PositionerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function TableCellTrigger(props: TableCellTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function TableHeader(props: TableHeaderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTableHeaderProps' }, props);
 	<th {...mergedProps.value}>{children}</th>
 }
 export function NextTrigger(props: NextTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getNextTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function MonthSelect(props: MonthSelectProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getMonthSelectProps' }, props);
 	<select {...mergedProps.value}>{children}</select>
 }
 export function PresetTrigger(props: PresetTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -198,17 +198,17 @@ export function PresetTrigger(props: PresetTriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Table(props: TableProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTableProps' }, props);
 	<table {...mergedProps.value}>{children}</table>
 }
 export function PrevTrigger(props: PrevTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPrevTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Input(props: InputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -223,22 +223,22 @@ export function Input(props: InputProps) @{
 	<input {...mergedProps.value} />
 }
 export function YearSelect(props: YearSelectProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getYearSelectProps' }, props);
 	<select {...mergedProps.value}>{children}</select>
 }
 export function RangeText(props: RangeTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getRangeTextProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function TableBody(props: TableBodyProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTableBodyProps' }, props);
 	<tbody {...mergedProps.value}>{children}</tbody>
 }
 export function View(props: ViewProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }

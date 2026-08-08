@@ -16,8 +16,8 @@ export type SwapRootProps =
 	};
 
 export function SwapRoot(props: SwapRootProps) @{
-	const { as = 'span', swap, children, ...localProps } = props;
-	const value = useSwap({ swap });
+	let &{ as = 'span', swap: _swap, children, ...localProps } = props;
+	const value = useSwap(props);
 	context.set(value);
 	<{as}
 		{...localProps}
@@ -31,13 +31,14 @@ export function SwapRoot(props: SwapRootProps) @{
 export type SwapRootProviderProps = Omit<SwapRootProps, keyof UseSwapProps> & { value: SwapValue };
 
 export function SwapRootProvider(props: SwapRootProviderProps) @{
-	const { as = 'span', value, children, ...localProps } = props;
-	context.set(value);
+	let &{ as = 'span', value, children, ...localProps } = props;
+	const api = track(() => value.value);
+	context.set(api);
 	<{as}
 		{...localProps}
 		data-scope="swap"
 		data-part="root"
-		data-swap={value.value.swap ? 'on' : 'off'}
+		data-swap={api.value.swap ? 'on' : 'off'}
 	>{children}</{as}>
 }
 
@@ -50,12 +51,11 @@ export type SwapIndicatorProps =
 export function SwapIndicator(props: SwapIndicatorProps) @{
 	const value = context.get();
 	if (!value) throw new Error('Swap.Indicator must be rendered inside Swap.Root');
-	const { type, children, ...localProps } = props;
-	const visible =
-		type === 'on' ? value.value.swap : !value.value.swap;
+	let &{ type, children, ...localProps } = props;
+	const visible = track(() => type === 'on' ? value.value.swap : !value.value.swap);
 
 	<>
-		@if (visible) {
+		@if (visible.value) {
 			<span
 				{...localProps}
 				data-scope="swap"

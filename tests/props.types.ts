@@ -1,8 +1,11 @@
 import type {
+	Api as AccordionApi,
 	ItemProps as AccordionItemProps,
 	ItemTriggerProps as AccordionItemTriggerProps,
 	RootProps as AccordionRootProps,
 } from '../src/generated/accordion.tsrx';
+import { Accordion } from '../src/generated/accordion.tsrx';
+import type { Children } from 'ripple';
 import type {
 	Api as ComboboxApi,
 	ItemProps as ComboboxItemProps,
@@ -24,6 +27,11 @@ void accordionItem;
 
 const accordionTrigger: AccordionItemTriggerProps = { disabled: true, type: 'button' };
 void accordionTrigger;
+
+const accordionContext: Parameters<typeof Accordion.Context>[0] = {
+	render: (_api: AccordionApi): Children => 'content',
+};
+void accordionContext;
 
 // @ts-expect-error Ripple's intrinsic button contract declares disabled as boolean.
 const nativeButton: JSX.IntrinsicElements['button'] = { disabled: 1 };

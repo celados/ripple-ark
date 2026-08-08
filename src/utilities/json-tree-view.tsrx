@@ -33,19 +33,27 @@ function branchValues(root: JsonNode, depth: number) {
 }
 
 export function useJsonTreeView(props: UseJsonTreeViewProps): JsonTreeApi {
-	const rootNode = getRootNode(props.data);
-	const collection = createTreeCollection<JsonNode>({ nodeToValue, nodeToString, rootNode });
+	const rootNode = track(() => getRootNode(props.data));
+	const collection = track(
+		() => createTreeCollection<JsonNode>({ nodeToValue, nodeToString, rootNode: rootNode.value }),
+	);
 	return useTreeView({
-		id: props.id,
-		collection,
+		get id() {
+			return props.id;
+		},
+		get collection() {
+			return collection.value;
+		},
 		typeahead: false,
-		defaultExpandedValue: props.defaultExpandedDepth == null
-			? undefined
-			: branchValues(rootNode, props.defaultExpandedDepth),
+		get defaultExpandedValue() {
+			return props.defaultExpandedDepth == null
+				? undefined
+				: branchValues(rootNode.value, props.defaultExpandedDepth);
+		},
 	});
 }
 
-const context = /*#__PURE__*/ new RippleContext<JsonTreeApi | null>(null);
+const context = /*#__PURE__*/ new RippleContext<Tracked<JsonTreeApi['value']> | null>(null);
 
 export type JsonTreeViewRootProps =
 	UseJsonTreeViewProps & {
@@ -53,10 +61,21 @@ export type JsonTreeViewRootProps =
 	};
 
 export function JsonTreeViewRoot(props: JsonTreeViewRootProps) @{
-	const { children, ...treeProps } = props;
-	const api = useJsonTreeView(treeProps);
+	let &{
+		id: _id,
+		data: _data,
+		defaultExpandedDepth: _defaultExpandedDepth,
+		maxPreviewItems: _maxPreviewItems,
+		collapseStringsAfterLength: _collapseStringsAfterLength,
+		quotesOnKeys: _quotesOnKeys,
+		groupArraysAfterLength: _groupArraysAfterLength,
+		showNonenumerable: _showNonenumerable,
+		children,
+		...localProps
+	} = props;
+	const api = useJsonTreeView(props);
 	context.set(api);
-	<div {...api.value.getRootProps()} data-scope="json-tree-view">{children}</div>
+	<div {...api.value.getRootProps()} {...localProps} data-scope="json-tree-view">{children}</div>
 }
 
 export type JsonTreeViewRootProviderProps = {
@@ -65,8 +84,10 @@ export type JsonTreeViewRootProviderProps = {
 };
 
 export function JsonTreeViewRootProvider(props: JsonTreeViewRootProviderProps) @{
-	context.set(props.value);
-	<div {...props.value.value.getRootProps()} data-scope="json-tree-view">{props.children}</div>
+	let &{ value, children } = props;
+	const api = track(() => value.value);
+	context.set(api);
+	<div {...api.value.getRootProps()} data-scope="json-tree-view">{children}</div>
 }
 
 type JsonTreeNodeProps = {

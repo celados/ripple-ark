@@ -20,10 +20,10 @@ type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const sliderThumbProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const sliderThumbProps = /*#__PURE__*/ new RippleContext<Tracked<Record<string, any>> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -62,17 +62,17 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<label {...mergedProps.value}>{children}</label>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getHiddenInputProps', inheritedProps: sliderThumbProps },
 		props,
@@ -80,27 +80,27 @@ export function HiddenInput(props: HiddenInputProps) @{
 	<input {...mergedProps.value} />
 }
 export function Track(props: TrackProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTrackProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function MarkerGroup(props: MarkerGroupProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getMarkerGroupProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ValueText(props: ValueTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getValueTextProps' }, props);
 	<span {...mergedProps.value}>{children}</span>
 }
 export function Range(props: RangeProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getRangeProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Marker(props: MarkerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -114,7 +114,7 @@ export function Marker(props: MarkerProps) @{
 	<span {...mergedProps.value}>{children}</span>
 }
 export function Thumb(props: ThumbProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -130,7 +130,7 @@ export function Thumb(props: ThumbProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function DraggingIndicator(props: DraggingIndicatorProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getDraggingIndicatorProps', inheritedProps: sliderThumbProps },
 		props,
@@ -138,7 +138,7 @@ export function DraggingIndicator(props: DraggingIndicatorProps) @{
 	<span {...mergedProps.value}>{children}</span>
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }

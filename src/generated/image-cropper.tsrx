@@ -21,7 +21,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -63,32 +63,32 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Image(props: ImageProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getImageProps' }, props);
 	<img {...mergedProps.value} />
 }
 export function Selection(props: SelectionProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getSelectionProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Handle(props: HandleProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHandleProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Grid(props: GridProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getGridProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Viewport(props: ViewportProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getViewportProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }

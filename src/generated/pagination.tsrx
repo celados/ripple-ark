@@ -21,7 +21,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -49,32 +49,32 @@ export function Root(props: RootProps) @{
 	<nav {...mergedProps.value}>{children}</nav>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<nav {...mergedProps.value}>{children}</nav>
 }
 export function NextTrigger(props: NextTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getNextTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function FirstTrigger(props: FirstTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getFirstTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function LastTrigger(props: LastTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLastTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function PrevTrigger(props: PrevTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPrevTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Item(props: ItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -89,7 +89,7 @@ export function Item(props: ItemProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Ellipsis(props: EllipsisProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,

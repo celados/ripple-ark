@@ -101,8 +101,17 @@ export type FieldRootProps =
 	};
 
 export function FieldRoot(props: FieldRootProps) @{
-	const { id, disabled, invalid, readOnly, required, target, children, ...localProps } = props;
-	const api = useField({ id, disabled, invalid, readOnly, required, target });
+	let &{
+		id: _id,
+		disabled: _disabled,
+		invalid: _invalid,
+		readOnly: _readOnly,
+		required: _required,
+		target: _target,
+		children,
+		...localProps
+	} = props;
+	const api = useField(props);
 	context.set(api);
 	<div {...api.value.getRootProps()} {...localProps}>{children}</div>
 }
@@ -111,9 +120,10 @@ export type FieldRootProviderProps =
 	Omit<FieldRootProps, keyof UseFieldProps> & { value: Tracked<FieldApi> };
 
 export function FieldRootProvider(props: FieldRootProviderProps) @{
-	const { value, children, ...localProps } = props;
-	context.set(value);
-	<div {...value.value.getRootProps()} {...localProps}>{children}</div>
+	let &{ value, children, ...localProps } = props;
+	const api = track(() => value.value);
+	context.set(api);
+	<div {...api.value.getRootProps()} {...localProps}>{children}</div>
 }
 
 function useFieldContext() {
@@ -154,7 +164,7 @@ export function FieldRequiredIndicator(props: JSX.IntrinsicElements['span'] & {
 	fallback?: Children;
 }) @{
 	const api = useFieldContext();
-	const { fallback, children = '*', ...localProps } = props;
+	let &{ fallback, children = '*', ...localProps } = props;
 	<>
 		@if (api.value.required) {
 			<span {...api.value.getRequiredIndicatorProps()} {...localProps}>{children}</span>
@@ -167,15 +177,13 @@ export function FieldRequiredIndicator(props: JSX.IntrinsicElements['span'] & {
 }
 export function FieldItem(props: JSX.IntrinsicElements['div'] & { value: string }) @{
 	const api = useFieldContext();
-	const { value, ...localProps } = props;
+	let &{ value, ...localProps } = props;
 	<div id={`${api.value.getInputProps().id}::item::${value}`} {...localProps} />
 }
-export function FieldContext(props: { children: (api: FieldApi) => Children }) @{
+export function FieldContext(props: { render: (api: FieldApi) => Children }) @{
 	const api = useFieldContext();
-	const render = props.children;
-	{
-		render(api.value);
-	}
+	const Content = () => props.render(api.value);
+	<{Content} />
 }
 
 export const Field = {

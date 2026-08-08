@@ -20,7 +20,7 @@ export type PresenceRootProps =
 	};
 
 export function PresenceRoot(props: PresenceRootProps) @{
-	const {
+	let &{
 		present,
 		lazyMount,
 		unmountOnExit,
@@ -29,7 +29,11 @@ export function PresenceRoot(props: PresenceRootProps) @{
 		ref,
 		...localProps
 	} = props;
-	const machine = usePresence({ present });
+	const machine = usePresence({
+		get present() {
+			return present;
+		},
+	});
 	const wasEverPresent = track(false);
 	effect(() => {
 		if (machine.value.present) wasEverPresent.value = true;
@@ -63,13 +67,11 @@ export function PresenceRoot(props: PresenceRootProps) @{
 	</>
 }
 
-export function PresenceContext(props: { children: (api: PresenceApi['value']) => Children }) @{
+export function PresenceContext(props: { render: (api: PresenceApi['value']) => Children }) @{
 	const api = context.get();
 	if (!api) throw new Error('Presence.Context must be rendered inside Presence.Root');
-	const render = props.children;
-	{
-		render(api.value);
-	}
+	const Content = () => props.render(api.value);
+	<{Content} />
 }
 
 export const Presence = { Root: PresenceRoot, Context: PresenceContext };

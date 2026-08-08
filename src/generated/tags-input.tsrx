@@ -20,10 +20,12 @@ type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 
-const tagsInputItemProps = /*#__PURE__*/ new RippleContext<Record<string, any> | null>(null);
+const tagsInputItemProps = /*#__PURE__*/ new RippleContext<
+	Tracked<Record<string, any>> | null
+>(null);
 
 export function Root(props: RootProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProps(
 		{
 			context,
@@ -69,22 +71,22 @@ export function Root(props: RootProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Label(props: LabelProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
 	<label {...mergedProps.value}>{children}</label>
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
 	<button {...mergedProps.value}>{children}</button>
 }
 export function ItemText(props: ItemTextProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemTextProps', inheritedProps: tagsInputItemProps },
 		props,
@@ -92,7 +94,7 @@ export function ItemText(props: ItemTextProps) @{
 	<span {...mergedProps.value}>{children}</span>
 }
 export function ItemInput(props: ItemInputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemInputProps', inheritedProps: tagsInputItemProps },
 		props,
@@ -100,17 +102,17 @@ export function ItemInput(props: ItemInputProps) @{
 	<input {...mergedProps.value} />
 }
 export function Control(props: ControlProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
 	<input {...mergedProps.value} />
 }
 export function ItemPreview(props: ItemPreviewProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemPreviewProps', inheritedProps: tagsInputItemProps },
 		props,
@@ -118,12 +120,12 @@ export function ItemPreview(props: ItemPreviewProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Input(props: InputProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getInputProps' }, props);
 	<input {...mergedProps.value} />
 }
 export function Item(props: ItemProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -140,7 +142,7 @@ export function Item(props: ItemProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ItemDeleteTrigger(props: ItemDeleteTriggerProps) @{
-	const children = props.children;
+	let &{ children } = props;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemDeleteTriggerProps', inheritedProps: tagsInputItemProps },
 		props,

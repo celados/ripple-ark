@@ -15,11 +15,12 @@ type ArkElements = { [T in ElementType]: ArkComponent<T> };
 
 function withAsProp<T extends ElementType>(tag: T): ArkComponent<T> {
 	return function ArkComponent(props: HTMLArkProps<T>) @{
-		const { asChild, ...parentProps } = props;
+		let &{ asChild, ...parentProps } = props;
 		@if (asChild) {
-			{
-				asChild((userProps = {}) => mergeProps(parentProps, userProps) as JSX.IntrinsicElements[T]);
-			}
+			const Content = () => asChild(
+				(userProps = {}) => mergeProps(parentProps, userProps) as JSX.IntrinsicElements[T],
+			);
+			<{Content} />
 		} @else {
 			const dynamicTag: DynamicElementType = tag;
 			<{dynamicTag} {...parentProps} />

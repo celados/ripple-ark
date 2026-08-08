@@ -34,8 +34,8 @@ export type PartOptions<TApi extends object> = {
 	context: BindingContext<TApi>;
 	getter?: Extract<keyof TApi, string>;
 	propKeys?: readonly string[];
-	inheritedProps?: Context<AnyRecord | null>;
-	provideProps?: Context<AnyRecord | null>;
+	inheritedProps?: Context<Tracked<AnyRecord> | null>;
+	provideProps?: Context<Tracked<AnyRecord> | null>;
 };
 
 function splitProps(props: ChildrenProps, keys: readonly string[]) {
@@ -49,6 +49,22 @@ function splitProps(props: ChildrenProps, keys: readonly string[]) {
 	return [selected, local] as const;
 }
 
+function createReactiveProps(
+	props: ChildrenProps,
+	keys: readonly string[],
+	defaults: AnyRecord = {},
+) {
+	const reactiveProps: AnyRecord = { ...defaults };
+	for (const key of keys) {
+		if (!(key in props)) continue;
+		Object.defineProperty(reactiveProps, key, {
+			enumerable: true,
+			get: () => (props as AnyRecord)[key],
+		});
+	}
+	return reactiveProps;
+}
+
 function useBindingContext<TApi extends object>(context: BindingContext<TApi>) {
 	const api = context.get();
 	if (!api) throw new Error('Ark part must be rendered inside its Root or RootProvider');
@@ -59,21 +75,32 @@ export function useRootProps<TApi extends object>(
 	options: RootOptions<TApi>,
 	props: ChildrenProps,
 ) {
-	const [machineProps, localProps] = splitProps(props, options.configKeys);
-	const api = options.useMachine({ ...options.defaultMachineProps?.(), ...machineProps });
+	const machineProps = createReactiveProps(
+		props,
+		options.configKeys,
+		options.defaultMachineProps?.(),
+	);
+	const api = options.useMachine(machineProps);
 	options.context.set(api);
 	// Zag's merge composes handlers, refs, class names, and styles. Object spread
 	// would silently replace machine behavior when consumers add their own props.
-	return track(() => mergeProps((api.value as AnyRecord).getRootProps?.(), localProps));
+	return track(() => {
+		const [, localProps] = splitProps(props, options.configKeys);
+		return mergeProps((api.value as AnyRecord).getRootProps?.(), localProps);
+	});
 }
 
 export function useRootProviderProps<TApi extends object>(
 	options: Pick<RootOptions<TApi>, 'context'>,
 	props: ChildrenProps & { value: Tracked<TApi> },
 ) {
-	const { children: _children, value, ...localProps } = props;
+	const value = track(() => props.value.value);
 	options.context.set(value);
-	return track(() => mergeProps((value.value as AnyRecord).getRootProps?.(), localProps));
+	return track(() => {
+		// This snapshot is rebuilt inside the tracked computation, so it stays reactive.
+		const { children: _children, value: _value, ...localProps } = props;
+		return mergeProps((value.value as AnyRecord).getRootProps?.(), localProps);
+	});
 }
 
 export function usePartProps<TApi extends object>(
@@ -81,12 +108,15 @@ export function usePartProps<TApi extends object>(
 	props: ChildrenProps,
 ) {
 	const api = useBindingContext(options.context);
-	const [ownProps, localProps] = splitProps(props, options.propKeys ?? []);
-	const machineProps = { ...(options.inheritedProps?.get() ?? {}), ...ownProps };
+	const machineProps = track(() => {
+		const [ownProps] = splitProps(props, options.propKeys ?? []);
+		return { ...(options.inheritedProps?.get()?.value ?? {}), ...ownProps };
+	});
 	options.provideProps?.set(machineProps);
 	return track(() => {
 		const getter = options.getter ? (api.value as AnyRecord)[options.getter] : undefined;
-		return mergeProps(typeof getter === 'function' ? getter(machineProps) : {}, localProps);
+		const [, localProps] = splitProps(props, options.propKeys ?? []);
+		return mergeProps(typeof getter === 'function' ? getter(machineProps.value) : {}, localProps);
 	});
 }
 
@@ -94,36 +124,33 @@ export function useExternalPartProps<TApi extends object>(
 	options: Pick<PartOptions<TApi>, 'context' | 'getter'>,
 	props: ChildrenProps,
 ) {
-	const { children: _children, ...localProps } = props;
 	const api = useBindingContext(options.context);
-	return track(
-		() => mergeProps(options.getter ? (api.value as AnyRecord)[options.getter]() : {}, localProps),
-	);
+	return track(() => {
+		// This snapshot is rebuilt inside the tracked computation, so it stays reactive.
+		const { children: _children, ...localProps } = props;
+		return mergeProps(options.getter ? (api.value as AnyRecord)[options.getter]() : {}, localProps);
+	});
 }
 
 export function createApiContext<TApi extends object>(context: BindingContext<TApi>) {
-	return function ApiContext(props: { children: (api: TApi) => Children }) @{
+	return function ApiContext(props: { render: (api: TApi) => Children }) @{
 		const api = useBindingContext(context);
-		const render = props.children;
-		{
-			render(api.value);
-		}
+		const Content = () => props.render(api.value);
+		<{Content} />
 	};
 }
 
 export function createItemContext(
 	context: BindingContext,
-	propsContext: Context<AnyRecord | null>,
+	propsContext: Context<Tracked<AnyRecord> | null>,
 	getter = 'getItemState',
 ) {
-	return function ItemContext(props: { children: (state: AnyRecord) => Children }) @{
+	return function ItemContext(props: { render: (state: AnyRecord) => Children }) @{
 		const api = useBindingContext(context);
 		const itemProps = propsContext.get();
 		if (!itemProps) throw new Error('ItemContext must be rendered inside its Item');
-		const state = track(() => api.value[getter](itemProps));
-		const render = props.children;
-		{
-			render(state.value);
-		}
+		const state = track(() => api.value[getter](itemProps.value));
+		const Content = () => props.render(state.value);
+		<{Content} />
 	};
 }

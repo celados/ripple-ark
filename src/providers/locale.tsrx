@@ -30,6 +30,7 @@ export type UseCollatorProps = Intl.CollatorOptions & { locale?: string };
 export function useCollator(props: UseCollatorProps = {}) {
 	const environment = useLocaleContext();
 	return track(() => {
+		// The formatter snapshot is recreated whenever a source prop changes.
 		const { locale = environment.value.locale, ...options } = props;
 		return createCollator(locale, options);
 	});
@@ -39,6 +40,7 @@ export type UseDateFormatterProps = Intl.DateTimeFormatOptions & { locale?: stri
 export function useDateFormatter(props: UseDateFormatterProps = {}) {
 	const environment = useLocaleContext();
 	return track(() => {
+		// The formatter snapshot is recreated whenever a source prop changes.
 		const { locale = environment.value.locale, ...options } = props;
 		return new DateFormatter(locale, options);
 	});

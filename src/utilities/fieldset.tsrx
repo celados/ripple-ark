@@ -62,8 +62,8 @@ export type FieldsetRootProps =
 	};
 
 export function FieldsetRoot(props: FieldsetRootProps) @{
-	const { id, disabled, invalid, children, ...localProps } = props;
-	const api = useFieldset({ id, disabled, invalid });
+	let &{ id: _id, disabled: _disabled, invalid: _invalid, children, ...localProps } = props;
+	const api = useFieldset(props);
 	fieldsetContext.set(api);
 	<fieldset {...api.value.getRootProps()} {...localProps}>{children}</fieldset>
 }
@@ -74,9 +74,10 @@ export type FieldsetRootProviderProps =
 	};
 
 export function FieldsetRootProvider(props: FieldsetRootProviderProps) @{
-	const { value, children, ...localProps } = props;
-	fieldsetContext.set(value);
-	<fieldset {...value.value.getRootProps()} {...localProps}>{children}</fieldset>
+	let &{ value, children, ...localProps } = props;
+	const api = track(() => value.value);
+	fieldsetContext.set(api);
+	<fieldset {...api.value.getRootProps()} {...localProps}>{children}</fieldset>
 }
 
 export function FieldsetLegend(props: JSX.IntrinsicElements['legend']) @{
@@ -101,13 +102,11 @@ export function FieldsetErrorText(props: JSX.IntrinsicElements['span']) @{
 	</>
 }
 
-export function FieldsetContext(props: { children: (api: FieldsetApi) => Children }) @{
+export function FieldsetContext(props: { render: (api: FieldsetApi) => Children }) @{
 	const api = fieldsetContext.get();
 	if (!api) throw new Error('Fieldset.Context must be rendered inside Fieldset.Root');
-	const render = props.children;
-	{
-		render(api.value);
-	}
+	const Content = () => props.render(api.value);
+	<{Content} />
 }
 
 export const Fieldset = {

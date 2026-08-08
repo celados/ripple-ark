@@ -1,5 +1,11 @@
 # ripple-ark
 
+## 0.3.1
+
+- Preserve reactive public props through generated roots, parts, providers, and utility components.
+- Replace callback children with explicit `render` props so Ripple renders returned TSRX nodes.
+- Keep `ClientOnly` represented in SSR output so post-hydration content mounts reliably.
+
 ## 0.3.0
 
 - Generate native static TSRX tags for Ark parts instead of making every component polymorphic.

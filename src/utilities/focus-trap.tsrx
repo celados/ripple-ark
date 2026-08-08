@@ -14,7 +14,7 @@ export type FocusTrapProps =
 	> & { disabled?: boolean; children?: Children | Children[] };
 
 export function FocusTrap(props: FocusTrapProps) @{
-	const {
+	let &{
 		disabled,
 		onActivate,
 		onDeactivate,
