@@ -1,5 +1,11 @@
 # ripple-ark
 
+## 0.3.2
+
+- Keep render-prop API and item contexts live as their Zag machine state changes.
+- Preserve children for rootless provider components such as Dialog, Menu, Popover, and Tooltip.
+- Forward part-specific props and merge all inherited contexts required by Image Cropper and Color Picker.
+
 ## 0.3.1
 
 - Preserve reactive public props through generated roots, parts, providers, and utility components.

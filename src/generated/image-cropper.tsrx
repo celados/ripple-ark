@@ -79,12 +79,30 @@ export function Selection(props: SelectionProps) @{
 }
 export function Handle(props: HandleProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getHandleProps' }, props);
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getHandleProps',
+			propKeys: [
+				'position',
+			],
+		},
+		props,
+	);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Grid(props: GridProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getGridProps' }, props);
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getGridProps',
+			propKeys: [
+				'axis',
+			],
+		},
+		props,
+	);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Viewport(props: ViewportProps) @{

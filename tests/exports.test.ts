@@ -73,4 +73,18 @@ describe('Ark UI upstream parity', () => {
 		expect(sources).not.toContain('const children = props.children');
 		expect(sources).toContain('let &{ children } = props');
 	});
+
+	test('forwards direct Solid getter props to Zag', () => {
+		const imageCropper = readFileSync('src/generated/image-cropper.tsrx', 'utf8');
+
+		expect(imageCropper).toContain("getter: 'getHandleProps'");
+		expect(imageCropper).toMatch(/getHandleProps'[\s\S]*?propKeys:\s*\[\s*["']position["']/);
+		expect(imageCropper).toMatch(/getGridProps'[\s\S]*?propKeys:\s*\[\s*["']axis["']/);
+	});
+
+	test('renders children for rootless Ark providers', () => {
+		const dialog = readFileSync('src/generated/dialog.tsrx', 'utf8');
+
+		expect(dialog).toMatch(/<>\s*\{children\}\s*<\/>/);
+	});
 });

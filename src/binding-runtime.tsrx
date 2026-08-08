@@ -34,7 +34,8 @@ export type PartOptions<TApi extends object> = {
 	context: BindingContext<TApi>;
 	getter?: Extract<keyof TApi, string>;
 	propKeys?: readonly string[];
-	inheritedProps?: Context<Tracked<AnyRecord> | null>;
+	inheritedProps?: | Context<Tracked<AnyRecord> | null>
+	| readonly Context<Tracked<AnyRecord> | null>[];
 	provideProps?: Context<Tracked<AnyRecord> | null>;
 };
 
@@ -110,7 +111,17 @@ export function usePartProps<TApi extends object>(
 	const api = useBindingContext(options.context);
 	const machineProps = track(() => {
 		const [ownProps] = splitProps(props, options.propKeys ?? []);
-		return { ...(options.inheritedProps?.get()?.value ?? {}), ...ownProps };
+		const inheritedContexts =
+			Array.isArray(options.inheritedProps)
+				? options.inheritedProps
+				: options.inheritedProps
+					? [options.inheritedProps]
+					: [];
+		return Object.assign(
+			{},
+			...inheritedContexts.map((inherited) => inherited.get()?.value ?? {}),
+			ownProps,
+		);
 	});
 	options.provideProps?.set(machineProps);
 	return track(() => {
@@ -132,10 +143,27 @@ export function useExternalPartProps<TApi extends object>(
 	});
 }
 
+function createReactiveObject<TValue extends object>(value: Tracked<TValue>): TValue {
+	// Render callbacks execute once, so expose a stable object whose reads still
+	// subscribe to the current Zag connection instead of capturing one snapshot.
+	return new Proxy({} as TValue, {
+		get: (_target, key) => Reflect.get(value.value, key),
+		has: (_target, key) => Reflect.has(value.value, key),
+		ownKeys: () => Reflect.ownKeys(value.value),
+		getOwnPropertyDescriptor: (_target, key) =>
+			Reflect.getOwnPropertyDescriptor(value.value, key) ??
+				{
+					configurable: true,
+					enumerable: true,
+				},
+	});
+}
+
 export function createApiContext<TApi extends object>(context: BindingContext<TApi>) {
 	return function ApiContext(props: { render: (api: TApi) => Children }) @{
 		const api = useBindingContext(context);
-		const Content = () => props.render(api.value);
+		const liveApi = createReactiveObject(api);
+		const Content = () => props.render(liveApi);
 		<{Content} />
 	};
 }
@@ -146,11 +174,13 @@ export function createItemContext(
 	getter = 'getItemState',
 ) {
 	return function ItemContext(props: { render: (state: AnyRecord) => Children }) @{
+		let &{ render } = props;
 		const api = useBindingContext(context);
 		const itemProps = propsContext.get();
 		if (!itemProps) throw new Error('ItemContext must be rendered inside its Item');
 		const state = track(() => api.value[getter](itemProps.value));
-		const Content = () => props.render(state.value);
+		const liveState = createReactiveObject(state);
+		const Content = () => render(liveState);
 		<{Content} />
 	};
 }

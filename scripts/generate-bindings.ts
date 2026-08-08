@@ -105,6 +105,13 @@ function splitKeys(source: string) {
 	return match ? [...match[1].matchAll(/['"]([^'"]+)['"]/g)].map((entry) => entry[1]) : [];
 }
 
+function directGetterPropKeys(source: string, getter: string | undefined) {
+	if (!getter) return [];
+	const argument = source.match(new RegExp(`\\.${getter}\\(\\{([\\s\\S]*?)\\}\\)`))?.[1];
+	if (!argument) return [];
+	return [...argument.matchAll(/\bprops\.([A-Za-z_$][A-Za-z0-9_$]*)/g)].map((entry) => entry[1]);
+}
+
 function contextName(value: string) {
 	return value
 		.replace(/^use/, '')
@@ -134,7 +141,9 @@ const voidTags = new Set([
 ]);
 
 function staticElement(tag: string | undefined) {
-	if (!tag) return '{children}';
+	// A bare top-level expression is valid TypeScript but does not create a TSRX
+	// render anchor, so rootless Ark providers would silently drop all children.
+	if (!tag) return '<>{children}</>';
 	return voidTags.has(tag)
 		? `<${tag} {...mergedProps.value} />`
 		: `<${tag} {...mergedProps.value}>{children}</${tag}>`;
@@ -147,8 +156,11 @@ function partDeclaration(part: {
 	getter?: string;
 	keys: string[];
 	provide?: string;
-	inherit?: string;
+	inherit?: string[];
 }) {
+	const inheritedVariables = part.inherit?.map(
+		(name) => `${name[0].toLowerCase() + name.slice(1)}Props`
+	);
 	const fields = [
 		`context`,
 		part.getter ? `getter: '${part.getter}'` : undefined,
@@ -156,9 +168,11 @@ function partDeclaration(part: {
 		part.provide
 			? `provideProps: ${part.provide[0].toLowerCase() + part.provide.slice(1)}Props`
 			: undefined,
-		part.inherit
-			? `inheritedProps: ${part.inherit[0].toLowerCase() + part.inherit.slice(1)}Props`
-			: undefined,
+		inheritedVariables?.length === 1
+			? `inheritedProps: ${inheritedVariables[0]}`
+			: inheritedVariables?.length
+				? `inheritedProps: [${inheritedVariables.join(', ')}]`
+				: undefined,
 	].filter(Boolean);
 	return `export function ${part.partName}(props: ${part.partName}Props) @{
 	let &{ children } = props;
@@ -172,12 +186,12 @@ function publicPartType(part: {
 	tag: string;
 	getter?: string;
 	keys: string[];
-	inherit?: string;
+	inherit?: string[];
 }) {
 	const html = `ArkPartProps<'${part.tag}'>`;
 	if (!part.getter) return html;
 	const getter = `Api['${part.getter}']`;
-	if (!part.inherit) return `PartProps<'${part.tag}', ${getter}>`;
+	if (!part.inherit?.length) return `PartProps<'${part.tag}', ${getter}>`;
 	if (!part.keys.length) return html;
 	const keys = part.keys.map((key) => `'${key}'`).join(' | ');
 	return `${html} & Pick<GetterProps<${getter}>, Extract<keyof GetterProps<${getter}>, ${keys}>>`;
@@ -210,7 +224,7 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 		getter?: string;
 		keys: string[];
 		provide?: string;
-		inherit?: string;
+		inherit?: string[];
 	}[] = [];
 	const contexts = new Set<string>();
 
@@ -236,21 +250,24 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 			source.match(/mergeProps\([\s\S]*?\.(get[A-Z][A-Za-z0-9]+Props)\(/)?.[1] ??
 			source.match(/\.(get[A-Z][A-Za-z0-9]+Props)\(/)?.[1];
 		const provider = source.match(/<(\w+PropsProvider)\s+value=/)?.[1];
-		const inherited = source.match(/\b(use\w+PropsContext)\(\)/)?.[1];
+		const inherited = [...source.matchAll(/\b(use\w+PropsContext)\(\)/g)].map((match) =>
+			contextName(match[1])
+		);
 		const provide = provider
 			? contextName(provider)
 			: source.includes(`${componentName}ItemProvider value=`)
 				? `${componentName}Item`
 				: undefined;
-		const inherit = inherited ? contextName(inherited) : undefined;
+		const inherit = [...new Set(inherited)];
 		if (provide) contexts.add(provide);
-		if (inherit) contexts.add(inherit);
+		for (const inheritedContext of inherit) contexts.add(inheritedContext);
+		const keys = [...new Set([...splitKeys(source), ...directGetterPropKeys(source, getter)])];
 		parts.push({
 			exportName,
 			partName: namespaceName,
 			tag,
 			getter,
-			keys: splitKeys(source),
+			keys,
 			provide,
 			inherit,
 		});

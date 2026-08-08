@@ -59,16 +59,16 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	{
-		children;
-	}
+	<>
+		{children}
+	</>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	{
-		children;
-	}
+	<>
+		{children}
+	</>
 }
 export function ArrowTip(props: ArrowTipProps) @{
 	let &{ children } = props;

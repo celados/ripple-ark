@@ -127,7 +127,11 @@ export function SwatchGroup(props: SwatchGroupProps) @{
 export function ChannelSliderThumb(props: ChannelSliderThumbProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps(
-		{ context, getter: 'getChannelSliderThumbProps', inheritedProps: colorPickerFormatProps },
+		{
+			context,
+			getter: 'getChannelSliderThumbProps',
+			inheritedProps: [colorPickerFormatProps, colorPickerChannelProps],
+		},
 		props,
 	);
 	<div {...mergedProps.value}>{children}</div>
@@ -257,7 +261,11 @@ export function Control(props: ControlProps) @{
 export function ChannelSliderTrack(props: ChannelSliderTrackProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps(
-		{ context, getter: 'getChannelSliderTrackProps', inheritedProps: colorPickerFormatProps },
+		{
+			context,
+			getter: 'getChannelSliderTrackProps',
+			inheritedProps: [colorPickerFormatProps, colorPickerChannelProps],
+		},
 		props,
 	);
 	<div {...mergedProps.value}>{children}</div>
