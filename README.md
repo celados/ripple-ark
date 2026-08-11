@@ -88,6 +88,59 @@ into the same props object under a `createRefKey()`-derived symbol, so it surviv
 `{...props}` spread or a rest-props forward without the render consumer doing anything special —
 spreading the full props object is enough for presence unmount detection to keep working.
 
+## Styling
+
+Styles are consumer-owned, and two traps hit every Ripple/tsrx consumer on first contact:
+
+1. **Scoped styles don't reach parts.** tsrx `<style>` blocks compile to hash-scoped classes
+   applied only to elements created in that component's own template. Generated parts render
+   their elements internally, so a class passed via `class` never matches your scoped rules —
+   style part classes through `:global(...)`.
+2. **Bare `:global()` leaks onto the host page.** When embedding into third-party pages (the
+   typical headless-widget deployment), `:global(.popover)` rewrites the _host's_ elements too.
+   Namespace every global rule under your mount root:
+
+```css
+/* Ark renders these elements; part classes style through :global,
+   namespaced under the mount root so the host page is untouched. */
+:global(.my-widget-root .popover) {
+	/* … */
+}
+```
+
+Z-index goes on the **content** class, not the positioner: zag's dismissable layer stack mirrors
+the content element's computed `z-index` onto the positioner's `--z-index` custom property.
+
+## Positioning beyond `PositioningOptions`
+
+Zag's popper options cover the common cases but pin the middleware pipeline: `slide: true`
+always applies floating-ui's `limitShift` (a surface whose anchor scrolls off-viewport stays
+attached instead of clamping into view), and `fitViewport`'s `--available-width`/`--available-height`
+are anchor-relative (a flipped surface near a viewport edge can collapse to a sliver). When you
+need an unconditional clamp or your own middleware chain, take over with `updatePosition`:
+
+```ts
+let primedFor: HTMLElement | null = null;
+const positioning: PositioningOptions = {
+	// …placement, boundary, listeners…
+	updatePosition: async ({ updatePosition, floatingElement }) => {
+		// Prime zag's default pass ONCE per positioner element: it establishes the
+		// autoUpdate observers and mirrors the content z-index onto --z-index.
+		// Re-running it every frame flashes unclamped coordinates.
+		if (floatingElement && primedFor !== floatingElement) {
+			primedFor = floatingElement;
+			await updatePosition();
+		}
+		if (!floatingElement) return;
+		// Then run your own floating-ui middleware chain and write --x/--y.
+	},
+};
+```
+
+Keep the positioner `visibility: hidden` until your first write lands, or the surface flashes at
+`0,0`. A production-grade middleware chain built on this pattern (hard clamp + custom boundary)
+lives in `celados/gloss` at `packages/annotator/src/floating-positioning.ts`.
+
 ## Runtime and build requirements
 
 This is a Ripple source package:
