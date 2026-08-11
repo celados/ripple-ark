@@ -81,8 +81,9 @@ export function CircleTrack(props: CircleTrackProps) @{
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
 	const mergedProps = usePartProps({ context, getter: 'getValueTextProps' }, props);
-	<span {...mergedProps.value}>{children}</span>
+	<span {...mergedProps.value}>{children || api.value.percentAsString}</span>
 }
 export function Track(props: TrackProps) @{
 	let &{ children } = props;

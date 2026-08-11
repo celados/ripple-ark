@@ -1,5 +1,12 @@
-import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
-
+import {
+	Context as RippleContext,
+	effect,
+	track,
+	untrack,
+	type Children,
+	type Tracked,
+} from 'ripple';
+import { mergeProps } from '@zag-js/core';
 import { useMenu } from '../components';
 import {
 	createApiContext,
@@ -8,10 +15,14 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	useRootPresence,
+	usePresenceState,
+	PRESENCE_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type PresenceState,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useMenu;
@@ -19,12 +30,14 @@ export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
-
+const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);
+const menuTriggerItemProps = /*#__PURE__*/ new RippleContext<Tracked<AnyRecord> | null>(null);
 const menuItemProps = /*#__PURE__*/ new RippleContext<Tracked<Record<string, any>> | null>(null);
 
 export function Root(props: RootProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProps(
+	const parentApi = context.get();
+	useRootProps(
 		{
 			context,
 			configKeys: [
@@ -54,18 +67,44 @@ export function Root(props: RootProps) @{
 				'defaultTriggerValue',
 				'onTriggerValueChange',
 			],
-
+			omitKeys: PRESENCE_KEYS,
 			useMachine: useMenu as any,
 		},
 		props,
 	);
+	const api = context.get()!;
+	const childService = (api as any).service;
+	useRootPresence(presenceContext, () => api.value.open, props);
+	if (parentApi) {
+		effect(() => {
+			untrack(() => {
+				(parentApi as any).value.setChild(childService);
+				api.value.setParent((parentApi as any).service);
+			});
+		});
+		menuTriggerItemProps.set(track(() => (parentApi as any).value.getTriggerItemProps(api.value)));
+	}
 	<>
 		{children}
 	</>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	const parentApi = context.get();
+	useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
+	const childService = props.value.service;
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
+	if (parentApi) {
+		effect(() => {
+			untrack(() => {
+				(parentApi as any).value.setChild(childService);
+				props.value.value.setParent((parentApi as any).service);
+			});
+		});
+		menuTriggerItemProps.set(
+			track(() => (parentApi as any).value.getTriggerItemProps(props.value.value)),
+		);
+	}
 	<>
 		{children}
 	</>
@@ -94,8 +133,10 @@ export function RadioItem(props: RadioItemProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function TriggerItem(props: TriggerItemProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, provideProps: menuItemProps }, props);
+	let &{ children, ...localProps } = props;
+	const triggerProps = menuTriggerItemProps.get();
+	const mergedProps = track(() => mergeProps(triggerProps?.value ?? {}, localProps));
+	menuItemProps.set(track(() => ({ value: mergedProps.value['data-value'] })));
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Trigger(props: TriggerProps) @{
@@ -107,6 +148,8 @@ export function Trigger(props: TriggerProps) @{
 			propKeys: [
 				'value',
 			],
+			presence: presenceContext,
+			presenceProps: (state) => ({ 'aria-controls': state.unmounted && null }),
 		},
 		props,
 	);
@@ -114,6 +157,8 @@ export function Trigger(props: TriggerProps) @{
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
+	const api = context.get();
+	if (!api) throw new Error('Menu.Item must be rendered inside Menu.Root or RootProvider');
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -129,12 +174,33 @@ export function Item(props: ItemProps) @{
 		},
 		props,
 	);
+	const itemProps = menuItemProps.get()!;
+	effect(() => {
+		const onSelect = itemProps.value.onSelect;
+		if (!onSelect) return;
+		return api.value.addItemListener({
+			id: api.value.getItemState(itemProps.value as any).id,
+			onSelect,
+		});
+	});
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	let &{ children, ref } = props;
+	const presence = usePresenceState(presenceContext);
+	const mergedProps = usePartProps(
+		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
+		props,
+	);
+	@if (!presence.value.unmounted) {
+		<div
+			{...mergedProps.value}
+			ref={(node) => {
+				presence.value.setNode(node);
+				if (typeof ref === 'function') ref(node);
+			}}
+		>{children}</div>
+	}
 }
 export function ItemGroup(props: ItemGroupProps) @{
 	let &{ children } = props;
@@ -178,8 +244,11 @@ export function Arrow(props: ArrowProps) @{
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
+	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (!presence.value.unmounted) {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
 	let &{ children } = props;
@@ -236,8 +305,24 @@ export const ItemContext = /*#__PURE__*/ createItemContext(context, menuItemProp
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ComponentProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ComponentProps & { value: ReturnType<Hook> };
+export type RootProps =
+	ComponentProps & NonNullable<Parameters<Hook>[0]> & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
+export type RootProviderProps =
+	ComponentProps & { value: ReturnType<Hook> } & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
 export type ArrowTipProps = PartProps<'div', Api['getArrowTipProps']>;
 export type RadioItemProps = PartProps<'div', Api['getOptionItemProps']>;
 export type TriggerItemProps = ArkPartProps<'div'>;

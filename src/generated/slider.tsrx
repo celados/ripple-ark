@@ -91,8 +91,9 @@ export function MarkerGroup(props: MarkerGroupProps) @{
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
 	const mergedProps = usePartProps({ context, getter: 'getValueTextProps' }, props);
-	<span {...mergedProps.value}>{children}</span>
+	<span {...mergedProps.value}>{children || api.value.value.join(',')}</span>
 }
 export function Range(props: RangeProps) @{
 	let &{ children } = props;
@@ -131,11 +132,13 @@ export function Thumb(props: ThumbProps) @{
 }
 export function DraggingIndicator(props: DraggingIndicatorProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
+	const thumbProps = sliderThumbProps.get()!;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getDraggingIndicatorProps', inheritedProps: sliderThumbProps },
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	<span {...mergedProps.value}>{children || api.value.getThumbValue(thumbProps.value.index)}</span>
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;

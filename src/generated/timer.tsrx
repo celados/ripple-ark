@@ -55,7 +55,7 @@ export function Control(props: ControlProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Item(props: ItemProps) @{
-	let &{ children } = props;
+	const api = context.get()!;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -66,7 +66,7 @@ export function Item(props: ItemProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	<div {...mergedProps.value}>{(api.value.formattedTime as any)[(props as any).type]}</div>
 }
 export function Separator(props: SeparatorProps) @{
 	let &{ children } = props;

@@ -8,10 +8,14 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	useRootPresence,
+	usePresenceState,
+	PRESENCE_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type PresenceState,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useSelect;
@@ -19,6 +23,7 @@ export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);
 
 const selectItemProps = /*#__PURE__*/ new RippleContext<Tracked<Record<string, any>> | null>(null);
 const selectItemGroupProps = /*#__PURE__*/ new RippleContext<
@@ -30,17 +35,52 @@ export function Root(props: RootProps) @{
 	const mergedProps = useRootProps(
 		{
 			context,
-			configKeys: [],
+			configKeys: [
+				'autoComplete',
+				'closeOnSelect',
+				'collection',
+				'composite',
+				'defaultHighlightedValue',
+				'defaultOpen',
+				'defaultValue',
+				'deselectable',
+				'disabled',
+				'form',
+				'highlightedValue',
+				'id',
+				'ids',
+				'invalid',
+				'loopFocus',
+				'multiple',
+				'name',
+				'onFocusOutside',
+				'onHighlightChange',
+				'onInteractOutside',
+				'onOpenChange',
+				'onPointerDownOutside',
+				'onSelect',
+				'onValueChange',
+				'open',
+				'positioning',
+				'readOnly',
+				'required',
+				'scrollToIndexFn',
+				'translations',
+				'value',
+			],
+			omitKeys: PRESENCE_KEYS,
 
 			useMachine: useSelect as any,
 		},
 		props,
 	);
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	const mergedProps = useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function List(props: ListProps) @{
@@ -67,9 +107,21 @@ export function Indicator(props: IndicatorProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	let &{ children, ref } = props;
+	const presence = usePresenceState(presenceContext);
+	const mergedProps = usePartProps(
+		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
+		props,
+	);
+	@if (!presence.value.unmounted) {
+		<div
+			{...mergedProps.value}
+			ref={(node) => {
+				presence.value.setNode(node);
+				if (typeof ref === 'function') ref(node);
+			}}
+		>{children}</div>
+	}
 }
 export function HiddenSelect(props: HiddenSelectProps) @{
 	let &{ children } = props;
@@ -78,8 +130,11 @@ export function HiddenSelect(props: HiddenSelectProps) @{
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
+	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (!presence.value.unmounted) {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
 	let &{ children } = props;
@@ -102,7 +157,14 @@ export function ItemText(props: ItemTextProps) @{
 export function ItemGroup(props: ItemGroupProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps(
-		{ context, getter: 'getItemGroupProps', provideProps: selectItemGroupProps },
+		{
+			context,
+			getter: 'getItemGroupProps',
+			propKeys: [
+				'id',
+			],
+			provideProps: selectItemGroupProps,
+		},
 		props,
 	);
 	<div {...mergedProps.value}>{children}</div>
@@ -132,9 +194,18 @@ export function Item(props: ItemProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ValueText(props: ValueTextProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getValueTextProps' }, props);
-	<span {...mergedProps.value}>{children}</span>
+	const api = context.get()!;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getValueTextProps',
+			propKeys: [
+				'placeholder',
+			],
+		},
+		props,
+	);
+	<span {...mergedProps.value}>{api.value.valueAsString || (props as any).placeholder}</span>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
@@ -145,8 +216,24 @@ export const ItemContext = /*#__PURE__*/ createItemContext(context, selectItemPr
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
 export type ListProps = PartProps<'div', Api['getListProps']>;
 export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
 export type ItemIndicatorProps = ArkPartProps<'div'>;
@@ -160,7 +247,7 @@ export type ItemTextProps = ArkPartProps<'span'>;
 export type ItemGroupProps = PartProps<'div', Api['getItemGroupProps']>;
 export type ItemGroupLabelProps = ArkPartProps<'div'>;
 export type ItemProps = PartProps<'div', Api['getItemProps']>;
-export type ValueTextProps = PartProps<'span', Api['getValueTextProps']>;
+export type ValueTextProps = PartProps<'span', Api['getValueTextProps']> & { placeholder?: string };
 export type LabelProps = PartProps<'label', Api['getLabelProps']>;
 
 export const Select = {

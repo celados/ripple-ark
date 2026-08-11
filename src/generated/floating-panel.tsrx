@@ -1,5 +1,5 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
-
+import { mergeProps } from '@zag-js/core';
 import { useFloatingPanel } from '../components';
 import {
 	createApiContext,
@@ -8,10 +8,14 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	useRootPresence,
+	usePresenceState,
+	PRESENCE_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type PresenceState,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useFloatingPanel;
@@ -19,10 +23,12 @@ export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);
 
 export function Root(props: RootProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProps(
+	// Rootless upstream: the call runs for its machine/context side effects only.
+	useRootProps(
 		{
 			context,
 			configKeys: [
@@ -59,18 +65,21 @@ export function Root(props: RootProps) @{
 				'strategy',
 				'translations',
 			],
+			omitKeys: PRESENCE_KEYS,
 
 			useMachine: useFloatingPanel as any,
 		},
 		props,
 	);
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<>
 		{children}
 	</>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<>
 		{children}
 	</>
@@ -130,18 +139,47 @@ export function Control(props: ControlProps) @{
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
+	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (!presence.value.unmounted) {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Trigger(props: TriggerProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
+	let &{ children, ...localProps } = props;
+	const api = context.get();
+	if (
+		!api
+	) throw new Error('FloatingPanel.Trigger must be rendered inside FloatingPanel.Root or RootProvider');
+	const presence = usePresenceState(presenceContext);
+	const mergedProps = track(() => {
+		const triggerProps = api.value.getTriggerProps();
+		return mergeProps(
+			{
+				...triggerProps,
+				'aria-controls': presence.value.unmounted ? undefined : triggerProps['aria-controls'],
+			},
+			localProps,
+		);
+	});
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Content(props: ContentProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	let &{ children, ref } = props;
+	const presence = usePresenceState(presenceContext);
+	const mergedProps = usePartProps(
+		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
+		props,
+	);
+	@if (!presence.value.unmounted) {
+		<div
+			{...mergedProps.value}
+			ref={(node) => {
+				presence.value.setNode(node);
+				if (typeof ref === 'function') ref(node);
+			}}
+		>{children}</div>
+	}
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
 	let &{ children } = props;
@@ -151,8 +189,24 @@ export function CloseTrigger(props: CloseTriggerProps) @{
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ComponentProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ComponentProps & { value: ReturnType<Hook> };
+export type RootProps =
+	ComponentProps & NonNullable<Parameters<Hook>[0]> & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
+export type RootProviderProps =
+	ComponentProps & { value: ReturnType<Hook> } & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
 export type TitleProps = PartProps<'h2', Api['getTitleProps']>;
 export type ResizeTriggerProps = PartProps<'div', Api['getResizeTriggerProps']>;
 export type DragTriggerProps = PartProps<'div', Api['getDragTriggerProps']>;

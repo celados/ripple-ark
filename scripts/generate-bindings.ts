@@ -9,6 +9,58 @@ const hookOverrides: Record<string, string> = {
 	'segment-group': 'useRadioGroup',
 };
 
+// zag-props gate: machine package name per directory. Mirrors hookOverrides
+// (segment-group composes radio-group's machine) — kept separate because the
+// hook name and the npm package name are cased differently.
+const machinePackageOverrides: Record<string, string> = {
+	'segment-group': 'radio-group',
+};
+
+// Injected at the hook layer (components.ts / create-machine.ts), never part of
+// a generated component's own configKeys.
+const hookInjectedProps = new Set(['dir', 'getRootNode']);
+
+// Investigated, confirmed divergences between extracted configKeys and zag's
+// `props` export. Each reason documents why the gap is real, not a parsing bug —
+// read the upstream root file before adding an entry here.
+const gateExceptions: Record<string, string> = {
+	tour: 'Root receives a useTour instance instead of building its own machine; config props live at the useTour call site (see part override)',
+};
+
+// P0 regression class (four components silently lost all machine config props to
+// a regex bug) must never ship silently again: compare extracted configKeys
+// against zag's own props metadata and fail the build on unexplained gaps.
+async function verifyZagProps(dir: string, configKeys: readonly string[]) {
+	const packageName = machinePackageOverrides[dir] ?? dir;
+	let mod: Record<string, unknown>;
+	try {
+		mod = await import(`@zag-js/${packageName}`);
+	} catch {
+		console.warn(`[zag-props-gate] no @zag-js/${packageName} package for ${dir}; skipping`);
+		return;
+	}
+	const zagProps = mod.props;
+	if (!Array.isArray(zagProps)) {
+		console.warn(
+			`[zag-props-gate] @zag-js/${packageName} does not export \`props\`; skipping ${dir}`
+		);
+		return;
+	}
+	const configured = new Set(configKeys);
+	const missing = (zagProps as string[]).filter(
+		(key) => !hookInjectedProps.has(key) && !configured.has(key)
+	);
+	if (missing.length === 0) return;
+	const reason = gateExceptions[dir];
+	if (reason) {
+		console.warn(`[zag-props-gate] ${dir}: accepted divergence (${reason}): ${missing.join(', ')}`);
+		return;
+	}
+	throw new Error(
+		`[zag-props-gate] ${dir}: configKeys missing zag props [${missing.join(', ')}] from @zag-js/${packageName} — extraction bug or undocumented gateException`
+	);
+}
+
 const skipped = new Set([
 	'client-only',
 	'collection',
@@ -74,11 +126,107 @@ export function NodeCheckboxIndicator(props: { children?: Children; indeterminat
 		{props.fallback}
 	}
 }`,
+	// Checkbox.Group is a plain Solid value-aggregation hook (no zag machine) —
+	// ported by hand rather than extracted, since there's no root/getter source to
+	// parse it from. Solid's createSignal/createMemo map onto Ripple's
+	// track(initial) / track(() => ...) directly. Upstream also falls back to
+	// useFieldsetContext for disabled/invalid; Field↔control integration is out of
+	// scope this round (00-shared-context.md), so that fallback is intentionally
+	// not ported — group-level disabled/invalid come only from Group's own props.
+	checkbox: `export type UseCheckboxGroupProps = {
+	value?: string[];
+	defaultValue?: string[];
+	onValueChange?: (value: string[]) => void;
+	disabled?: boolean;
+	readOnly?: boolean;
+	invalid?: boolean;
+	name?: string;
+	maxSelectedValues?: number;
+};
+
+export type CheckboxGroupApi = {
+	isChecked(value: string | undefined): boolean;
+	value: string[];
+	name: string | undefined;
+	disabled: boolean | undefined;
+	readOnly: boolean | undefined;
+	invalid: boolean | undefined;
+	setValue(value: string[]): void;
+	addValue(value: string): void;
+	toggleValue(value: string): void;
+	getItemProps(itemProps: { value: string | undefined }): AnyRecord;
+};
+
+export function useCheckboxGroup(props: UseCheckboxGroupProps = {}): Tracked<CheckboxGroupApi> {
+	const uncontrolledValue = track<string[]>(props.defaultValue ?? []);
+	const setValue = (next: string[]) => {
+		if (props.value === undefined) uncontrolledValue.value = next;
+		props.onValueChange?.(next);
+	};
+	return track(() => {
+		const value = props.value ?? uncontrolledValue.value;
+		const disabled = props.disabled;
+		const readOnly = props.readOnly;
+		const invalid = props.invalid;
+		const name = props.name;
+		const isAtMax = props.maxSelectedValues != null && value.length >= props.maxSelectedValues;
+		const isChecked = (val: string | undefined) => value.some((v) => String(v) === String(val));
+		const addValue = (val: string) => {
+			if (disabled || readOnly) return;
+			if (isChecked(val)) return;
+			if (isAtMax) return;
+			setValue(value.concat(val));
+		};
+		const removeValue = (val: string) => {
+			if (disabled || readOnly) return;
+			setValue(value.filter((v) => String(v) !== String(val)));
+		};
+		const toggleValue = (val: string) => {
+			if (isChecked(val)) removeValue(val);
+			else addValue(val);
+		};
+		return {
+			isChecked,
+			value,
+			name,
+			disabled,
+			readOnly,
+			invalid,
+			setValue,
+			addValue,
+			toggleValue,
+			getItemProps(itemProps: { value: string | undefined }) {
+				const checked = itemProps.value != null ? isChecked(itemProps.value) : undefined;
+				return {
+					checked,
+					onCheckedChange() {
+						if (itemProps.value != null) toggleValue(itemProps.value);
+					},
+					name,
+					disabled: disabled || (isAtMax && !checked),
+					readOnly,
+					invalid,
+				};
+			},
+		};
+	});
+}`,
 };
 
 const specialPrelude: Record<string, string> = {
 	drawer: `const drawerStackStore = /*#__PURE__*/ new RippleContext<DrawerStack | null>(null);
 const drawerStackApi = /*#__PURE__*/ new RippleContext<Tracked<AnyRecord> | null>(null);`,
+	// Carries the enclosing menu's getTriggerItemProps(childApi) result down to a
+	// nested MenuTriggerItem — see rootOverrides.menu / partOverrides.menu.TriggerItem.
+	menu: `const menuTriggerItemProps = /*#__PURE__*/ new RippleContext<Tracked<AnyRecord> | null>(null);`,
+	// checkboxGroupAnatomyAttrs mirrors upstream checkbox.anatomy.ts
+	// (anatomy.extendWith('group')) — computed once, it's a static data-scope/
+	// data-part pair, not per-instance state.
+	checkbox: `const checkboxGroupContext = /*#__PURE__*/ new RippleContext<Tracked<CheckboxGroupApi> | null>(null);
+const checkboxGroupAnatomyAttrs = /*#__PURE__*/ anatomy.extendWith('group').build().group.attrs;`,
+	// carousel-progress-text.tsx applies this directly instead of a zag getter
+	// (§4.6) — same static-attrs pattern as checkboxGroupAnatomyAttrs above.
+	carousel: `const carouselProgressTextAttrs = /*#__PURE__*/ anatomy.build().progressText.attrs;`,
 };
 
 const specialNames: Record<string, string[]> = {
@@ -91,6 +239,21 @@ const specialNames: Record<string, string[]> = {
 const extraImports: Record<string, string> = {
 	drawer: `import { connectStack, createStack, type DrawerStack } from '@zag-js/drawer';
 import { normalizeProps } from '@celados/ripple-zag';`,
+	// FloatingPanel.Trigger's presence override builds its merged props by hand
+	// (see presencePartDeclaration) instead of through usePartProps.
+	'floating-panel': `import { mergeProps } from '@zag-js/core';`,
+	// TriggerItem's override builds its merged props by hand (no api getter exists
+	// for it — see partOverrides.menu.TriggerItem).
+	menu: `import { mergeProps } from '@zag-js/core';`,
+	checkbox: `import { anatomy } from '@zag-js/checkbox';`,
+	// ItemPreviewImage's override builds its merged props by hand (needs the
+	// object-URL effect before it can call the getter — see partOverrides).
+	'file-upload': `import { mergeProps } from '@zag-js/core';`,
+	carousel: `import { anatomy } from '@zag-js/carousel';`,
+	// ColorPicker.ValueText's `format` prop type (§4.6) — the color-picker package
+	// re-exports the Color class but not this format-string union, so it comes
+	// straight from color-utils, same as color-picker's own upstream source does.
+	'color-picker': `import type { ColorStringFormat } from '@zag-js/color-utils';`,
 };
 
 function pascalCase(value: string) {
@@ -101,7 +264,10 @@ function pascalCase(value: string) {
 }
 
 function splitKeys(source: string) {
-	const match = source.match(/createSplitProps<[^>]+>\(\)\([^,]+,\s*\[([\s\S]*?)\]\)/);
+	// `[^>]+` stops at the first `>`, which breaks on nested generics like
+	// `createSplitProps<UseSelectProps<T>>()`; `[^(]+` consumes up to the call
+	// parens instead, swallowing the generic's own `>`s along the way.
+	const match = source.match(/createSplitProps<[^(]+>\(\)\([^,]+,\s*\[([\s\S]*?)\]\)/);
 	return match ? [...match[1].matchAll(/['"]([^'"]+)['"]/g)].map((entry) => entry[1]) : [];
 }
 
@@ -149,7 +315,7 @@ function staticElement(tag: string | undefined) {
 		: `<${tag} {...mergedProps.value}>{children}</${tag}>`;
 }
 
-function partDeclaration(part: {
+type PartSpec = {
 	exportName: string;
 	partName: string;
 	tag: string;
@@ -157,16 +323,150 @@ function partDeclaration(part: {
 	keys: string[];
 	provide?: string;
 	inherit?: string[];
-}) {
-	const inheritedVariables = part.inherit?.map(
-		(name) => `${name[0].toLowerCase() + name.slice(1)}Props`
-	);
+};
+
+// Presence layer (see binding-runtime.tsrx useRootPresence/PresenceState/usePartProps):
+// Ark roots that split presence props from their own config and hand descendant
+// parts a presence machine. Detected the same way as everything else here — by
+// what the upstream source itself does — rather than a hardcoded directory list.
+function isPresenceRoot(rootSource: string) {
+	return rootSource.includes('splitPresenceProps');
+}
+
+type PresenceBehavior =
+	| { gate?: boolean; mergePresence?: boolean; presenceRef?: boolean }
+	| { ariaControls: 'null' | 'floating-panel' };
+
+const PRESENCE_CONTENT: PresenceBehavior = { gate: true, mergePresence: true, presenceRef: true };
+const PRESENCE_GATE: PresenceBehavior = { gate: true };
+
+// Per-part presence behavior, read off the 28 upstream files that call
+// usePresenceContext() (.scratch/fix-specs/02-generator.md §3). A generator-time
+// assertion checks this table's keys against that file set on every run, so
+// upstream drift (a part gaining/losing presence) breaks the build loudly
+// instead of silently generating stale bindings.
+const presencePartBehaviors: Record<string, Record<string, PresenceBehavior>> = {
+	'color-picker': { Content: PRESENCE_CONTENT, Positioner: PRESENCE_GATE },
+	combobox: { Content: PRESENCE_CONTENT, Positioner: PRESENCE_GATE },
+	'date-picker': { Content: PRESENCE_CONTENT, Positioner: PRESENCE_GATE },
+	dialog: {
+		Content: PRESENCE_CONTENT,
+		Positioner: PRESENCE_GATE,
+		Trigger: { ariaControls: 'null' },
+	},
+	drawer: {
+		Content: PRESENCE_CONTENT,
+		Positioner: PRESENCE_GATE,
+		Trigger: { ariaControls: 'null' },
+	},
+	'floating-panel': {
+		Content: PRESENCE_CONTENT,
+		Positioner: PRESENCE_GATE,
+		Trigger: { ariaControls: 'floating-panel' },
+	},
+	'hover-card': { Content: PRESENCE_CONTENT, Positioner: PRESENCE_GATE },
+	menu: { Content: PRESENCE_CONTENT, Positioner: PRESENCE_GATE, Trigger: { ariaControls: 'null' } },
+	popover: {
+		Content: PRESENCE_CONTENT,
+		Positioner: PRESENCE_GATE,
+		Trigger: { ariaControls: 'null' },
+	},
+	select: { Content: PRESENCE_CONTENT, Positioner: PRESENCE_GATE },
+	tooltip: { Content: PRESENCE_CONTENT, Positioner: PRESENCE_GATE },
+	tour: { Positioner: PRESENCE_GATE },
+};
+
+function presencePartDeclaration(
+	componentName: string,
+	part: PartSpec,
+	behavior: PresenceBehavior
+) {
+	if ('ariaControls' in behavior) {
+		if (behavior.ariaControls === 'floating-panel') {
+			// Upstream builds `{...triggerProps, 'aria-controls': undefined}` via a plain
+			// object spread, not a mergeProps chain: zag's mergeProps treats a later
+			// `undefined` as "keep the earlier value" (see merge-props.mjs), which would
+			// silently no-op this clear if routed through usePartProps's chained merge —
+			// bespoke body instead, mirroring floating-panel-trigger.tsx exactly.
+			return `export function ${part.partName}(props: ${part.partName}Props) @{
+	let &{ children, ...localProps } = props;
+	const api = context.get();
+	if (!api) throw new Error('${componentName}.${part.partName} must be rendered inside ${componentName}.Root or RootProvider');
+	const presence = usePresenceState(presenceContext);
+	const mergedProps = track(() => {
+		const triggerProps = api.value.${part.getter ?? 'getTriggerProps'}();
+		return mergeProps(
+			{ ...triggerProps, 'aria-controls': presence.value.unmounted ? undefined : triggerProps['aria-controls'] },
+			localProps,
+		);
+	});
+	<${part.tag} {...mergedProps.value}>{children}</${part.tag}>
+}`;
+		}
+		// Four triggers share the exact same odd-looking upstream expression
+		// (`unmounted && null`, which clears aria-controls in both branches once it
+		// survives zag's mergeProps) — mirrored verbatim rather than "fixed".
+		const fields = [
+			`context`,
+			part.getter ? `getter: '${part.getter}'` : undefined,
+			part.keys.length ? `propKeys: ${literal(part.keys)}` : undefined,
+			`presence: presenceContext`,
+			`presenceProps: (state) => ({ 'aria-controls': state.unmounted && null })`,
+		].filter(Boolean);
+		return `export function ${part.partName}(props: ${part.partName}Props) @{
+	let &{ children } = props;
+	const mergedProps = usePartProps({ ${fields.join(', ')} }, props);
+	${staticElement(part.tag)}
+}`;
+	}
+
+	const needsRef = Boolean(behavior.presenceRef);
+	const needsPresenceLocal = Boolean(behavior.gate) || needsRef;
 	const fields = [
 		`context`,
 		part.getter ? `getter: '${part.getter}'` : undefined,
 		part.keys.length ? `propKeys: ${literal(part.keys)}` : undefined,
-		part.provide
-			? `provideProps: ${part.provide[0].toLowerCase() + part.provide.slice(1)}Props`
+		behavior.mergePresence ? `presence: presenceContext` : undefined,
+		needsRef ? `omitKeys: ['ref']` : undefined,
+	].filter(Boolean);
+	const refAttr = needsRef
+		? ` ref={(node) => { presence.value.setNode(node); if (typeof ref === 'function') ref(node); }}`
+		: '';
+	const element = `<${part.tag} {...mergedProps.value}${refAttr}>{children}</${part.tag}>`;
+	const body = behavior.gate ? `@if (!presence.value.unmounted) {\n\t\t${element}\n\t}` : element;
+	return `export function ${part.partName}(props: ${part.partName}Props) @{
+	let &{ children${needsRef ? ', ref' : ''} } = props;
+	${needsPresenceLocal ? 'const presence = usePresenceState(presenceContext);\n\t' : ''}const mergedProps = usePartProps({ ${fields.join(', ')} }, props);
+	${body}
+}`;
+}
+
+// `content`/`needsApi`/`prelude`/`extraKeys` support the derived-content-fallback
+// overrides (§4.6): upstream parts that render machine-derived text when no
+// children are given. Keeping this in the same function as the plain path (not
+// a parallel one) means the usePartProps field wiring (getter/propKeys/provide/
+// inherit) stays identical between the two — only the rendered body differs.
+function partDeclaration(
+	part: PartSpec,
+	options?: {
+		extraKeys?: readonly string[];
+		needsApi?: boolean;
+		prelude?: string;
+		content?: (part: PartSpec) => string;
+	}
+) {
+	const effectivePart = options?.extraKeys?.length
+		? { ...part, keys: [...new Set([...part.keys, ...options.extraKeys])] }
+		: part;
+	const inheritedVariables = effectivePart.inherit?.map(
+		(name) => `${name[0].toLowerCase() + name.slice(1)}Props`
+	);
+	const fields = [
+		`context`,
+		effectivePart.getter ? `getter: '${effectivePart.getter}'` : undefined,
+		effectivePart.keys.length ? `propKeys: ${literal(effectivePart.keys)}` : undefined,
+		effectivePart.provide
+			? `provideProps: ${effectivePart.provide[0].toLowerCase() + effectivePart.provide.slice(1)}Props`
 			: undefined,
 		inheritedVariables?.length === 1
 			? `inheritedProps: ${inheritedVariables[0]}`
@@ -174,20 +474,445 @@ function partDeclaration(part: {
 				? `inheritedProps: [${inheritedVariables.join(', ')}]`
 				: undefined,
 	].filter(Boolean);
-	return `export function ${part.partName}(props: ${part.partName}Props) @{
+	const setup = [options?.needsApi ? 'const api = context.get()!;' : undefined, options?.prelude]
+		.filter(Boolean)
+		.join('\n\t');
+	return `export function ${effectivePart.partName}(props: ${effectivePart.partName}Props) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ ${fields.join(', ')} }, props);
-	${staticElement(part.tag)}
+	${setup ? setup + '\n\t' : ''}const mergedProps = usePartProps({ ${fields.join(', ')} }, props);
+	${options?.content ? options.content(effectivePart) : staticElement(effectivePart.tag)}
 }`;
 }
 
-function publicPartType(part: {
-	partName: string;
-	tag: string;
-	getter?: string;
-	keys: string[];
-	inherit?: string[];
-}) {
+// Full-body replacements for parts the uniform template cannot express (bespoke
+// imperative upstream semantics — nested machines, effects, non-Root anatomy).
+// A function form is for overrides that still need per-part data (e.g. drawer's
+// two indent parts share one shape but differ in which getter they call).
+const partOverrides: Record<string, Record<string, string | ((part: PartSpec) => string)>> = {
+	'signature-pad': {
+		Segment: `export function Segment(props: SegmentProps) @{
+	let &{ children } = props;
+	const api = context.get();
+	if (!api) throw new Error('SignaturePad.Segment must be rendered inside SignaturePad.Root');
+	const mergedProps = usePartProps({ context, getter: 'getSegmentProps' }, props);
+	<svg {...mergedProps.value}>
+		<title>Signature</title>
+		@for (const path of api.value.paths) {
+			<path {...api.value.getSegmentPathProps({ path })} />
+		}
+		@if (api.value.currentPath) {
+			<path {...api.value.getSegmentPathProps({ path: api.value.currentPath })} />
+		}
+		{children}
+	</svg>
+}`,
+	},
+	drawer: {
+		// Indentation reads from the shared stack API (drawerStackApi), not this
+		// instance's DrawerApi — every open drawer in the stack indents together.
+		Indent: (part) => drawerIndentDeclaration(part, 'getIndentProps'),
+		IndentBackground: (part) => drawerIndentDeclaration(part, 'getIndentBackgroundProps'),
+	},
+	menu: {
+		// Upstream menu-item.tsx registers onSelect via addItemListener in an
+		// effect (GitHub issue #3: getItemProps ignores onSelect, so routing it
+		// through propKeys alone silently drops the callback). `itemProps` reuses
+		// the same reactive props usePartProps already provides to menuItemProps
+		// instead of re-deriving the split — one source of truth for the item's
+		// {value, disabled, closeOnSelect, valueText, onSelect} bag.
+		Item: (part) => `export function ${part.partName}(props: ${part.partName}Props) @{
+	let &{ children } = props;
+	const api = context.get();
+	if (!api) throw new Error('Menu.${part.partName} must be rendered inside Menu.Root or RootProvider');
+	const mergedProps = usePartProps(
+		{ context, getter: '${part.getter}', propKeys: ${literal(part.keys)}, provideProps: menuItemProps },
+		props,
+	);
+	const itemProps = menuItemProps.get()!;
+	effect(() => {
+		const onSelect = itemProps.value.onSelect;
+		if (!onSelect) return;
+		return api.value.addItemListener({ id: api.value.getItemState(itemProps.value as any).id, onSelect });
+	});
+	<${part.tag} {...mergedProps.value}>{children}</${part.tag}>
+}`,
+		// Renders inside a parent Menu.Item, standing in for it while it opens a
+		// submenu. Reads the parent-provided trigger-item props (wired by the Root
+		// override below) instead of an api getter — there is none for this; upstream
+		// reads it off Solid context (useMenuTriggerItemContext) the same way.
+		TriggerItem: (part) => `export function ${part.partName}(props: ${part.partName}Props) @{
+	let &{ children, ...localProps } = props;
+	const triggerProps = menuTriggerItemProps.get();
+	const mergedProps = track(() => mergeProps(triggerProps?.value ?? {}, localProps));
+	menuItemProps.set(track(() => ({ value: mergedProps.value['data-value'] })));
+	<${part.tag} {...mergedProps.value}>{children}</${part.tag}>
+}`,
+	},
+	checkbox: {
+		// The OUTER wrapper for a set of Checkbox.Root instances, not a part inside
+		// one — must not call usePartProps/useBindingContext (there is no Root api
+		// to bind to yet; Root instead reads *this* context, see rootOverrides.checkbox).
+		// Spread order is localProps-then-attrs (attrs win) to match upstream
+		// checkbox-group.tsx exactly — the opposite of carousel's progressText
+		// (attrs-then-props, user wins); upstream itself isn't consistent between
+		// the two, so this mirrors each source file rather than picking one rule.
+		Group: (part) => `export function ${part.partName}(props: ${part.partName}Props) @{
+	let &{ children } = props;
+	const group = useCheckboxGroup(props);
+	checkboxGroupContext.set(group);
+	const localProps = track(() => splitProps(props, ${literal(part.keys)})[1]);
+	<${part.tag} role="group" {...localProps.value} {...checkboxGroupAnatomyAttrs}>{children}</${part.tag}>
+}`,
+		GroupProvider: (part) => `export function ${part.partName}(props: ${part.partName}Props) @{
+	let &{ children, value } = props;
+	checkboxGroupContext.set(value);
+	const localProps = track(() => splitProps(props, ${literal(part.keys)})[1]);
+	<${part.tag} role="group" {...localProps.value} {...checkboxGroupAnatomyAttrs}>{children}</${part.tag}>
+}`,
+	},
+	'file-upload': {
+		// Upstream creates the preview's object URL itself (createFileUrl) instead
+		// of taking one as a prop; the generic getter-only template had no url to
+		// pass getItemPreviewImageProps, so it always rendered `src=undefined`.
+		ItemPreviewImage: (part) => `export function ${part.partName}(props: ${part.partName}Props) @{
+	let &{ children, ...localProps } = props;
+	const api = context.get();
+	if (!api) throw new Error('FileUpload.${part.partName} must be rendered inside FileUpload.Root or RootProvider');
+	const itemProps = fileUploadItemProps.get();
+	if (!itemProps) throw new Error('FileUpload.${part.partName} must be rendered inside FileUpload.Item');
+	const url = track('');
+	effect(() => {
+		return api.value.createFileUrl(itemProps.value.file, (nextUrl) => {
+			url.value = nextUrl;
+		});
+	});
+	const mergedProps = track(() =>
+		mergeProps(
+			api.value.getItemPreviewImageProps({ ...itemProps.value, url: url.value } as any),
+			localProps,
+		),
+	);
+	@if (url.value) {
+		<${part.tag} {...mergedProps.value} />
+	}
+}`,
+		// Reads the item props context set by the enclosing Item — see
+		// file-upload-item-name.tsx / file-upload-item-size-text.tsx.
+		ItemName: (part) =>
+			partDeclaration(part, {
+				prelude: 'const itemProps = fileUploadItemProps.get()!;',
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || itemProps.value.file.name}</${p.tag}>`,
+			}),
+		ItemSizeText: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				prelude: 'const itemProps = fileUploadItemProps.get()!;',
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || api.value.getFileSize(itemProps.value.file)}</${p.tag}>`,
+			}),
+	},
+	// Derived-content fallbacks (§4.6): each part renders machine-derived text
+	// when the caller gives no children. `needsApi` hoists `context.get()!` once
+	// at setup (not inside the JSX expression) matching the established
+	// context.get()-at-setup idiom used by every other bespoke override here.
+	'angle-slider': {
+		ValueText: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || api.value.valueAsDegree}</${p.tag}>`,
+			}),
+	},
+	clipboard: {
+		ValueText: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				content: (p) => `<${p.tag} {...mergedProps.value}>{children || api.value.value}</${p.tag}>`,
+			}),
+	},
+	'color-picker': {
+		ValueText: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				content: (p) => `<${p.tag} {...mergedProps.value}>{children || ((props as any).format
+					? api.value.value.toString((props as any).format)
+					: api.value.valueAsString)}</${p.tag}>`,
+			}),
+	},
+	listbox: {
+		ValueText: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				extraKeys: ['placeholder'],
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || api.value.valueAsString || (props as any).placeholder}</${p.tag}>`,
+			}),
+	},
+	progress: {
+		ValueText: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || api.value.percentAsString}</${p.tag}>`,
+			}),
+	},
+	slider: {
+		ValueText: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || api.value.value.join(',')}</${p.tag}>`,
+			}),
+		DraggingIndicator: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				prelude: 'const thumbProps = sliderThumbProps.get()!;',
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || api.value.getThumbValue(thumbProps.value.index)}</${p.tag}>`,
+			}),
+	},
+	// select-value-text.tsx renders no children — mirrored exactly rather than
+	// forced through the generic children-destructuring path.
+	select: {
+		ValueText: (part) => `export function ${part.partName}(props: ${part.partName}Props) @{
+	const api = context.get()!;
+	const mergedProps = usePartProps(
+		{ context, getter: '${part.getter}', propKeys: ${literal([...part.keys, 'placeholder'])} },
+		props,
+	);
+	<${part.tag} {...mergedProps.value}>{api.value.valueAsString || (props as any).placeholder}</${part.tag}>
+}`,
+	},
+	// timer-item.tsx renders formattedTime[type] only — no children fallback.
+	timer: {
+		Item: (part) => `export function ${part.partName}(props: ${part.partName}Props) @{
+	const api = context.get()!;
+	const mergedProps = usePartProps(
+		{ context, getter: '${part.getter}', propKeys: ${literal(part.keys)} },
+		props,
+	);
+	<${part.tag} {...mergedProps.value}>{(api.value.formattedTime as any)[(props as any).type]}</${part.tag}>
+}`,
+	},
+	carousel: {
+		// carousel-progress-text.tsx doesn't call a zag getter at all — it computes
+		// the label itself and applies static anatomy attrs directly, so this
+		// bypasses usePartProps like Checkbox.Group does.
+		ProgressText: (part) => `export function ${part.partName}(props: ${part.partName}Props) @{
+	let &{ children, ...localProps } = props;
+	const api = context.get()!;
+	const progressText = track(() => \`\${api.value.page + 1} / \${api.value.pageSnapPoints.length}\`);
+	<${part.tag} {...carouselProgressTextAttrs} {...localProps}>{children || progressText.value}</${part.tag}>
+}`,
+	},
+	tour: {
+		// tour-action-trigger.tsx's fallback is a static field off the split
+		// `action` prop, not an api read, so this doesn't need needsApi.
+		ActionTrigger: (part) =>
+			partDeclaration(part, {
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || (props as any).action?.label}</${p.tag}>`,
+			}),
+		ProgressText: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || api.value.getProgressText()}</${p.tag}>`,
+			}),
+		Title: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || api.value.step?.title}</${p.tag}>`,
+			}),
+		Description: (part) =>
+			partDeclaration(part, {
+				needsApi: true,
+				content: (p) =>
+					`<${p.tag} {...mergedProps.value}>{children || api.value.step?.description}</${p.tag}>`,
+			}),
+	},
+};
+
+// Nested Menu.Root/RootProvider read the enclosing menu off `context` BEFORE
+// setting their own instance, then wire parent/child services together and
+// publish getTriggerItemProps for a MenuTriggerItem rendered inside a parent
+// Menu.Item (menu-root.tsx / menu-root-provider.tsx). Outside a nested menu,
+// `parentApi` is null and both Root variants behave exactly like the generic
+// template. `.service` is typed away by BindingContext<TApi> (Tracked<TApi>
+// only) even though createMachineHook always attaches it — `as any` bridges that
+// representational gap rather than widening the context's public type everywhere.
+// childApiExpr must be re-evaluated inside the effect/track callbacks (never
+// hoisted to a plain variable): the untracked setParent call wants whatever
+// api is current at that moment (matches upstream's one-shot onMount, services
+// are stable so a snapshot there is fine), but getTriggerItemProps' result
+// (aria-expanded/data-state on the trigger item) depends on the CHILD menu's
+// live open state, so track() must actually read `.value` inside its callback
+// to subscribe — passing a hoisted snapshot would freeze it at mount-time state.
+const menuNestingEffect = (childApiExpr: string) => `if (parentApi) {
+		effect(() => {
+			untrack(() => {
+				(parentApi as any).value.setChild(childService);
+				${childApiExpr}.setParent((parentApi as any).service);
+			});
+		});
+		menuTriggerItemProps.set(track(() => (parentApi as any).value.getTriggerItemProps(${childApiExpr})));
+	}`;
+
+const rootOverrides: Record<string, (configKeys: string[]) => string> = {
+	menu: (configKeys) => `export function Root(props: RootProps) @{
+	let &{ children } = props;
+	const parentApi = context.get();
+	useRootProps(
+		{
+			context,
+			configKeys: ${literal(configKeys)},
+			omitKeys: PRESENCE_KEYS,
+			useMachine: useMenu as any,
+		},
+		props,
+	);
+	const api = context.get()!;
+	const childService = (api as any).service;
+	useRootPresence(presenceContext, () => api.value.open, props);
+	${menuNestingEffect('api.value')}
+	<>
+		{children}
+	</>
+}`,
+	// upstream use-checkbox.ts folds checkboxGroup.getItemProps({value}) under the
+	// individual checkbox's own props (mergeProps(groupProps, ownProps) — own wins)
+	// at the useCheckbox hook layer; we do it here because hooks (components.ts)
+	// can't import a generated file's context. Consequence: a direct useCheckbox()
+	// caller (bypassing Checkbox.Root) does not get group integration.
+	checkbox: (configKeys) => `export function Root(props: RootProps) @{
+	let &{ children } = props;
+	const group = checkboxGroupContext.get();
+	const groupItemProps = group
+		? track(() => group.value.getItemProps({ value: (props as AnyRecord).value }))
+		: undefined;
+	const mergedProps = useRootProps(
+		{
+			context,
+			configKeys: ${literal(configKeys)},
+			machineDefaults: groupItemProps
+				? {
+						checked: () => groupItemProps.value.checked,
+						onCheckedChange: () => groupItemProps.value.onCheckedChange,
+						name: () => groupItemProps.value.name,
+						disabled: () => groupItemProps.value.disabled,
+						readOnly: () => groupItemProps.value.readOnly,
+						invalid: () => groupItemProps.value.invalid,
+					}
+				: undefined,
+			useMachine: useCheckbox as any,
+		},
+		props,
+	);
+	<label {...mergedProps.value}>{children}</label>
+}`,
+	// Upstream tour-root.tsx does not build a machine at all — Root receives an
+	// already-built `tour` (a useTour() instance) as a prop and only provides
+	// context + presence. No tour-root-provider.tsx exists upstream either; ours
+	// mirrors Root exactly so the namespace still offers both (see
+	// rootProviderOverrides.tour and gateExceptions.tour in the zag-props gate).
+	tour: () => `export function Root(props: RootProps) @{
+	let &{ children } = props;
+	context.set(props.tour);
+	useRootPresence(presenceContext, () => props.tour.value.open, props);
+	<>
+		{children}
+	</>
+}`,
+};
+
+const rootProviderOverrides: Record<string, () => string> = {
+	menu: () => `export function RootProvider(props: RootProviderProps) @{
+	let &{ children } = props;
+	const parentApi = context.get();
+	useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
+	const childService = props.value.service;
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
+	${menuNestingEffect('props.value.value')}
+	<>
+		{children}
+	</>
+}`,
+	tour: () => `export function RootProvider(props: RootProviderProps) @{
+	let &{ children } = props;
+	context.set(props.tour);
+	useRootPresence(presenceContext, () => props.tour.value.open, props);
+	<>
+		{children}
+	</>
+}`,
+};
+
+// PRESENCE_KEYS is a runtime array (`useRootProps`'s omitKeys), not a type —
+// the machine's own Parameters<Hook>[0] never includes these (they're consumed
+// by useRootPresence, not the zag machine), so every isPresence root/provider
+// must union it in explicitly or the props go untyped-or-rejected. Untagged
+// roots (dialog, drawer, menu, popover, tooltip, hover-card: Root renders a
+// Fragment, so RootProps falls back to bare ComponentProps with no index
+// signature) would otherwise hard type-error on `<Dialog.Root lazyMount>`;
+// tagged roots (select, combobox, ...) merely "slip through" via
+// ArkPartProps's OpenAttributes index signature today, but that types the
+// presence props as `any` instead of `boolean | undefined` — applying this
+// uniformly to every isPresence root fixes the untagged case and sharpens the
+// tagged one for free.
+const presencePropsType = `{
+	present?: boolean;
+	lazyMount?: boolean;
+	unmountOnExit?: boolean;
+	onExitComplete?: () => void;
+	immediate?: boolean;
+	skipAnimationOnMount?: boolean;
+}`;
+
+// tour's Root/RootProvider don't build a machine — `tour` is a useTour()
+// instance the caller already built (see rootOverrides.tour) — so the generic
+// `NonNullable<Parameters<Hook>[0]>`/`{ value: ReturnType<Hook> }` prop shapes
+// don't apply; RootProps and RootProviderProps are identical for tour.
+const rootPropsTypeOverrides: Record<string, string> = {
+	tour: `{ tour: ReturnType<typeof useTour> } & ${presencePropsType} & ComponentProps`,
+};
+
+function drawerIndentDeclaration(part: PartSpec, getter: string) {
+	return `export function ${part.partName}(props: ${part.partName}Props) @{
+	let &{ children } = props;
+	const mergedProps = useExternalPartProps({ context: drawerStackApi, getter: '${getter}' }, props);
+	<div {...mergedProps.value}>{children}</div>
+}`;
+}
+
+// Public prop-type replacements paired with partOverrides above: drawer's indent
+// parts don't own a DrawerApi getter, so the generic PartProps<tag, Api[getter]>
+// shape would name a getter DrawerApi doesn't have.
+const typeOverrides: Record<string, Record<string, string>> = {
+	drawer: {
+		Indent: `ArkPartProps<'div'>`,
+		IndentBackground: `ArkPartProps<'div'>`,
+	},
+	checkbox: {
+		Group: `ArkPartProps<'div'> & UseCheckboxGroupProps`,
+		GroupProvider: `ArkPartProps<'div'> & { value: Tracked<CheckboxGroupApi> }`,
+	},
+	// `placeholder`/`format` are Ark-level UI props, not part of the zag getter's
+	// own parameter type, so publicPartType's GetterProps<...> extraction can't
+	// see them (the getters take no arguments at all) — named explicitly instead.
+	select: {
+		ValueText: `PartProps<'span', Api['getValueTextProps']> & { placeholder?: string }`,
+	},
+	listbox: {
+		ValueText: `PartProps<'span', Api['getValueTextProps']> & { placeholder?: string }`,
+	},
+	'color-picker': {
+		ValueText: `PartProps<'span', Api['getValueTextProps']> & { format?: ColorStringFormat }`,
+	},
+};
+
+function publicPartType(part: PartSpec) {
 	const html = `ArkPartProps<'${part.tag}'>`;
 	if (!part.getter) return html;
 	const getter = `Api['${part.getter}']`;
@@ -217,15 +942,10 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 	const hook = hookOverrides[directory.name] ?? `use${componentName}`;
 	const rootTag = rootSource.match(/<ark\.([a-z][a-z0-9]*)/)?.[1];
 	const configKeys = splitKeys(rootSource);
-	const parts: {
-		exportName: string;
-		partName: string;
-		tag: string;
-		getter?: string;
-		keys: string[];
-		provide?: string;
-		inherit?: string[];
-	}[] = [];
+	await verifyZagProps(directory.name, configKeys);
+	const isPresence = isPresenceRoot(rootSource);
+	const presenceParts = new Set<string>();
+	const parts: PartSpec[] = [];
 	const contexts = new Set<string>();
 
 	for (const entry of readdirSync(componentRoot, { withFileTypes: true })) {
@@ -242,6 +962,7 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 			new RegExp(`\\b${exportName}\\s+as\\s+(\\w+)`)
 		)?.[1];
 		if (!namespaceName) continue;
+		if (source.includes('usePresenceContext(')) presenceParts.add(namespaceName);
 		const tag =
 			source.match(/<ark\.([a-z][a-z0-9]*)/)?.[1] ??
 			source.match(/PolymorphicProps<'([a-z][a-z0-9]*)'>/)?.[1];
@@ -273,6 +994,21 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 		});
 	}
 
+	// Upstream drift guard: if a part starts (or stops) calling usePresenceContext,
+	// presencePartBehaviors goes stale silently unless this throws.
+	const expectedPresenceParts = new Set(Object.keys(presencePartBehaviors[directory.name] ?? {}));
+	const presencePartsMismatch =
+		presenceParts.size !== expectedPresenceParts.size ||
+		[...presenceParts].some((name) => !expectedPresenceParts.has(name));
+	if (presencePartsMismatch) {
+		const missingFromTable = [...presenceParts].filter((name) => !expectedPresenceParts.has(name));
+		const missingFromSource = [...expectedPresenceParts].filter((name) => !presenceParts.has(name));
+		throw new Error(
+			`[presence-gate] ${directory.name}: usePresenceContext part set drifted from presencePartBehaviors ` +
+				`(missing from table: [${missingFromTable.join(', ')}], stale in table: [${missingFromSource.join(', ')}])`
+		);
+	}
+
 	const contextDeclarations = [...contexts]
 		.map(
 			(name) =>
@@ -292,32 +1028,10 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 		.join('\n');
 	const partDeclarations = parts
 		.map((part) => {
-			if (directory.name === 'signature-pad' && part.partName === 'Segment') {
-				return `export function Segment(props: SegmentProps) @{
-	let &{ children } = props;
-	const api = context.get();
-	if (!api) throw new Error('SignaturePad.Segment must be rendered inside SignaturePad.Root');
-	const mergedProps = usePartProps({ context, getter: 'getSegmentProps' }, props);
-	<svg {...mergedProps.value}>
-		<title>Signature</title>
-		@for (const path of api.value.paths) {
-			<path {...api.value.getSegmentPathProps({ path })} />
-		}
-		@if (api.value.currentPath) {
-			<path {...api.value.getSegmentPathProps({ path: api.value.currentPath })} />
-		}
-		{children}
-	</svg>
-}`;
-			}
-			if (directory.name === 'drawer' && ['Indent', 'IndentBackground'].includes(part.partName)) {
-				const getter = part.partName === 'Indent' ? 'getIndentProps' : 'getIndentBackgroundProps';
-				return `export function ${part.partName}(props: ${part.partName}Props) @{
-	let &{ children } = props;
-	const mergedProps = useExternalPartProps({ context: drawerStackApi, getter: '${getter}' }, props);
-	<div {...mergedProps.value}>{children}</div>
-}`;
-			}
+			const presenceBehavior = presencePartBehaviors[directory.name]?.[part.partName];
+			if (presenceBehavior) return presencePartDeclaration(componentName, part, presenceBehavior);
+			const override = partOverrides[directory.name]?.[part.partName];
+			if (override) return typeof override === 'function' ? override(part) : override;
 			return partDeclaration(part);
 		})
 		.join('\n');
@@ -332,49 +1046,87 @@ for (const directory of readdirSync(solidComponents, { withFileTypes: true })) {
 		...(specialNames[directory.name] ?? []),
 		'Context',
 	];
-	const source = `import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
+	const rootDeclaration =
+		rootOverrides[directory.name]?.(configKeys) ??
+		`export function Root(props: RootProps) @{
+	let &{ children } = props;
+	${rootTag ? 'const mergedProps = ' : '// Rootless upstream: the call runs for its machine/context side effects only.\n\t'}useRootProps({
+		context,
+		configKeys: ${literal(configKeys)},
+	${directory.name === 'drawer' ? 'defaultMachineProps: () => ({ stack: drawerStackStore.get() ?? undefined }),\n\t' : ''}${isPresence ? 'omitKeys: PRESENCE_KEYS,\n\t' : ''}
+		useMachine: ${hook} as any,
+	}, props);
+	${isPresence ? 'useRootPresence(presenceContext, () => context.get()!.value.open, props);\n\t' : ''}${staticElement(rootTag)}
+}`;
+	const rootProviderDeclaration =
+		rootProviderOverrides[directory.name]?.() ??
+		`export function RootProvider(props: RootProviderProps) @{
+	let &{ children } = props;
+	${rootTag ? 'const mergedProps = ' : ''}useRootProviderProps({ context${isPresence ? ', omitKeys: PRESENCE_KEYS' : ''} }, props);
+	${isPresence ? 'useRootPresence(presenceContext, () => context.get()!.value.open, props);\n\t' : ''}${staticElement(rootTag)}
+}`;
+	// Root overrides (tour) can replace the generic body wholesale and drop the
+	// generic hook calls entirely — derive their imports from what the emitted
+	// text actually calls instead of assuming every presence-tagged directory
+	// still uses useRootProps/useRootProviderProps/PRESENCE_KEYS.
+	const rootBodyText = rootDeclaration + rootProviderDeclaration;
+	const bindingRuntimeImports = [
+		'createApiContext',
+		'createItemContext',
+		'useExternalPartProps',
+		'usePartProps',
+		...(rootBodyText.includes('useRootProps(') ? ['useRootProps'] : []),
+		...(rootBodyText.includes('useRootProviderProps(') ? ['useRootProviderProps'] : []),
+		...(rootBodyText.includes('useRootPresence(') ? ['useRootPresence'] : []),
+		...(isPresence ? ['usePresenceState'] : []),
+		...(rootBodyText.includes('PRESENCE_KEYS') ? ['PRESENCE_KEYS'] : []),
+		// Checkbox.Group renders its own element outside usePartProps (see
+		// partOverrides.checkbox) but still needs the same children/key split.
+		...(directory.name === 'checkbox' ? ['splitProps'] : []),
+		'type ArkPartProps',
+		'type ComponentProps',
+		'type GetterProps',
+		'type PartProps',
+		...(isPresence ? ['type PresenceState'] : []),
+	].join(', ');
+	// Nested-menu wiring needs untrack (see menuNestingEffect) — no other override
+	// needs a ripple runtime import beyond the baseline, so this stays a one-off
+	// rather than a generalized per-directory list.
+	const rippleImports = [
+		'Context as RippleContext',
+		'effect',
+		'track',
+		...(directory.name === 'menu' ? ['untrack'] : []),
+		'type Children',
+		'type Tracked',
+	].join(', ');
+	const source = `import { ${rippleImports} } from 'ripple';
 ${extraImports[directory.name] ?? ''}
 import { ${hook} } from '../components';
-import { createApiContext, createItemContext, useExternalPartProps, usePartProps, useRootProps, useRootProviderProps, type ArkPartProps, type ComponentProps, type GetterProps, type PartProps } from '../binding-runtime.tsrx';
+import { ${bindingRuntimeImports} } from '../binding-runtime.tsrx';
 
 type Hook = typeof ${hook};
 export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+${isPresence ? 'const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);' : ''}
 ${specialPrelude[directory.name] ?? ''}
 ${contextDeclarations}
 
-export function Root(props: RootProps) @{
-	let &{ children } = props;
-	const mergedProps = useRootProps({
-		context,
-		configKeys: ${literal(configKeys)},
-	${directory.name === 'drawer' ? 'defaultMachineProps: () => ({ stack: drawerStackStore.get() ?? undefined }),\n\t' : ''}
-		useMachine: ${hook} as any,
-	}, props);
-	${staticElement(rootTag)}
-}
-export function RootProvider(props: RootProviderProps) @{
-	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
-	${staticElement(rootTag)}
-}
+${rootDeclaration}
+${rootProviderDeclaration}
 ${partDeclarations}
 ${itemContextDeclarations}
 ${specialDeclarations[directory.name] ?? ''}
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ${rootTag ? `ArkPartProps<'${rootTag}'>` : 'ComponentProps'} & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ${rootTag ? `ArkPartProps<'${rootTag}'>` : 'ComponentProps'} & { value: ReturnType<Hook> };
+export type RootProps = ${rootPropsTypeOverrides[directory.name] ?? `${rootTag ? `ArkPartProps<'${rootTag}'>` : 'ComponentProps'} & NonNullable<Parameters<Hook>[0]>${isPresence ? ` & ${presencePropsType}` : ''}`};
+export type RootProviderProps = ${rootPropsTypeOverrides[directory.name] ?? `${rootTag ? `ArkPartProps<'${rootTag}'>` : 'ComponentProps'} & { value: ReturnType<Hook> }${isPresence ? ` & ${presencePropsType}` : ''}`};
 ${parts
 	.map((part) => {
-		// Drawer indentation belongs to the shared stack API, not to DrawerApi.
-		// Keep its public surface honest instead of naming getters DrawerApi does not own.
-		if (directory.name === 'drawer' && ['Indent', 'IndentBackground'].includes(part.partName)) {
-			return `export type ${part.partName}Props = ArkPartProps<'div'>;`;
-		}
-		return `export type ${part.partName}Props = ${publicPartType(part)};`;
+		const typeOverride = typeOverrides[directory.name]?.[part.partName];
+		return `export type ${part.partName}Props = ${typeOverride ?? publicPartType(part)};`;
 	})
 	.join('\n')}
 
@@ -427,3 +1179,13 @@ writeFileSync(
 );
 
 console.log(`Generated ${generated.length} Ripple component bindings in ${outputRoot}`);
+
+// Derived-content fallbacks (§4.6) intentionally not ported: date-picker's
+// ValueText render-prop API (For/Show over multi-date selection, separate
+// per-value render callback) and color-picker's ChannelSliderValueText (needs
+// both channel-props and locale context) are substantially more involved than
+// the `children || derivedText` shape every other part in this batch has.
+console.warn(
+	'[derived-content] known gaps, not ported: date-picker ValueText (render-prop multi-date API), ' +
+		'color-picker ChannelSliderValueText (channel + locale context) — both still render {children} only'
+);

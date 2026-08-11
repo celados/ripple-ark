@@ -19,8 +19,11 @@ Every release must pass a clean-consumer compile against the packed artifact.
   parent/child machines; ordinary consumers should use `api.value`.
 - Static TSRX text is native JSX text. Use expressions for dynamic values and for
   parser-required escapes such as whitespace-only nodes.
-- Regenerate bindings only against a fresh `chakra-ui/ark` snapshot, then run the
-  namespace parity, all-subpath compile, and SSR gates before accepting the result.
+- Regenerate bindings only against a fresh `chakra-ui/ark` snapshot, then pass every
+  gate before accepting the result: the generator's zag-props and presence-drift
+  assertions, namespace parity, all-subpath compile, SSR, and the runtime smoke suite
+  (`tests/smoke.test.ts`). Upstream-sync method and the translatability taxonomy live
+  in `.agents/skills/upstream-sync/SKILL.md` — read it before touching the generator.
 - Comments explain the adapter constraint or trade-off, not the code operation.
 
 ## Current sources

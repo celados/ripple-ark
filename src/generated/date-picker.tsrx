@@ -8,10 +8,14 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	useRootPresence,
+	usePresenceState,
+	PRESENCE_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type PresenceState,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useDatePicker;
@@ -19,6 +23,7 @@ export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);
 
 export function Root(props: RootProps) @{
 	let &{ children } = props;
@@ -70,16 +75,19 @@ export function Root(props: RootProps) @{
 				'value',
 				'view',
 			],
+			omitKeys: PRESENCE_KEYS,
 
 			useMachine: useDatePicker as any,
 		},
 		props,
 	);
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	const mergedProps = useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function WeekNumberCell(props: WeekNumberCellProps) @{
@@ -134,9 +142,21 @@ export function Control(props: ControlProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	let &{ children, ref } = props;
+	const presence = usePresenceState(presenceContext);
+	const mergedProps = usePartProps(
+		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
+		props,
+	);
+	@if (!presence.value.unmounted) {
+		<div
+			{...mergedProps.value}
+			ref={(node) => {
+				presence.value.setNode(node);
+				if (typeof ref === 'function') ref(node);
+			}}
+		>{children}</div>
+	}
 }
 export function WeekNumberHeaderCell(props: WeekNumberHeaderCellProps) @{
 	let &{ children } = props;
@@ -155,8 +175,11 @@ export function Trigger(props: TriggerProps) @{
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
+	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (!presence.value.unmounted) {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function TableCellTrigger(props: TableCellTriggerProps) @{
 	let &{ children } = props;
@@ -199,7 +222,16 @@ export function PresetTrigger(props: PresetTriggerProps) @{
 }
 export function Table(props: TableProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTableProps' }, props);
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getTableProps',
+			propKeys: [
+				'columns',
+			],
+		},
+		props,
+	);
 	<table {...mergedProps.value}>{children}</table>
 }
 export function PrevTrigger(props: PrevTriggerProps) @{
@@ -239,14 +271,38 @@ export function TableBody(props: TableBodyProps) @{
 }
 export function View(props: ViewProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context }, props);
+	const mergedProps = usePartProps(
+		{
+			context,
+			propKeys: [
+				'view',
+			],
+		},
+		props,
+	);
 	<div {...mergedProps.value}>{children}</div>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
 export type WeekNumberCellProps = PartProps<'td', Api['getWeekNumberCellProps']>;
 export type TableHeadProps = PartProps<'thead', Api['getTableHeadProps']>;
 export type TableRowProps = PartProps<'tr', Api['getTableRowProps']>;

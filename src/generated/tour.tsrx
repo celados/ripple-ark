@@ -6,12 +6,13 @@ import {
 	createItemContext,
 	useExternalPartProps,
 	usePartProps,
-	useRootProps,
-	useRootProviderProps,
+	useRootPresence,
+	usePresenceState,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type PresenceState,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useTour;
@@ -19,33 +20,29 @@ export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);
 
 export function Root(props: RootProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProps(
-		{
-			context,
-			configKeys: [],
-
-			useMachine: useTour as any,
-		},
-		props,
-	);
+	context.set(props.tour);
+	useRootPresence(presenceContext, () => props.tour.value.open, props);
 	<>
 		{children}
 	</>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	context.set(props.tour);
+	useRootPresence(presenceContext, () => props.tour.value.open, props);
 	<>
 		{children}
 	</>
 }
 export function Title(props: TitleProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
 	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
-	<h2 {...mergedProps.value}>{children}</h2>
+	<h2 {...mergedProps.value}>{children || api.value.step?.title}</h2>
 }
 export function Spotlight(props: SpotlightProps) @{
 	let &{ children } = props;
@@ -64,12 +61,13 @@ export function ActionTrigger(props: ActionTriggerProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	<button {...mergedProps.value}>{children || (props as any).action?.label}</button>
 }
 export function ProgressText(props: ProgressTextProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
 	const mergedProps = usePartProps({ context, getter: 'getProgressTextProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	<div {...mergedProps.value}>{children || api.value.getProgressText()}</div>
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
 	let &{ children } = props;
@@ -93,8 +91,9 @@ export function Backdrop(props: BackdropProps) @{
 }
 export function Description(props: DescriptionProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
 	const mergedProps = usePartProps({ context, getter: 'getDescriptionProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	<div {...mergedProps.value}>{children || api.value.step?.description}</div>
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
@@ -103,8 +102,11 @@ export function Control(props: ControlProps) @{
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
+	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (!presence.value.unmounted) {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Content(props: ContentProps) @{
 	let &{ children } = props;
@@ -121,8 +123,24 @@ export function Actions(props: { render: (actions: Tracked<AnyRecord[]>) => Chil
 }
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ComponentProps & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ComponentProps & { value: ReturnType<Hook> };
+export type RootProps =
+	{ tour: ReturnType<typeof useTour> } & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	} & ComponentProps;
+export type RootProviderProps =
+	{ tour: ReturnType<typeof useTour> } & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	} & ComponentProps;
 export type TitleProps = PartProps<'h2', Api['getTitleProps']>;
 export type SpotlightProps = PartProps<'div', Api['getSpotlightProps']>;
 export type ActionTriggerProps = PartProps<'button', Api['getActionTriggerProps']>;

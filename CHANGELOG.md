@@ -1,5 +1,33 @@
 # ripple-ark
 
+## 0.4.0
+
+Structural parity release: fixes four completely non-functional components and three
+systemic gaps found by a full review against the Ark Solid upstream.
+
+- Auto-generate a machine `id` per instance and inject `dir`/`getRootNode` from the
+  Locale/Environment providers in every hook; id-less Roots no longer crash (#2) and
+  RTL/shadow-DOM wiring now reaches the machines.
+- Fix the generator's `createSplitProps` extraction on nested generics: Select, Combobox,
+  Listbox, and TreeView Roots received zero machine props (no collection, no handlers)
+  and leaked every config prop onto the DOM. All four are functional again.
+- Add a zag-props verification gate: generated `configKeys` are checked against each
+  machine's own `props` export at generation time, so silent extraction gaps fail the build.
+- Integrate the presence/render-strategy layer across all 12 floating components:
+  `lazyMount`/`unmountOnExit` work, exit animations hold content mounted, and presence
+  props no longer leak as DOM attributes.
+- Register `Menu.Item` `onSelect` through the machine's item listener; the prop was
+  silently dropped (#3). Wire nested menus (`setParent`/`setChild`) and make
+  `Menu.TriggerItem` functional.
+- Rebuild `Checkbox.Group` as the outer wrapper it is upstream, with a ported
+  value-aggregation hook consumed by `Checkbox.Root`.
+- Match `Tour.Root` to the upstream contract: it now receives a `useTour` instance
+  instead of spinning up a second props-less machine.
+- Render machine-derived fallback content in 16 parts (`Select.ValueText`,
+  `Progress.ValueText`, `Timer.Item`, `FileUpload.ItemName`, Tour text parts, …) and
+  create object URLs for `FileUpload.ItemPreviewImage`.
+- Add a jsdom runtime smoke suite so behavioral regressions fail CI, not consumers.
+
 ## 0.3.2
 
 - Keep render-prop API and item contexts live as their Zag machine state changes.

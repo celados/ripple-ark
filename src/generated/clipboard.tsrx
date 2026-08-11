@@ -49,8 +49,9 @@ export function RootProvider(props: RootProviderProps) @{
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
 	const mergedProps = usePartProps({ context }, props);
-	<span {...mergedProps.value}>{children}</span>
+	<span {...mergedProps.value}>{children || api.value.value}</span>
 }
 export function Input(props: InputProps) @{
 	let &{ children } = props;

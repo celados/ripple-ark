@@ -1,5 +1,5 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
-
+import { anatomy } from '@zag-js/carousel';
 import { useCarousel } from '../components';
 import {
 	createApiContext,
@@ -19,6 +19,8 @@ export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+
+const carouselProgressTextAttrs = /*#__PURE__*/ anatomy.build().progressText.attrs;
 
 export function Root(props: RootProps) @{
 	let &{ children } = props;
@@ -70,9 +72,10 @@ export function IndicatorGroup(props: IndicatorGroupProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function ProgressText(props: ProgressTextProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context }, props);
-	<span {...mergedProps.value}>{children}</span>
+	let &{ children, ...localProps } = props;
+	const api = context.get()!;
+	const progressText = track(() => `${api.value.page + 1} / ${api.value.pageSnapPoints.length}`);
+	<span {...carouselProgressTextAttrs} {...localProps}>{children || progressText.value}</span>
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;

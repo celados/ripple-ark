@@ -1,5 +1,5 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
-
+import type { ColorStringFormat } from '@zag-js/color-utils';
 import { useColorPicker } from '../components';
 import {
 	createApiContext,
@@ -8,10 +8,14 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	useRootPresence,
+	usePresenceState,
+	PRESENCE_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type PresenceState,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useColorPicker;
@@ -19,6 +23,7 @@ export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);
 
 const colorPickerSwatchProps = /*#__PURE__*/ new RippleContext<
 	Tracked<Record<string, any>> | null
@@ -66,22 +71,28 @@ export function Root(props: RootProps) @{
 				'inline',
 				'value',
 			],
+			omitKeys: PRESENCE_KEYS,
 
 			useMachine: useColorPicker as any,
 		},
 		props,
 	);
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	const mergedProps = useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
+	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (!presence.value.unmounted) {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ValueSwatch(props: ValueSwatchProps) @{
 	let &{ children } = props;
@@ -211,9 +222,21 @@ export function Trigger(props: TriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function Content(props: ContentProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	let &{ children, ref } = props;
+	const presence = usePresenceState(presenceContext);
+	const mergedProps = usePartProps(
+		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
+		props,
+	);
+	@if (!presence.value.unmounted) {
+		<div
+			{...mergedProps.value}
+			ref={(node) => {
+				presence.value.setNode(node);
+				if (typeof ref === 'function') ref(node);
+			}}
+		>{children}</div>
+	}
 }
 export function ChannelSliderLabel(props: ChannelSliderLabelProps) @{
 	let &{ children } = props;
@@ -225,6 +248,7 @@ export function ChannelSliderLabel(props: ChannelSliderLabelProps) @{
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -235,7 +259,12 @@ export function ValueText(props: ValueTextProps) @{
 		},
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	<span {...mergedProps.value}>
+		{children ||
+			((props as any).format
+				? api.value.value.toString((props as any).format)
+				: api.value.valueAsString)}
+	</span>
 }
 export function ChannelSliderValueText(props: ChannelSliderValueTextProps) @{
 	let &{ children } = props;
@@ -331,8 +360,24 @@ export function AreaBackground(props: AreaBackgroundProps) @{
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
 export type PositionerProps = PartProps<'div', Api['getPositionerProps']>;
 export type ValueSwatchProps = PartProps<'div', Api['getSwatchProps']>;
 export type FormatSelectProps = PartProps<'select', Api['getFormatSelectProps']>;
@@ -353,7 +398,8 @@ export type AreaThumbProps = ArkPartProps<'div'>;
 export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
 export type ContentProps = PartProps<'div', Api['getContentProps']>;
 export type ChannelSliderLabelProps = ArkPartProps<'label'>;
-export type ValueTextProps = PartProps<'span', Api['getValueTextProps']>;
+export type ValueTextProps =
+	PartProps<'span', Api['getValueTextProps']> & { format?: ColorStringFormat };
 export type ChannelSliderValueTextProps = ArkPartProps<'span'>;
 export type SwatchIndicatorProps = ArkPartProps<'div'>;
 export type ControlProps = PartProps<'div', Api['getControlProps']>;

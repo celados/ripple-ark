@@ -59,8 +59,9 @@ export function Thumb(props: ThumbProps) @{
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
 	const mergedProps = usePartProps({ context, getter: 'getValueTextProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	<div {...mergedProps.value}>{children || api.value.valueAsDegree}</div>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;

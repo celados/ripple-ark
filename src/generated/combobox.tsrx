@@ -8,10 +8,14 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	useRootPresence,
+	usePresenceState,
+	PRESENCE_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type PresenceState,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useCombobox;
@@ -19,6 +23,7 @@ export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);
 
 const comboboxItemProps = /*#__PURE__*/ new RippleContext<
 	Tracked<Record<string, any>> | null
@@ -32,17 +37,64 @@ export function Root(props: RootProps) @{
 	const mergedProps = useRootProps(
 		{
 			context,
-			configKeys: [],
+			configKeys: [
+				'allowCustomValue',
+				'alwaysSubmitOnEnter',
+				'autoFocus',
+				'closeOnSelect',
+				'collection',
+				'composite',
+				'defaultHighlightedValue',
+				'defaultInputValue',
+				'defaultOpen',
+				'defaultValue',
+				'disabled',
+				'disableLayer',
+				'form',
+				'highlightedValue',
+				'id',
+				'ids',
+				'inputBehavior',
+				'inputValue',
+				'invalid',
+				'loopFocus',
+				'multiple',
+				'name',
+				'navigate',
+				'onFocusOutside',
+				'onHighlightChange',
+				'onInputValueChange',
+				'onInteractOutside',
+				'onOpenChange',
+				'onPointerDownOutside',
+				'onValueChange',
+				'onSelect',
+				'open',
+				'openOnChange',
+				'openOnClick',
+				'openOnKeyPress',
+				'placeholder',
+				'positioning',
+				'readOnly',
+				'required',
+				'scrollToIndexFn',
+				'selectionBehavior',
+				'translations',
+				'value',
+			],
+			omitKeys: PRESENCE_KEYS,
 
 			useMachine: useCombobox as any,
 		},
 		props,
 	);
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	const mergedProps = useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
+	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<div {...mergedProps.value}>{children}</div>
 }
 export function List(props: ListProps) @{
@@ -70,13 +122,23 @@ export function ClearTrigger(props: ClearTriggerProps) @{
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
+	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (!presence.value.unmounted) {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ItemGroup(props: ItemGroupProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps(
-		{ context, getter: 'getItemGroupProps', provideProps: comboboxItemGroupProps },
+		{
+			context,
+			getter: 'getItemGroupProps',
+			propKeys: [
+				'id',
+			],
+			provideProps: comboboxItemGroupProps,
+		},
 		props,
 	);
 	<div {...mergedProps.value}>{children}</div>
@@ -98,9 +160,21 @@ export function Item(props: ItemProps) @{
 	<div {...mergedProps.value}>{children}</div>
 }
 export function Content(props: ContentProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	let &{ children, ref } = props;
+	const presence = usePresenceState(presenceContext);
+	const mergedProps = usePartProps(
+		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
+		props,
+	);
+	@if (!presence.value.unmounted) {
+		<div
+			{...mergedProps.value}
+			ref={(node) => {
+				presence.value.setNode(node);
+				if (typeof ref === 'function') ref(node);
+			}}
+		>{children}</div>
+	}
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children } = props;
@@ -151,8 +225,24 @@ export const ItemContext = /*#__PURE__*/ createItemContext(context, comboboxItem
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & {
+		present?: boolean;
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+		onExitComplete?: () => void;
+		immediate?: boolean;
+		skipAnimationOnMount?: boolean;
+	};
 export type ListProps = PartProps<'div', Api['getListProps']>;
 export type InputProps = PartProps<'input', Api['getInputProps']>;
 export type ItemTextProps = ArkPartProps<'span'>;

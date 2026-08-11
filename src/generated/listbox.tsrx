@@ -30,7 +30,27 @@ export function Root(props: RootProps) @{
 	const mergedProps = useRootProps(
 		{
 			context,
-			configKeys: [],
+			configKeys: [
+				'collection',
+				'defaultHighlightedValue',
+				'defaultValue',
+				'deselectable',
+				'disabled',
+				'disallowSelectAll',
+				'highlightedValue',
+				'id',
+				'ids',
+				'loopFocus',
+				'onHighlightChange',
+				'onSelect',
+				'onValueChange',
+				'orientation',
+				'scrollToIndexFn',
+				'selectionMode',
+				'selectOnHighlight',
+				'typeahead',
+				'value',
+			],
 
 			useMachine: useListbox as any,
 		},
@@ -89,8 +109,20 @@ export function Item(props: ItemProps) @{
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getValueTextProps' }, props);
-	<span {...mergedProps.value}>{children}</span>
+	const api = context.get()!;
+	const mergedProps = usePartProps(
+		{
+			context,
+			getter: 'getValueTextProps',
+			propKeys: [
+				'placeholder',
+			],
+		},
+		props,
+	);
+	<span {...mergedProps.value}>
+		{children || api.value.valueAsString || (props as any).placeholder}
+	</span>
 }
 export function Empty(props: EmptyProps) @{
 	let &{ children } = props;
@@ -121,7 +153,14 @@ export function ItemText(props: ItemTextProps) @{
 export function ItemGroup(props: ItemGroupProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps(
-		{ context, getter: 'getItemGroupProps', provideProps: listboxItemGroupProps },
+		{
+			context,
+			getter: 'getItemGroupProps',
+			propKeys: [
+				'id',
+			],
+			provideProps: listboxItemGroupProps,
+		},
 		props,
 	);
 	<div {...mergedProps.value}>{children}</div>
@@ -136,7 +175,7 @@ export type ItemGroupLabelProps = ArkPartProps<'div'>;
 export type InputProps = PartProps<'input', Api['getInputProps']>;
 export type ContentProps = PartProps<'div', Api['getContentProps']>;
 export type ItemProps = PartProps<'div', Api['getItemProps']>;
-export type ValueTextProps = PartProps<'span', Api['getValueTextProps']>;
+export type ValueTextProps = PartProps<'span', Api['getValueTextProps']> & { placeholder?: string };
 export type EmptyProps = ArkPartProps<'div'>;
 export type ItemIndicatorProps = ArkPartProps<'div'>;
 export type LabelProps = PartProps<'span', Api['getLabelProps']>;

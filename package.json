@@ -1,6 +1,6 @@
 {
 	"name": "@celados/ripple-ark",
-	"version": "0.3.2",
+	"version": "0.4.0",
 	"description": "Ark UI components for Ripple, powered by Zag state machines",
 	"keywords": [
 		"ripple",
@@ -46,7 +46,7 @@
 	"scripts": {
 		"build": "tsrx-tsc --noEmit",
 		"typecheck": "tsrx-tsc --noEmit",
-		"test": "vitest run tests/exports.test.ts",
+		"test": "vitest run tests/exports.test.ts tests/smoke.test.ts",
 		"lint": "eslint .",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
@@ -139,6 +139,7 @@
 		"@types/node": "^26.1.2",
 		"@typescript-eslint/parser": "^8.66.0",
 		"eslint": "^10.8.0",
+		"jsdom": "^30.0.1",
 		"prettier": "^3.9.6",
 		"ripple": "^0.3.118",
 		"typescript": "5",

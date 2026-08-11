@@ -1,5 +1,5 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
-
+import { mergeProps } from '@zag-js/core';
 import { useFileUpload } from '../components';
 import {
 	createApiContext,
@@ -72,11 +72,13 @@ export function RootProvider(props: RootProviderProps) @{
 }
 export function ItemSizeText(props: ItemSizeTextProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
+	const itemProps = fileUploadItemProps.get()!;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemSizeTextProps', inheritedProps: fileUploadItemProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	<div {...mergedProps.value}>{children || api.value.getFileSize(itemProps.value.file)}</div>
 }
 export function Dropzone(props: DropzoneProps) @{
 	let &{ children } = props;
@@ -120,11 +122,12 @@ export function HiddenInput(props: HiddenInputProps) @{
 }
 export function ItemName(props: ItemNameProps) @{
 	let &{ children } = props;
+	const itemProps = fileUploadItemProps.get()!;
 	const mergedProps = usePartProps(
 		{ context, getter: 'getItemNameProps', inheritedProps: fileUploadItemProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	<div {...mergedProps.value}>{children || itemProps.value.file.name}</div>
 }
 export function ItemPreview(props: ItemPreviewProps) @{
 	let &{ children } = props;
@@ -155,12 +158,30 @@ export function Trigger(props: TriggerProps) @{
 	<button {...mergedProps.value}>{children}</button>
 }
 export function ItemPreviewImage(props: ItemPreviewImageProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemPreviewImageProps', inheritedProps: fileUploadItemProps },
-		props,
+	let &{ children, ...localProps } = props;
+	const api = context.get();
+	if (
+		!api
+	) throw new Error('FileUpload.ItemPreviewImage must be rendered inside FileUpload.Root or RootProvider');
+	const itemProps = fileUploadItemProps.get();
+	if (
+		!itemProps
+	) throw new Error('FileUpload.ItemPreviewImage must be rendered inside FileUpload.Item');
+	const url = track('');
+	effect(() => {
+		return api.value.createFileUrl(itemProps.value.file, (nextUrl) => {
+			url.value = nextUrl;
+		});
+	});
+	const mergedProps = track(
+		() => mergeProps(
+			api.value.getItemPreviewImageProps({ ...itemProps.value, url: url.value } as any),
+			localProps,
+		),
 	);
-	<img {...mergedProps.value} />
+	@if (url.value) {
+		<img {...mergedProps.value} />
+	}
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
