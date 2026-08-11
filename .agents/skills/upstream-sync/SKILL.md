@@ -41,6 +41,15 @@ Every sync decision routes through this taxonomy:
 | `gateExceptions`                                                           | a component legitimately fails the zag-props gate; requires a reason string                                                                                                                                                                                              |
 | `skipped`                                                                  | the component is hand-written under `src/utilities/` instead                                                                                                                                                                                                             |
 
+## Composition contract
+
+Parts compose via Base UI's **function-form `render` prop only** (README "Composition";
+runtime: `RenderProp`/`createRenderContent` in binding-runtime, ref delivery via a
+`createRefKey()` entry in the props object so a plain spread carries the composed ref).
+Never port Ark/Radix `asChild`, an `as` prop, or Base UI's element-form `render={<X />}`
+from upstream — strip them when syncing; `splitProps` drops `render` globally so it can
+never leak to the DOM or a machine.
+
 ## Sync procedure
 
 1. Refresh the upstream snapshot; bump `@zag-js/*` deps with the package manager (never hand-write versions).

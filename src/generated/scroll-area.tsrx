@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useScrollArea;
@@ -34,17 +36,32 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Thumb(props: ThumbProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getThumbProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Scrollbar(props: ScrollbarProps) @{
 	let &{ children } = props;
@@ -58,33 +75,59 @@ export function Scrollbar(props: ScrollbarProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Content(props: ContentProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Viewport(props: ViewportProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getViewportProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Corner(props: CornerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCornerProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
-export type ThumbProps = PartProps<'div', Api['getThumbProps']>;
-export type ScrollbarProps = PartProps<'div', Api['getScrollbarProps']>;
-export type ContentProps = PartProps<'div', Api['getContentProps']>;
-export type ViewportProps = PartProps<'div', Api['getViewportProps']>;
-export type CornerProps = PartProps<'div', Api['getCornerProps']>;
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+export type ThumbProps = (PartProps<'div', Api['getThumbProps']>) & { render?: RenderProp<'div'> };
+export type ScrollbarProps =
+	(PartProps<'div', Api['getScrollbarProps']>) & { render?: RenderProp<'div'> };
+export type ContentProps =
+	(PartProps<'div', Api['getContentProps']>) & { render?: RenderProp<'div'> };
+export type ViewportProps =
+	(PartProps<'div', Api['getViewportProps']>) & { render?: RenderProp<'div'> };
+export type CornerProps =
+	(PartProps<'div', Api['getCornerProps']>) & { render?: RenderProp<'div'> };
 
 export const ScrollArea = {
 	Root,

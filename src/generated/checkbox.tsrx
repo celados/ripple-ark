@@ -9,10 +9,12 @@ import {
 	useRootProps,
 	useRootProviderProps,
 	splitProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useCheckbox;
@@ -64,22 +66,42 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<label {...mergedProps.value}>{children}</label>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<label {...mergedProps.value}>{children}</label>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<label {...mergedProps.value}>{children}</label>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<label {...mergedProps.value}>{children}</label>
+	}
 }
 export function HiddenInput(props: HiddenInputProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
-	<input {...mergedProps.value} />
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<input {...mergedProps.value} />
+	}
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function GroupProvider(props: GroupProviderProps) @{
 	let &{ children, value } = props;
@@ -89,7 +111,15 @@ export function GroupProvider(props: GroupProviderProps) @{
 			'value',
 		])[1],
 	);
-	<div role="group" {...localProps.value} {...checkboxGroupAnatomyAttrs}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(
+			track(() => ({ role: 'group', ...localProps.value, ...checkboxGroupAnatomyAttrs })),
+			props.render,
+		);
+		<{Content} />
+	} @else {
+		<div role="group" {...localProps.value} {...checkboxGroupAnatomyAttrs}>{children}</div>
+	}
 }
 export function Group(props: GroupProps) @{
 	let &{ children } = props;
@@ -107,12 +137,25 @@ export function Group(props: GroupProps) @{
 			'maxSelectedValues',
 		])[1],
 	);
-	<div role="group" {...localProps.value} {...checkboxGroupAnatomyAttrs}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(
+			track(() => ({ role: 'group', ...localProps.value, ...checkboxGroupAnatomyAttrs })),
+			props.render,
+		);
+		<{Content} />
+	} @else {
+		<div role="group" {...localProps.value} {...checkboxGroupAnatomyAttrs}>{children}</div>
+	}
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
@@ -126,7 +169,12 @@ export function Indicator(props: IndicatorProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export type UseCheckboxGroupProps = {
@@ -210,14 +258,22 @@ export function useCheckboxGroup(props: UseCheckboxGroupProps = {}): Tracked<Che
 }
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'label'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'label'> & { value: ReturnType<Hook> };
-export type HiddenInputProps = PartProps<'input', Api['getHiddenInputProps']>;
-export type ControlProps = PartProps<'div', Api['getControlProps']>;
-export type GroupProviderProps = ArkPartProps<'div'> & { value: Tracked<CheckboxGroupApi> };
-export type GroupProps = ArkPartProps<'div'> & UseCheckboxGroupProps;
-export type LabelProps = PartProps<'span', Api['getLabelProps']>;
-export type IndicatorProps = PartProps<'div', Api['getIndicatorProps']>;
+export type RootProps =
+	ArkPartProps<'label'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'label'> };
+export type RootProviderProps =
+	ArkPartProps<'label'> & { value: ReturnType<Hook> } & { render?: RenderProp<'label'> };
+export type HiddenInputProps =
+	(PartProps<'input', Api['getHiddenInputProps']>) & { render?: RenderProp<'input'> };
+export type ControlProps =
+	(PartProps<'div', Api['getControlProps']>) & { render?: RenderProp<'div'> };
+export type GroupProviderProps =
+	(ArkPartProps<'div'> & { value: Tracked<CheckboxGroupApi> }) & { render?: RenderProp<'div'> };
+export type GroupProps =
+	(ArkPartProps<'div'> & UseCheckboxGroupProps) & { render?: RenderProp<'div'> };
+export type LabelProps =
+	(PartProps<'span', Api['getLabelProps']>) & { render?: RenderProp<'span'> };
+export type IndicatorProps =
+	(PartProps<'div', Api['getIndicatorProps']>) & { render?: RenderProp<'div'> };
 
 export const Checkbox = {
 	Root,

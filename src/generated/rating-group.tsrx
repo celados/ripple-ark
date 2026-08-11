@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useRatingGroup;
@@ -51,27 +53,52 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function HiddenInput(props: HiddenInputProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
-	<input {...mergedProps.value} />
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<input {...mergedProps.value} />
+	}
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	<label {...mergedProps.value}>{children}</label>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<label {...mergedProps.value}>{children}</label>
+	}
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
@@ -86,18 +113,28 @@ export function Item(props: ItemProps) @{
 		},
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export const ItemContext = /*#__PURE__*/ createItemContext(context, ratingGroupItemProps);
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
-export type HiddenInputProps = PartProps<'input', Api['getHiddenInputProps']>;
-export type LabelProps = PartProps<'label', Api['getLabelProps']>;
-export type ControlProps = PartProps<'div', Api['getControlProps']>;
-export type ItemProps = PartProps<'span', Api['getItemProps']>;
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+export type HiddenInputProps =
+	(PartProps<'input', Api['getHiddenInputProps']>) & { render?: RenderProp<'input'> };
+export type LabelProps =
+	(PartProps<'label', Api['getLabelProps']>) & { render?: RenderProp<'label'> };
+export type ControlProps =
+	(PartProps<'div', Api['getControlProps']>) & { render?: RenderProp<'div'> };
+export type ItemProps = (PartProps<'span', Api['getItemProps']>) & { render?: RenderProp<'span'> };
 
 export const RatingGroup = {
 	Root,

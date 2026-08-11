@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useTagsInput;
@@ -68,22 +70,42 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	<label {...mergedProps.value}>{children}</label>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<label {...mergedProps.value}>{children}</label>
+	}
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function ItemText(props: ItemTextProps) @{
 	let &{ children } = props;
@@ -91,7 +113,12 @@ export function ItemText(props: ItemTextProps) @{
 		{ context, getter: 'getItemTextProps', inheritedProps: tagsInputItemProps },
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export function ItemInput(props: ItemInputProps) @{
 	let &{ children } = props;
@@ -99,17 +126,32 @@ export function ItemInput(props: ItemInputProps) @{
 		{ context, getter: 'getItemInputProps', inheritedProps: tagsInputItemProps },
 		props,
 	);
-	<input {...mergedProps.value} />
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<input {...mergedProps.value} />
+	}
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function HiddenInput(props: HiddenInputProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
-	<input {...mergedProps.value} />
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<input {...mergedProps.value} />
+	}
 }
 export function ItemPreview(props: ItemPreviewProps) @{
 	let &{ children } = props;
@@ -117,12 +159,22 @@ export function ItemPreview(props: ItemPreviewProps) @{
 		{ context, getter: 'getItemPreviewProps', inheritedProps: tagsInputItemProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Input(props: InputProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getInputProps' }, props);
-	<input {...mergedProps.value} />
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<input {...mergedProps.value} />
+	}
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
@@ -139,7 +191,12 @@ export function Item(props: ItemProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ItemDeleteTrigger(props: ItemDeleteTriggerProps) @{
 	let &{ children } = props;
@@ -147,24 +204,36 @@ export function ItemDeleteTrigger(props: ItemDeleteTriggerProps) @{
 		{ context, getter: 'getItemDeleteTriggerProps', inheritedProps: tagsInputItemProps },
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export const ItemContext = /*#__PURE__*/ createItemContext(context, tagsInputItemProps);
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
-export type LabelProps = PartProps<'label', Api['getLabelProps']>;
-export type ClearTriggerProps = PartProps<'button', Api['getClearTriggerProps']>;
-export type ItemTextProps = ArkPartProps<'span'>;
-export type ItemInputProps = ArkPartProps<'input'>;
-export type ControlProps = PartProps<'div', Api['getControlProps']>;
-export type HiddenInputProps = PartProps<'input', Api['getHiddenInputProps']>;
-export type ItemPreviewProps = ArkPartProps<'div'>;
-export type InputProps = PartProps<'input', Api['getInputProps']>;
-export type ItemProps = PartProps<'div', Api['getItemProps']>;
-export type ItemDeleteTriggerProps = ArkPartProps<'button'>;
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+export type LabelProps =
+	(PartProps<'label', Api['getLabelProps']>) & { render?: RenderProp<'label'> };
+export type ClearTriggerProps =
+	(PartProps<'button', Api['getClearTriggerProps']>) & { render?: RenderProp<'button'> };
+export type ItemTextProps = (ArkPartProps<'span'>) & { render?: RenderProp<'span'> };
+export type ItemInputProps = (ArkPartProps<'input'>) & { render?: RenderProp<'input'> };
+export type ControlProps =
+	(PartProps<'div', Api['getControlProps']>) & { render?: RenderProp<'div'> };
+export type HiddenInputProps =
+	(PartProps<'input', Api['getHiddenInputProps']>) & { render?: RenderProp<'input'> };
+export type ItemPreviewProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type InputProps =
+	(PartProps<'input', Api['getInputProps']>) & { render?: RenderProp<'input'> };
+export type ItemProps = (PartProps<'div', Api['getItemProps']>) & { render?: RenderProp<'div'> };
+export type ItemDeleteTriggerProps = (ArkPartProps<'button'>) & { render?: RenderProp<'button'> };
 
 export const TagsInput = {
 	Root,

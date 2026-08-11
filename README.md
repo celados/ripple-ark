@@ -61,11 +61,32 @@ Component subpaths are the preferred public API. The root export additionally pr
 
 - lower-level `useXxx` hooks for custom composition
 - framework providers
-- the `ark` element factory
+- the `ark` dynamic-tag element factory
 - collection and utility helpers
 
-Generated parts use their native JSX tags directly. Polymorphism is deliberately opt-in through
-the `ark` factory instead of adding a dynamic `as` prop to every component.
+## Composition
+
+Every generated part that renders an element (and every tagged `Root`/`RootProvider`) accepts
+a `render` prop, following [Base UI's function-form composition](https://base-ui.com/react/handbook/composition):
+
+```tsrx
+<Dialog.Trigger render={(props) => <Link {...props} to="/settings">打开</Link>} />
+```
+
+`render` receives the part's merged, normalized props as a live object — reading a property
+inside the callback stays subscribed to the underlying machine state — and its return replaces
+the default element **entirely**. `children` is ignored once `render` is given.
+
+This is function form only: no Radix/Ark-style `asChild` (child cloning), no `as` prop, and no
+element-form `render={<X />}` (a React idiom that doesn't fit Ripple's reactivity model). The
+`ark` factory above is unrelated — it is a plain dynamic-tag wrapper, not a composition
+mechanism; if you need low-level access without a `render` prop at all, use the part's `Context`
+render prop or call a `useXxx` hook directly against the zag getters.
+
+Presence-gated parts (`Dialog.Content`, `Popover.Positioner`, …) compose their internal mount ref
+into the same props object under a `createRefKey()`-derived symbol, so it survives a plain
+`{...props}` spread or a rest-props forward without the render consumer doing anything special —
+spreading the full props object is enough for presence unmount detection to keep working.
 
 ## Runtime and build requirements
 

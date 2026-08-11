@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useSplitter;
@@ -50,17 +52,32 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ResizeTriggerIndicator(props: ResizeTriggerIndicatorProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, inheritedProps: splitterResizeTriggerProps }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ResizeTrigger(props: ResizeTriggerProps) @{
 	let &{ children } = props;
@@ -76,7 +93,12 @@ export function ResizeTrigger(props: ResizeTriggerProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Panel(props: PanelProps) @{
 	let &{ children } = props;
@@ -90,16 +112,24 @@ export function Panel(props: PanelProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
-export type ResizeTriggerIndicatorProps = ArkPartProps<'div'>;
-export type ResizeTriggerProps = PartProps<'button', Api['getResizeTriggerProps']>;
-export type PanelProps = PartProps<'div', Api['getPanelProps']>;
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+export type ResizeTriggerIndicatorProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type ResizeTriggerProps =
+	(PartProps<'button', Api['getResizeTriggerProps']>) & { render?: RenderProp<'button'> };
+export type PanelProps = (PartProps<'div', Api['getPanelProps']>) & { render?: RenderProp<'div'> };
 
 export const Splitter = {
 	Root,

@@ -1,5 +1,16 @@
 # ripple-ark
 
+## 0.5.0
+
+- Adopt Base UI's function-form `render` prop on every generated part, tagged Root, and
+  RootProvider: `render={(props) => <Link {...props} />}` replaces the element while
+  keeping machine props live through a reactive proxy; presence-gated parts compose the
+  presence `setNode` ref into the spread so custom elements need no special handling.
+- Remove `asChild` and `PolymorphicProps` from the `ark` factory — composition now has
+  exactly one mechanism.
+- Declare `ripple` as a peerDependency; the shipped source imports it, and a second copy
+  of the singleton runtime silently splits the reactive graph.
+
 ## 0.4.0
 
 Structural parity release: fixes four completely non-functional components and three

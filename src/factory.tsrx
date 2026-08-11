@@ -1,50 +1,40 @@
-import { mergeProps } from '@zag-js/core';
 import { type Children, type DynamicElementType } from 'ripple';
 
 type ElementType = keyof JSX.IntrinsicElements;
-type ParentProps<T extends ElementType> =
-	(userProps?: JSX.IntrinsicElements[T]) => JSX.IntrinsicElements[T];
-export type PolymorphicProps<T extends ElementType> = {
-	asChild?: (props: ParentProps<T>) => Children;
-};
 export type HTMLProps<T extends ElementType> = JSX.IntrinsicElements[T];
-export type HTMLArkProps<T extends ElementType> = HTMLProps<T> & PolymorphicProps<T>;
 
-type ArkComponent<T extends ElementType> = (props: HTMLArkProps<T>) => Children;
+// No-compat cut: this factory used to carry Ark/Radix-style `asChild` polymorphism
+// (child cloning + a PolymorphicProps merge). Composition now lives on generated parts
+// as Base UI's function-form `render` prop (README "Composition"; binding-runtime's
+// RenderProp/createRenderContent) — a dynamic-tag wrapper has no analogous need, so
+// `ark.div` etc. is just a plain component around a runtime-chosen tag.
+type ArkComponent<T extends ElementType> = (props: HTMLProps<T>) => Children;
 type ArkElements = { [T in ElementType]: ArkComponent<T> };
 
-function withAsProp<T extends ElementType>(tag: T): ArkComponent<T> {
-	return function ArkComponent(props: HTMLArkProps<T>) @{
-		let &{ asChild, ...parentProps } = props;
-		@if (asChild) {
-			const Content = () => asChild(
-				(userProps = {}) => mergeProps(parentProps, userProps) as JSX.IntrinsicElements[T],
-			);
-			<{Content} />
-		} @else {
-			const dynamicTag: DynamicElementType = tag;
-			<{dynamicTag} {...parentProps} />
-		}
+function createArkElement<T extends ElementType>(tag: T): ArkComponent<T> {
+	return function ArkElement(props: HTMLProps<T>) @{
+		const dynamicTag: DynamicElementType = tag;
+		<{dynamicTag} {...props} />
 	};
 }
 
 function createArkFactory() {
 	const cache = new Map<ElementType, ArkComponent<ElementType>>();
-	return new Proxy(withAsProp, {
+	return new Proxy(createArkElement, {
 		apply(_target, _thisArg, args: [ElementType]) {
-			return withAsProp(args[0]);
+			return createArkElement(args[0]);
 		},
 		get(_target, property: string | symbol) {
 			if (typeof property === 'symbol') return Reflect.get(_target, property);
 			const element = property as ElementType;
 			let component = cache.get(element);
 			if (!component) {
-				component = withAsProp(element);
+				component = createArkElement(element);
 				cache.set(element, component);
 			}
 			return component;
 		},
-	}) as typeof withAsProp & ArkElements;
+	}) as typeof createArkElement & ArkElements;
 }
 
 export const ark = createArkFactory();

@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useProgress;
@@ -43,17 +45,32 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function CircleRange(props: CircleRangeProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCircleRangeProps' }, props);
-	<circle {...mergedProps.value}>{children}</circle>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<circle {...mergedProps.value}>{children}</circle>
+	}
 }
 export function View(props: ViewProps) @{
 	let &{ children } = props;
@@ -67,52 +84,94 @@ export function View(props: ViewProps) @{
 		},
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export function Range(props: RangeProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getRangeProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function CircleTrack(props: CircleTrackProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCircleTrackProps' }, props);
-	<circle {...mergedProps.value}>{children}</circle>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<circle {...mergedProps.value}>{children}</circle>
+	}
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
 	const mergedProps = usePartProps({ context, getter: 'getValueTextProps' }, props);
-	<span {...mergedProps.value}>{children || api.value.percentAsString}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children || api.value.percentAsString}</span>
+	}
 }
 export function Track(props: TrackProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTrackProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Circle(props: CircleProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCircleProps' }, props);
-	<svg {...mergedProps.value}>{children}</svg>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<svg {...mergedProps.value}>{children}</svg>
+	}
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
-export type CircleRangeProps = PartProps<'circle', Api['getCircleRangeProps']>;
-export type ViewProps = PartProps<'span', Api['getViewProps']>;
-export type RangeProps = PartProps<'div', Api['getRangeProps']>;
-export type CircleTrackProps = PartProps<'circle', Api['getCircleTrackProps']>;
-export type ValueTextProps = PartProps<'span', Api['getValueTextProps']>;
-export type TrackProps = PartProps<'div', Api['getTrackProps']>;
-export type CircleProps = PartProps<'svg', Api['getCircleProps']>;
-export type LabelProps = PartProps<'span', Api['getLabelProps']>;
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+export type CircleRangeProps =
+	(PartProps<'circle', Api['getCircleRangeProps']>) & { render?: RenderProp<'circle'> };
+export type ViewProps = (PartProps<'span', Api['getViewProps']>) & { render?: RenderProp<'span'> };
+export type RangeProps = (PartProps<'div', Api['getRangeProps']>) & { render?: RenderProp<'div'> };
+export type CircleTrackProps =
+	(PartProps<'circle', Api['getCircleTrackProps']>) & { render?: RenderProp<'circle'> };
+export type ValueTextProps =
+	(PartProps<'span', Api['getValueTextProps']>) & { render?: RenderProp<'span'> };
+export type TrackProps = (PartProps<'div', Api['getTrackProps']>) & { render?: RenderProp<'div'> };
+export type CircleProps =
+	(PartProps<'svg', Api['getCircleProps']>) & { render?: RenderProp<'svg'> };
+export type LabelProps =
+	(PartProps<'span', Api['getLabelProps']>) & { render?: RenderProp<'span'> };
 
 export const Progress = {
 	Root,

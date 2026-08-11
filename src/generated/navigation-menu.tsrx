@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useNavigationMenu;
@@ -51,12 +53,22 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<nav {...mergedProps.value}>{children}</nav>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<nav {...mergedProps.value}>{children}</nav>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<nav {...mergedProps.value}>{children}</nav>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<nav {...mergedProps.value}>{children}</nav>
+	}
 }
 export function Viewport(props: ViewportProps) @{
 	let &{ children } = props;
@@ -64,17 +76,32 @@ export function Viewport(props: ViewportProps) @{
 		{ context, getter: 'getViewportProps', inheritedProps: navigationMenuViewportProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function List(props: ListProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getListProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Link(props: LinkProps) @{
 	let &{ children } = props;
@@ -82,7 +109,12 @@ export function Link(props: LinkProps) @{
 		{ context, getter: 'getLinkProps', inheritedProps: navigationMenuItemProps },
 		props,
 	);
-	<a {...mergedProps.value}>{children}</a>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<a {...mergedProps.value}>{children}</a>
+	}
 }
 export function ViewportPositioner(props: ViewportPositionerProps) @{
 	let &{ children } = props;
@@ -97,7 +129,12 @@ export function ViewportPositioner(props: ViewportPositionerProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Content(props: ContentProps) @{
 	let &{ children } = props;
@@ -105,7 +142,12 @@ export function Content(props: ContentProps) @{
 		{ context, getter: 'getContentProps', inheritedProps: navigationMenuItemProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children } = props;
@@ -113,7 +155,12 @@ export function Trigger(props: TriggerProps) @{
 		{ context, getter: 'getTriggerProps', inheritedProps: navigationMenuItemProps },
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
 	let &{ children } = props;
@@ -121,7 +168,12 @@ export function ItemIndicator(props: ItemIndicatorProps) @{
 		{ context, getter: 'getItemIndicatorProps', inheritedProps: navigationMenuItemProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
@@ -129,28 +181,42 @@ export function Item(props: ItemProps) @{
 		{ context, getter: 'getItemProps', provideProps: navigationMenuItemProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Arrow(props: ArrowProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getArrowProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'nav'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'nav'> & { value: ReturnType<Hook> };
-export type ViewportProps = ArkPartProps<'div'>;
-export type ListProps = PartProps<'div', Api['getListProps']>;
-export type IndicatorProps = PartProps<'div', Api['getIndicatorProps']>;
-export type LinkProps = ArkPartProps<'a'>;
-export type ViewportPositionerProps = PartProps<'div', Api['getViewportPositionerProps']>;
-export type ContentProps = ArkPartProps<'div'>;
-export type TriggerProps = ArkPartProps<'button'>;
-export type ItemIndicatorProps = ArkPartProps<'div'>;
-export type ItemProps = PartProps<'div', Api['getItemProps']>;
-export type ArrowProps = PartProps<'div', Api['getArrowProps']>;
+export type RootProps =
+	ArkPartProps<'nav'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'nav'> };
+export type RootProviderProps =
+	ArkPartProps<'nav'> & { value: ReturnType<Hook> } & { render?: RenderProp<'nav'> };
+export type ViewportProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type ListProps = (PartProps<'div', Api['getListProps']>) & { render?: RenderProp<'div'> };
+export type IndicatorProps =
+	(PartProps<'div', Api['getIndicatorProps']>) & { render?: RenderProp<'div'> };
+export type LinkProps = (ArkPartProps<'a'>) & { render?: RenderProp<'a'> };
+export type ViewportPositionerProps =
+	(PartProps<'div', Api['getViewportPositionerProps']>) & { render?: RenderProp<'div'> };
+export type ContentProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type TriggerProps = (ArkPartProps<'button'>) & { render?: RenderProp<'button'> };
+export type ItemIndicatorProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type ItemProps = (PartProps<'div', Api['getItemProps']>) & { render?: RenderProp<'div'> };
+export type ArrowProps = (PartProps<'div', Api['getArrowProps']>) & { render?: RenderProp<'div'> };
 
 export const NavigationMenu = {
 	Root,

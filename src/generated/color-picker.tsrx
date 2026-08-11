@@ -1,4 +1,11 @@
-import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
+import {
+	Context as RippleContext,
+	effect,
+	track,
+	createRefKey,
+	type Children,
+	type Tracked,
+} from 'ripple';
 import type { ColorStringFormat } from '@zag-js/color-utils';
 import { useColorPicker } from '../components';
 import {
@@ -11,10 +18,12 @@ import {
 	useRootPresence,
 	usePresenceState,
 	PRESENCE_KEYS,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 	type PresenceState,
 } from '../binding-runtime.tsrx';
 
@@ -78,20 +87,35 @@ export function Root(props: RootProps) @{
 		props,
 	);
 	useRootPresence(presenceContext, () => context.get()!.value.open, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
 	useRootPresence(presenceContext, () => context.get()!.value.open, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
 	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	@if (!presence.value.unmounted) {
-		<div {...mergedProps.value}>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(mergedProps, props.render);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value}>{children}</div>
+		}
 	}
 }
 export function ValueSwatch(props: ValueSwatchProps) @{
@@ -107,12 +131,22 @@ export function ValueSwatch(props: ValueSwatchProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function FormatSelect(props: FormatSelectProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getFormatSelectProps' }, props);
-	<select {...mergedProps.value}>{children}</select>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<select {...mergedProps.value}>{children}</select>
+	}
 }
 export function Swatch(props: SwatchProps) @{
 	let &{ children } = props;
@@ -128,12 +162,22 @@ export function Swatch(props: SwatchProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function SwatchGroup(props: SwatchGroupProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getSwatchGroupProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ChannelSliderThumb(props: ChannelSliderThumbProps) @{
 	let &{ children } = props;
@@ -145,7 +189,12 @@ export function ChannelSliderThumb(props: ChannelSliderThumbProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function SwatchTrigger(props: SwatchTriggerProps) @{
 	let &{ children } = props;
@@ -160,7 +209,12 @@ export function SwatchTrigger(props: SwatchTriggerProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function View(props: ViewProps) @{
 	let &{ children } = props;
@@ -174,12 +228,22 @@ export function View(props: ViewProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function EyeDropperTrigger(props: EyeDropperTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getEyeDropperTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function ChannelSlider(props: ChannelSliderProps) @{
 	let &{ children } = props;
@@ -196,17 +260,32 @@ export function ChannelSlider(props: ChannelSliderProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	<label {...mergedProps.value}>{children}</label>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<label {...mergedProps.value}>{children}</label>
+	}
 }
 export function FormatTrigger(props: FormatTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getFormatTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function AreaThumb(props: AreaThumbProps) @{
 	let &{ children } = props;
@@ -214,28 +293,45 @@ export function AreaThumb(props: AreaThumbProps) @{
 		{ context, getter: 'getAreaThumbProps', inheritedProps: colorPickerAreaProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Content(props: ContentProps) @{
 	let &{ children, ref } = props;
 	const presence = usePresenceState(presenceContext);
+	const presenceRefKey = createRefKey();
+	let applyPresenceRef = (node: any) => {
+		presence.value.setNode(node);
+		if (typeof ref === 'function') ref(node);
+	};
 	const mergedProps = usePartProps(
 		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
 		props,
 	);
 	@if (!presence.value.unmounted) {
-		<div
-			{...mergedProps.value}
-			ref={(node) => {
-				presence.value.setNode(node);
-				if (typeof ref === 'function') ref(node);
-			}}
-		>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(
+				track(() => ({ ...mergedProps.value, [presenceRefKey]: applyPresenceRef })),
+				props.render,
+			);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value} ref={applyPresenceRef}>{children}</div>
+		}
 	}
 }
 export function ChannelSliderLabel(props: ChannelSliderLabelProps) @{
@@ -244,7 +340,12 @@ export function ChannelSliderLabel(props: ChannelSliderLabelProps) @{
 		{ context, getter: 'getChannelSliderLabelProps', inheritedProps: colorPickerChannelProps },
 		props,
 	);
-	<label {...mergedProps.value}>{children}</label>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<label {...mergedProps.value}>{children}</label>
+	}
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
@@ -259,12 +360,17 @@ export function ValueText(props: ValueTextProps) @{
 		},
 		props,
 	);
-	<span {...mergedProps.value}>
-		{children ||
-			((props as any).format
-				? api.value.value.toString((props as any).format)
-				: api.value.valueAsString)}
-	</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>
+			{children ||
+				((props as any).format
+					? api.value.value.toString((props as any).format)
+					: api.value.valueAsString)}
+		</span>
+	}
 }
 export function ChannelSliderValueText(props: ChannelSliderValueTextProps) @{
 	let &{ children } = props;
@@ -272,7 +378,12 @@ export function ChannelSliderValueText(props: ChannelSliderValueTextProps) @{
 		{ context, getter: 'getChannelSliderValueTextProps', inheritedProps: colorPickerChannelProps },
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export function SwatchIndicator(props: SwatchIndicatorProps) @{
 	let &{ children } = props;
@@ -280,12 +391,22 @@ export function SwatchIndicator(props: SwatchIndicatorProps) @{
 		{ context, getter: 'getSwatchIndicatorProps', inheritedProps: colorPickerSwatchProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ChannelSliderTrack(props: ChannelSliderTrackProps) @{
 	let &{ children } = props;
@@ -297,7 +418,12 @@ export function ChannelSliderTrack(props: ChannelSliderTrackProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ChannelInput(props: ChannelInputProps) @{
 	let &{ children } = props;
@@ -312,12 +438,22 @@ export function ChannelInput(props: ChannelInputProps) @{
 		},
 		props,
 	);
-	<input {...mergedProps.value} />
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<input {...mergedProps.value} />
+	}
 }
 export function HiddenInput(props: HiddenInputProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
-	<input {...mergedProps.value} />
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<input {...mergedProps.value} />
+	}
 }
 export function Area(props: AreaProps) @{
 	let &{ children } = props;
@@ -333,7 +469,12 @@ export function Area(props: AreaProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function TransparencyGrid(props: TransparencyGridProps) @{
 	let &{ children } = props;
@@ -347,7 +488,12 @@ export function TransparencyGrid(props: TransparencyGridProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function AreaBackground(props: AreaBackgroundProps) @{
 	let &{ children } = props;
@@ -355,7 +501,12 @@ export function AreaBackground(props: AreaBackgroundProps) @{
 		{ context, getter: 'getAreaBackgroundProps', inheritedProps: colorPickerAreaProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
@@ -368,7 +519,7 @@ export type RootProps =
 		onExitComplete?: () => void;
 		immediate?: boolean;
 		skipAnimationOnMount?: boolean;
-	};
+	} & { render?: RenderProp<'div'> };
 export type RootProviderProps =
 	ArkPartProps<'div'> & { value: ReturnType<Hook> } & {
 		present?: boolean;
@@ -377,38 +528,55 @@ export type RootProviderProps =
 		onExitComplete?: () => void;
 		immediate?: boolean;
 		skipAnimationOnMount?: boolean;
-	};
-export type PositionerProps = PartProps<'div', Api['getPositionerProps']>;
-export type ValueSwatchProps = PartProps<'div', Api['getSwatchProps']>;
-export type FormatSelectProps = PartProps<'select', Api['getFormatSelectProps']>;
-export type SwatchProps = PartProps<'div', Api['getSwatchProps']>;
-export type SwatchGroupProps = PartProps<'div', Api['getSwatchGroupProps']>;
-export type ChannelSliderThumbProps = ArkPartProps<'div'>;
-export type SwatchTriggerProps = PartProps<'button', Api['getSwatchTriggerProps']>;
-export type ViewProps = ArkPartProps<'div'>;
-export type EyeDropperTriggerProps = PartProps<'button', Api['getEyeDropperTriggerProps']>;
+	} & { render?: RenderProp<'div'> };
+export type PositionerProps =
+	(PartProps<'div', Api['getPositionerProps']>) & { render?: RenderProp<'div'> };
+export type ValueSwatchProps =
+	(PartProps<'div', Api['getSwatchProps']>) & { render?: RenderProp<'div'> };
+export type FormatSelectProps =
+	(PartProps<'select', Api['getFormatSelectProps']>) & { render?: RenderProp<'select'> };
+export type SwatchProps =
+	(PartProps<'div', Api['getSwatchProps']>) & { render?: RenderProp<'div'> };
+export type SwatchGroupProps =
+	(PartProps<'div', Api['getSwatchGroupProps']>) & { render?: RenderProp<'div'> };
+export type ChannelSliderThumbProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type SwatchTriggerProps =
+	(PartProps<'button', Api['getSwatchTriggerProps']>) & { render?: RenderProp<'button'> };
+export type ViewProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type EyeDropperTriggerProps =
+	(PartProps<'button', Api['getEyeDropperTriggerProps']>) & { render?: RenderProp<'button'> };
 export type ChannelSliderProps =
-	ArkPartProps<'div'> & Pick<
+	(ArkPartProps<'div'> & Pick<
 		GetterProps<Api['getChannelSliderProps']>,
 		Extract<keyof GetterProps<Api['getChannelSliderProps']>, 'channel' | 'orientation'>
-	>;
-export type LabelProps = PartProps<'label', Api['getLabelProps']>;
-export type FormatTriggerProps = PartProps<'button', Api['getFormatTriggerProps']>;
-export type AreaThumbProps = ArkPartProps<'div'>;
-export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
-export type ContentProps = PartProps<'div', Api['getContentProps']>;
-export type ChannelSliderLabelProps = ArkPartProps<'label'>;
+	>) & { render?: RenderProp<'div'> };
+export type LabelProps =
+	(PartProps<'label', Api['getLabelProps']>) & { render?: RenderProp<'label'> };
+export type FormatTriggerProps =
+	(PartProps<'button', Api['getFormatTriggerProps']>) & { render?: RenderProp<'button'> };
+export type AreaThumbProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type TriggerProps =
+	(PartProps<'button', Api['getTriggerProps']>) & { render?: RenderProp<'button'> };
+export type ContentProps =
+	(PartProps<'div', Api['getContentProps']>) & { render?: RenderProp<'div'> };
+export type ChannelSliderLabelProps = (ArkPartProps<'label'>) & { render?: RenderProp<'label'> };
 export type ValueTextProps =
-	PartProps<'span', Api['getValueTextProps']> & { format?: ColorStringFormat };
-export type ChannelSliderValueTextProps = ArkPartProps<'span'>;
-export type SwatchIndicatorProps = ArkPartProps<'div'>;
-export type ControlProps = PartProps<'div', Api['getControlProps']>;
-export type ChannelSliderTrackProps = ArkPartProps<'div'>;
-export type ChannelInputProps = PartProps<'input', Api['getChannelInputProps']>;
-export type HiddenInputProps = PartProps<'input', Api['getHiddenInputProps']>;
-export type AreaProps = PartProps<'div', Api['getAreaProps']>;
-export type TransparencyGridProps = PartProps<'div', Api['getTransparencyGridProps']>;
-export type AreaBackgroundProps = ArkPartProps<'div'>;
+	(PartProps<'span', Api['getValueTextProps']> & { format?: ColorStringFormat }) & {
+		render?: RenderProp<'span'>;
+	};
+export type ChannelSliderValueTextProps = (ArkPartProps<'span'>) & { render?: RenderProp<'span'> };
+export type SwatchIndicatorProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type ControlProps =
+	(PartProps<'div', Api['getControlProps']>) & { render?: RenderProp<'div'> };
+export type ChannelSliderTrackProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type ChannelInputProps =
+	(PartProps<'input', Api['getChannelInputProps']>) & { render?: RenderProp<'input'> };
+export type HiddenInputProps =
+	(PartProps<'input', Api['getHiddenInputProps']>) & { render?: RenderProp<'input'> };
+export type AreaProps = (PartProps<'div', Api['getAreaProps']>) & { render?: RenderProp<'div'> };
+export type TransparencyGridProps =
+	(PartProps<'div', Api['getTransparencyGridProps']>) & { render?: RenderProp<'div'> };
+export type AreaBackgroundProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
 
 export const ColorPicker = {
 	Root,

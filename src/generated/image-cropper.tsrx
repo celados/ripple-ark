@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useImageCropper;
@@ -60,22 +62,42 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Image(props: ImageProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getImageProps' }, props);
-	<img {...mergedProps.value} />
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<img {...mergedProps.value} />
+	}
 }
 export function Selection(props: SelectionProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getSelectionProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Handle(props: HandleProps) @{
 	let &{ children } = props;
@@ -89,7 +111,12 @@ export function Handle(props: HandleProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Grid(props: GridProps) @{
 	let &{ children } = props;
@@ -103,23 +130,38 @@ export function Grid(props: GridProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Viewport(props: ViewportProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getViewportProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
-export type ImageProps = PartProps<'img', Api['getImageProps']>;
-export type SelectionProps = PartProps<'div', Api['getSelectionProps']>;
-export type HandleProps = PartProps<'div', Api['getHandleProps']>;
-export type GridProps = PartProps<'div', Api['getGridProps']>;
-export type ViewportProps = PartProps<'div', Api['getViewportProps']>;
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+export type ImageProps = (PartProps<'img', Api['getImageProps']>) & { render?: RenderProp<'img'> };
+export type SelectionProps =
+	(PartProps<'div', Api['getSelectionProps']>) & { render?: RenderProp<'div'> };
+export type HandleProps =
+	(PartProps<'div', Api['getHandleProps']>) & { render?: RenderProp<'div'> };
+export type GridProps = (PartProps<'div', Api['getGridProps']>) & { render?: RenderProp<'div'> };
+export type ViewportProps =
+	(PartProps<'div', Api['getViewportProps']>) & { render?: RenderProp<'div'> };
 
 export const ImageCropper = {
 	Root,

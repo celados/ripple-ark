@@ -1,4 +1,11 @@
-import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
+import {
+	Context as RippleContext,
+	effect,
+	track,
+	createRefKey,
+	type Children,
+	type Tracked,
+} from 'ripple';
 import { connectStack, createStack, type DrawerStack } from '@zag-js/drawer';
 import { normalizeProps } from '@celados/ripple-zag';
 import { useDrawer } from '../components';
@@ -12,10 +19,12 @@ import {
 	useRootPresence,
 	usePresenceState,
 	PRESENCE_KEYS,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 	type PresenceState,
 } from '../binding-runtime.tsrx';
 
@@ -91,20 +100,35 @@ export function RootProvider(props: RootProviderProps) @{
 export function SwipeArea(props: SwipeAreaProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getSwipeAreaProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
 	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	@if (!presence.value.unmounted) {
-		<div {...mergedProps.value}>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(mergedProps, props.render);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value}>{children}</div>
+		}
 	}
 }
 export function Backdrop(props: BackdropProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getBackdropProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function IndentBackground(props: IndentBackgroundProps) @{
 	let &{ children } = props;
@@ -112,11 +136,21 @@ export function IndentBackground(props: IndentBackgroundProps) @{
 		{ context: drawerStackApi, getter: 'getIndentBackgroundProps' },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Content(props: ContentProps) @{
 	let &{ children, ref } = props;
 	const presence = usePresenceState(presenceContext);
+	const presenceRefKey = createRefKey();
+	let applyPresenceRef = (node: any) => {
+		presence.value.setNode(node);
+		if (typeof ref === 'function') ref(node);
+	};
 	const mergedProps = usePartProps(
 		{
 			context,
@@ -130,13 +164,15 @@ export function Content(props: ContentProps) @{
 		props,
 	);
 	@if (!presence.value.unmounted) {
-		<div
-			{...mergedProps.value}
-			ref={(node) => {
-				presence.value.setNode(node);
-				if (typeof ref === 'function') ref(node);
-			}}
-		>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(
+				track(() => ({ ...mergedProps.value, [presenceRefKey]: applyPresenceRef })),
+				props.render,
+			);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value} ref={applyPresenceRef}>{children}</div>
+		}
 	}
 }
 export function Trigger(props: TriggerProps) @{
@@ -153,17 +189,32 @@ export function Trigger(props: TriggerProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCloseTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function GrabberIndicator(props: GrabberIndicatorProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getGrabberIndicatorProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Indent(props: IndentProps) @{
 	let &{ children } = props;
@@ -171,22 +222,42 @@ export function Indent(props: IndentProps) @{
 		{ context: drawerStackApi, getter: 'getIndentProps' },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Grabber(props: GrabberProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getGrabberProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Title(props: TitleProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
-	<h2 {...mergedProps.value}>{children}</h2>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<h2 {...mergedProps.value}>{children}</h2>
+	}
 }
 export function Description(props: DescriptionProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getDescriptionProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export function Stack(props: { children?: Children | Children[] }) @{
@@ -227,18 +298,27 @@ export type RootProviderProps =
 		immediate?: boolean;
 		skipAnimationOnMount?: boolean;
 	};
-export type SwipeAreaProps = PartProps<'div', Api['getSwipeAreaProps']>;
-export type PositionerProps = PartProps<'div', Api['getPositionerProps']>;
-export type BackdropProps = PartProps<'div', Api['getBackdropProps']>;
-export type IndentBackgroundProps = ArkPartProps<'div'>;
-export type ContentProps = PartProps<'div', Api['getContentProps']>;
-export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
-export type CloseTriggerProps = PartProps<'button', Api['getCloseTriggerProps']>;
-export type GrabberIndicatorProps = PartProps<'div', Api['getGrabberIndicatorProps']>;
-export type IndentProps = ArkPartProps<'div'>;
-export type GrabberProps = PartProps<'div', Api['getGrabberProps']>;
-export type TitleProps = PartProps<'h2', Api['getTitleProps']>;
-export type DescriptionProps = PartProps<'div', Api['getDescriptionProps']>;
+export type SwipeAreaProps =
+	(PartProps<'div', Api['getSwipeAreaProps']>) & { render?: RenderProp<'div'> };
+export type PositionerProps =
+	(PartProps<'div', Api['getPositionerProps']>) & { render?: RenderProp<'div'> };
+export type BackdropProps =
+	(PartProps<'div', Api['getBackdropProps']>) & { render?: RenderProp<'div'> };
+export type IndentBackgroundProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type ContentProps =
+	(PartProps<'div', Api['getContentProps']>) & { render?: RenderProp<'div'> };
+export type TriggerProps =
+	(PartProps<'button', Api['getTriggerProps']>) & { render?: RenderProp<'button'> };
+export type CloseTriggerProps =
+	(PartProps<'button', Api['getCloseTriggerProps']>) & { render?: RenderProp<'button'> };
+export type GrabberIndicatorProps =
+	(PartProps<'div', Api['getGrabberIndicatorProps']>) & { render?: RenderProp<'div'> };
+export type IndentProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type GrabberProps =
+	(PartProps<'div', Api['getGrabberProps']>) & { render?: RenderProp<'div'> };
+export type TitleProps = (PartProps<'h2', Api['getTitleProps']>) & { render?: RenderProp<'h2'> };
+export type DescriptionProps =
+	(PartProps<'div', Api['getDescriptionProps']>) & { render?: RenderProp<'div'> };
 
 export const Drawer = {
 	Root,

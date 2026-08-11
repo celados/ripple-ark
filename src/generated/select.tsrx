@@ -1,4 +1,11 @@
-import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
+import {
+	Context as RippleContext,
+	effect,
+	track,
+	createRefKey,
+	type Children,
+	type Tracked,
+} from 'ripple';
 
 import { useSelect } from '../components';
 import {
@@ -11,10 +18,12 @@ import {
 	useRootPresence,
 	usePresenceState,
 	PRESENCE_KEYS,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 	type PresenceState,
 } from '../binding-runtime.tsrx';
 
@@ -75,23 +84,43 @@ export function Root(props: RootProps) @{
 		props,
 	);
 	useRootPresence(presenceContext, () => context.get()!.value.open, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
 	useRootPresence(presenceContext, () => context.get()!.value.open, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function List(props: ListProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getListProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
 	let &{ children } = props;
@@ -99,52 +128,89 @@ export function ItemIndicator(props: ItemIndicatorProps) @{
 		{ context, getter: 'getItemIndicatorProps', inheritedProps: selectItemProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Content(props: ContentProps) @{
 	let &{ children, ref } = props;
 	const presence = usePresenceState(presenceContext);
+	const presenceRefKey = createRefKey();
+	let applyPresenceRef = (node: any) => {
+		presence.value.setNode(node);
+		if (typeof ref === 'function') ref(node);
+	};
 	const mergedProps = usePartProps(
 		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
 		props,
 	);
 	@if (!presence.value.unmounted) {
-		<div
-			{...mergedProps.value}
-			ref={(node) => {
-				presence.value.setNode(node);
-				if (typeof ref === 'function') ref(node);
-			}}
-		>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(
+				track(() => ({ ...mergedProps.value, [presenceRefKey]: applyPresenceRef })),
+				props.render,
+			);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value} ref={applyPresenceRef}>{children}</div>
+		}
 	}
 }
 export function HiddenSelect(props: HiddenSelectProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getHiddenSelectProps' }, props);
-	<select {...mergedProps.value}>{children}</select>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<select {...mergedProps.value}>{children}</select>
+	}
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
 	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	@if (!presence.value.unmounted) {
-		<div {...mergedProps.value}>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(mergedProps, props.render);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value}>{children}</div>
+		}
 	}
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ItemText(props: ItemTextProps) @{
 	let &{ children } = props;
@@ -152,7 +218,12 @@ export function ItemText(props: ItemTextProps) @{
 		{ context, getter: 'getItemTextProps', inheritedProps: selectItemProps },
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export function ItemGroup(props: ItemGroupProps) @{
 	let &{ children } = props;
@@ -167,7 +238,12 @@ export function ItemGroup(props: ItemGroupProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ItemGroupLabel(props: ItemGroupLabelProps) @{
 	let &{ children } = props;
@@ -175,7 +251,12 @@ export function ItemGroupLabel(props: ItemGroupLabelProps) @{
 		{ context, getter: 'getItemGroupLabelProps', inheritedProps: selectItemGroupProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
@@ -191,7 +272,12 @@ export function Item(props: ItemProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ValueText(props: ValueTextProps) @{
 	const api = context.get()!;
@@ -205,12 +291,22 @@ export function ValueText(props: ValueTextProps) @{
 		},
 		props,
 	);
-	<span {...mergedProps.value}>{api.value.valueAsString || (props as any).placeholder}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{api.value.valueAsString || (props as any).placeholder}</span>
+	}
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	<label {...mergedProps.value}>{children}</label>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<label {...mergedProps.value}>{children}</label>
+	}
 }
 export const ItemContext = /*#__PURE__*/ createItemContext(context, selectItemProps);
 
@@ -224,7 +320,7 @@ export type RootProps =
 		onExitComplete?: () => void;
 		immediate?: boolean;
 		skipAnimationOnMount?: boolean;
-	};
+	} & { render?: RenderProp<'div'> };
 export type RootProviderProps =
 	ArkPartProps<'div'> & { value: ReturnType<Hook> } & {
 		present?: boolean;
@@ -233,22 +329,34 @@ export type RootProviderProps =
 		onExitComplete?: () => void;
 		immediate?: boolean;
 		skipAnimationOnMount?: boolean;
+	} & { render?: RenderProp<'div'> };
+export type ListProps = (PartProps<'div', Api['getListProps']>) & { render?: RenderProp<'div'> };
+export type TriggerProps =
+	(PartProps<'button', Api['getTriggerProps']>) & { render?: RenderProp<'button'> };
+export type ItemIndicatorProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type IndicatorProps =
+	(PartProps<'div', Api['getIndicatorProps']>) & { render?: RenderProp<'div'> };
+export type ContentProps =
+	(PartProps<'div', Api['getContentProps']>) & { render?: RenderProp<'div'> };
+export type HiddenSelectProps =
+	(PartProps<'select', Api['getHiddenSelectProps']>) & { render?: RenderProp<'select'> };
+export type PositionerProps =
+	(PartProps<'div', Api['getPositionerProps']>) & { render?: RenderProp<'div'> };
+export type ClearTriggerProps =
+	(PartProps<'button', Api['getClearTriggerProps']>) & { render?: RenderProp<'button'> };
+export type ControlProps =
+	(PartProps<'div', Api['getControlProps']>) & { render?: RenderProp<'div'> };
+export type ItemTextProps = (ArkPartProps<'span'>) & { render?: RenderProp<'span'> };
+export type ItemGroupProps =
+	(PartProps<'div', Api['getItemGroupProps']>) & { render?: RenderProp<'div'> };
+export type ItemGroupLabelProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type ItemProps = (PartProps<'div', Api['getItemProps']>) & { render?: RenderProp<'div'> };
+export type ValueTextProps =
+	(PartProps<'span', Api['getValueTextProps']> & { placeholder?: string }) & {
+		render?: RenderProp<'span'>;
 	};
-export type ListProps = PartProps<'div', Api['getListProps']>;
-export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
-export type ItemIndicatorProps = ArkPartProps<'div'>;
-export type IndicatorProps = PartProps<'div', Api['getIndicatorProps']>;
-export type ContentProps = PartProps<'div', Api['getContentProps']>;
-export type HiddenSelectProps = PartProps<'select', Api['getHiddenSelectProps']>;
-export type PositionerProps = PartProps<'div', Api['getPositionerProps']>;
-export type ClearTriggerProps = PartProps<'button', Api['getClearTriggerProps']>;
-export type ControlProps = PartProps<'div', Api['getControlProps']>;
-export type ItemTextProps = ArkPartProps<'span'>;
-export type ItemGroupProps = PartProps<'div', Api['getItemGroupProps']>;
-export type ItemGroupLabelProps = ArkPartProps<'div'>;
-export type ItemProps = PartProps<'div', Api['getItemProps']>;
-export type ValueTextProps = PartProps<'span', Api['getValueTextProps']> & { placeholder?: string };
-export type LabelProps = PartProps<'label', Api['getLabelProps']>;
+export type LabelProps =
+	(PartProps<'label', Api['getLabelProps']>) & { render?: RenderProp<'label'> };
 
 export const Select = {
 	Root,

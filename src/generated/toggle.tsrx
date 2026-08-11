@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useToggle;
@@ -36,23 +38,41 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'button'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'button'> & { value: ReturnType<Hook> };
-export type IndicatorProps = PartProps<'div', Api['getIndicatorProps']>;
+export type RootProps =
+	ArkPartProps<'button'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'button'> };
+export type RootProviderProps =
+	ArkPartProps<'button'> & { value: ReturnType<Hook> } & { render?: RenderProp<'button'> };
+export type IndicatorProps =
+	(PartProps<'div', Api['getIndicatorProps']>) & { render?: RenderProp<'div'> };
 
 export const Toggle = { Root, RootProvider, Indicator, Context };

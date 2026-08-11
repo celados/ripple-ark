@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useRadioGroup;
@@ -48,17 +50,32 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export function ItemText(props: ItemTextProps) @{
 	let &{ children } = props;
@@ -66,7 +83,12 @@ export function ItemText(props: ItemTextProps) @{
 		{ context, getter: 'getItemTextProps', inheritedProps: radioGroupItemProps },
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export function ItemControl(props: ItemControlProps) @{
 	let &{ children } = props;
@@ -74,7 +96,12 @@ export function ItemControl(props: ItemControlProps) @{
 		{ context, getter: 'getItemControlProps', inheritedProps: radioGroupItemProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ItemHiddenInput(props: ItemHiddenInputProps) @{
 	let &{ children } = props;
@@ -82,7 +109,12 @@ export function ItemHiddenInput(props: ItemHiddenInputProps) @{
 		{ context, getter: 'getItemHiddenInputProps', inheritedProps: radioGroupItemProps },
 		props,
 	);
-	<input {...mergedProps.value} />
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<input {...mergedProps.value} />
+	}
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
@@ -99,25 +131,40 @@ export function Item(props: ItemProps) @{
 		},
 		props,
 	);
-	<label {...mergedProps.value}>{children}</label>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<label {...mergedProps.value}>{children}</label>
+	}
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export const ItemContext = /*#__PURE__*/ createItemContext(context, radioGroupItemProps);
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
-export type LabelProps = PartProps<'span', Api['getLabelProps']>;
-export type ItemTextProps = ArkPartProps<'span'>;
-export type ItemControlProps = ArkPartProps<'div'>;
-export type ItemHiddenInputProps = ArkPartProps<'input'>;
-export type ItemProps = PartProps<'label', Api['getItemProps']>;
-export type IndicatorProps = PartProps<'div', Api['getIndicatorProps']>;
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+export type LabelProps =
+	(PartProps<'span', Api['getLabelProps']>) & { render?: RenderProp<'span'> };
+export type ItemTextProps = (ArkPartProps<'span'>) & { render?: RenderProp<'span'> };
+export type ItemControlProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type ItemHiddenInputProps = (ArkPartProps<'input'>) & { render?: RenderProp<'input'> };
+export type ItemProps =
+	(PartProps<'label', Api['getItemProps']>) & { render?: RenderProp<'label'> };
+export type IndicatorProps =
+	(PartProps<'div', Api['getIndicatorProps']>) & { render?: RenderProp<'div'> };
 
 export const RadioGroup = {
 	Root,

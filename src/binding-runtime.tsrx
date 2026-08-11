@@ -1,5 +1,5 @@
 import { mergeProps } from '@zag-js/core';
-import { Context, effect, track, type Children, type Tracked } from 'ripple';
+import { Context, effect, track, type Children, type RefKey, type Tracked } from 'ripple';
 // components.ts does not import this module, so pulling usePresence in here
 // stays acyclic — see presence.tsrx for the standalone Presence.Root sibling.
 import { usePresence } from './components';
@@ -23,6 +23,22 @@ export type GetterProps<T> =
 		: Record<never, never>;
 export type PartProps<T extends ElementType, TGetter = never> =
 	Omit<NativePartProps<T>, keyof GetterProps<TGetter>> & GetterProps<TGetter> & OpenAttributes;
+
+// Base UI's function-form composition (https://base-ui.com/react/handbook/composition;
+// decision recorded in .agents/backlog.md "Part composition"), function form only — no
+// asChild child-cloning, no `as` prop, no element-form `render={<X />}`. One alias shared
+// by every generated part/tagged-Root type instead of repeating the signature per part.
+// Omits the origin tag's own `ref` field and its `RefKey` symbol counterpart
+// (deviation from the spec's literal `JSX.IntrinsicElements[T] & Record<string, any>`):
+// the verified ref contract (#3, see presencePartDeclaration in generate-bindings.ts)
+// never puts the composed ref on the string `ref` key — presence parts omit it and
+// ride a createRefKey() symbol instead, non-presence parts pass through an
+// element-agnostic callback — so typing `ref`/`[RefKey]` as the origin tag's own
+// `RefValue<HTMLDivElement>` etc. is a lie that breaks the feature's entire point
+// (swapping to a different tag, e.g. div Trigger -> <a>) under strict mode's
+// ref-type checking.
+export type RenderProp<T extends ElementType> =
+	(props: Omit<JSX.IntrinsicElements[T], 'ref' | RefKey> & Record<string, any>) => Children;
 
 type BindingContext<TApi extends object = AnyRecord> = Context<Tracked<TApi> | null>;
 
@@ -70,7 +86,12 @@ export function splitProps(
 	const selected: AnyRecord = {};
 	const local: AnyRecord = {};
 	for (const [key, value] of Object.entries(props)) {
-		if (key === 'children') continue;
+		// `render` (Base UI-style function-form composition, see createRenderContent
+		// below) is consumed by the part's own render-branch check, never a machine
+		// config prop or a DOM attribute — drop it here alongside `children` so every
+		// splitProps call site, including hand-rolled overrides that call it directly,
+		// excludes it for free instead of each needing its own omit entry.
+		if (key === 'children' || key === 'render') continue;
 		if (keys.includes(key)) selected[key] = value;
 		else if (!omit.includes(key)) local[key] = value;
 	}
@@ -255,7 +276,13 @@ export function useExternalPartProps<TApi extends object>(
 	const api = useBindingContext(options.context);
 	return track(() => {
 		// This snapshot is rebuilt inside the tracked computation, so it stays reactive.
-		const { children: _children, ...localProps } = props;
+		// `render` is excluded the same way `children` is — see splitProps. Cast for the
+		// same reason as the rest of this file's `(props as AnyRecord).xxx` reads: `render`
+		// is part of a generated part's own honest prop type, not this generic ChildrenProps.
+		const { children: _children, render: _render, ...localProps } = props as
+			ChildrenProps & {
+				render?: unknown;
+			};
 		return mergeProps(options.getter ? (api.value as AnyRecord)[options.getter]() : {}, localProps);
 	});
 }
@@ -274,6 +301,21 @@ function createReactiveObject<TValue extends object>(value: Tracked<TValue>): TV
 					enumerable: true,
 				},
 	});
+}
+
+// The generated part templates' `render` branch (`@if (props.render) { ... }`):
+// reuses createReactiveObject so property reads inside the consumer's spread stay
+// subscribed to the live merged props across the single render() call, the same
+// contract createApiContext/createItemContext already give their render props.
+// Returning the Content function itself (not just the live props) keeps every
+// template call site to one line: `const Content = createRenderContent(mergedProps,
+// props.render);` followed by `<{Content} />`.
+export function createRenderContent<TProps extends object>(
+	props: Tracked<TProps>,
+	render: (props: TProps) => Children,
+) {
+	const liveProps = createReactiveObject(props);
+	return () => render(liveProps);
 }
 
 export function createApiContext<TApi extends object>(context: BindingContext<TApi>) {

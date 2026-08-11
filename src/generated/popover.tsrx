@@ -1,4 +1,11 @@
-import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
+import {
+	Context as RippleContext,
+	effect,
+	track,
+	createRefKey,
+	type Children,
+	type Tracked,
+} from 'ripple';
 
 import { usePopover } from '../components';
 import {
@@ -11,10 +18,12 @@ import {
 	useRootPresence,
 	usePresenceState,
 	PRESENCE_KEYS,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 	type PresenceState,
 } from '../binding-runtime.tsrx';
 
@@ -90,67 +99,119 @@ export function Trigger(props: TriggerProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Content(props: ContentProps) @{
 	let &{ children, ref } = props;
 	const presence = usePresenceState(presenceContext);
+	const presenceRefKey = createRefKey();
+	let applyPresenceRef = (node: any) => {
+		presence.value.setNode(node);
+		if (typeof ref === 'function') ref(node);
+	};
 	const mergedProps = usePartProps(
 		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
 		props,
 	);
 	@if (!presence.value.unmounted) {
-		<div
-			{...mergedProps.value}
-			ref={(node) => {
-				presence.value.setNode(node);
-				if (typeof ref === 'function') ref(node);
-			}}
-		>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(
+				track(() => ({ ...mergedProps.value, [presenceRefKey]: applyPresenceRef })),
+				props.render,
+			);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value} ref={applyPresenceRef}>{children}</div>
+		}
 	}
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
 	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	@if (!presence.value.unmounted) {
-		<div {...mergedProps.value}>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(mergedProps, props.render);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value}>{children}</div>
+		}
 	}
 }
 export function ArrowTip(props: ArrowTipProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getArrowTipProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Description(props: DescriptionProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getDescriptionProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Anchor(props: AnchorProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getAnchorProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Arrow(props: ArrowProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getArrowProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCloseTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Title(props: TitleProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
@@ -173,16 +234,24 @@ export type RootProviderProps =
 		immediate?: boolean;
 		skipAnimationOnMount?: boolean;
 	};
-export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
-export type ContentProps = PartProps<'div', Api['getContentProps']>;
-export type IndicatorProps = PartProps<'div', Api['getIndicatorProps']>;
-export type PositionerProps = PartProps<'div', Api['getPositionerProps']>;
-export type ArrowTipProps = PartProps<'div', Api['getArrowTipProps']>;
-export type DescriptionProps = PartProps<'div', Api['getDescriptionProps']>;
-export type AnchorProps = PartProps<'div', Api['getAnchorProps']>;
-export type ArrowProps = PartProps<'div', Api['getArrowProps']>;
-export type CloseTriggerProps = PartProps<'button', Api['getCloseTriggerProps']>;
-export type TitleProps = PartProps<'div', Api['getTitleProps']>;
+export type TriggerProps =
+	(PartProps<'button', Api['getTriggerProps']>) & { render?: RenderProp<'button'> };
+export type ContentProps =
+	(PartProps<'div', Api['getContentProps']>) & { render?: RenderProp<'div'> };
+export type IndicatorProps =
+	(PartProps<'div', Api['getIndicatorProps']>) & { render?: RenderProp<'div'> };
+export type PositionerProps =
+	(PartProps<'div', Api['getPositionerProps']>) & { render?: RenderProp<'div'> };
+export type ArrowTipProps =
+	(PartProps<'div', Api['getArrowTipProps']>) & { render?: RenderProp<'div'> };
+export type DescriptionProps =
+	(PartProps<'div', Api['getDescriptionProps']>) & { render?: RenderProp<'div'> };
+export type AnchorProps =
+	(PartProps<'div', Api['getAnchorProps']>) & { render?: RenderProp<'div'> };
+export type ArrowProps = (PartProps<'div', Api['getArrowProps']>) & { render?: RenderProp<'div'> };
+export type CloseTriggerProps =
+	(PartProps<'button', Api['getCloseTriggerProps']>) & { render?: RenderProp<'button'> };
+export type TitleProps = (PartProps<'div', Api['getTitleProps']>) & { render?: RenderProp<'div'> };
 
 export const Popover = {
 	Root,

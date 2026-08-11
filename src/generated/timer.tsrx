@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useTimer;
@@ -42,17 +44,32 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Item(props: ItemProps) @{
 	const api = context.get()!;
@@ -66,12 +83,22 @@ export function Item(props: ItemProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{(api.value.formattedTime as any)[(props as any).type]}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{(api.value.formattedTime as any)[(props as any).type]}</div>
+	}
 }
 export function Separator(props: SeparatorProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getSeparatorProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ActionTrigger(props: ActionTriggerProps) @{
 	let &{ children } = props;
@@ -85,22 +112,37 @@ export function ActionTrigger(props: ActionTriggerProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Area(props: AreaProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getAreaProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
-export type ControlProps = PartProps<'div', Api['getControlProps']>;
-export type ItemProps = PartProps<'div', Api['getItemProps']>;
-export type SeparatorProps = PartProps<'div', Api['getSeparatorProps']>;
-export type ActionTriggerProps = PartProps<'button', Api['getActionTriggerProps']>;
-export type AreaProps = PartProps<'div', Api['getAreaProps']>;
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+export type ControlProps =
+	(PartProps<'div', Api['getControlProps']>) & { render?: RenderProp<'div'> };
+export type ItemProps = (PartProps<'div', Api['getItemProps']>) & { render?: RenderProp<'div'> };
+export type SeparatorProps =
+	(PartProps<'div', Api['getSeparatorProps']>) & { render?: RenderProp<'div'> };
+export type ActionTriggerProps =
+	(PartProps<'button', Api['getActionTriggerProps']>) & { render?: RenderProp<'button'> };
+export type AreaProps = (PartProps<'div', Api['getAreaProps']>) & { render?: RenderProp<'div'> };
 
 export const Timer = { Root, RootProvider, Control, Item, Separator, ActionTrigger, Area, Context };

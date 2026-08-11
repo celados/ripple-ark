@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof usePagination;
@@ -46,32 +48,62 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<nav {...mergedProps.value}>{children}</nav>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<nav {...mergedProps.value}>{children}</nav>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<nav {...mergedProps.value}>{children}</nav>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<nav {...mergedProps.value}>{children}</nav>
+	}
 }
 export function NextTrigger(props: NextTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getNextTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function FirstTrigger(props: FirstTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getFirstTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function LastTrigger(props: LastTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLastTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function PrevTrigger(props: PrevTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPrevTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
@@ -86,7 +118,12 @@ export function Item(props: ItemProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Ellipsis(props: EllipsisProps) @{
 	let &{ children } = props;
@@ -100,19 +137,32 @@ export function Ellipsis(props: EllipsisProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'nav'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'nav'> & { value: ReturnType<Hook> };
-export type NextTriggerProps = PartProps<'button', Api['getNextTriggerProps']>;
-export type FirstTriggerProps = PartProps<'button', Api['getFirstTriggerProps']>;
-export type LastTriggerProps = PartProps<'button', Api['getLastTriggerProps']>;
-export type PrevTriggerProps = PartProps<'button', Api['getPrevTriggerProps']>;
-export type ItemProps = PartProps<'button', Api['getItemProps']>;
-export type EllipsisProps = PartProps<'div', Api['getEllipsisProps']>;
+export type RootProps =
+	ArkPartProps<'nav'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'nav'> };
+export type RootProviderProps =
+	ArkPartProps<'nav'> & { value: ReturnType<Hook> } & { render?: RenderProp<'nav'> };
+export type NextTriggerProps =
+	(PartProps<'button', Api['getNextTriggerProps']>) & { render?: RenderProp<'button'> };
+export type FirstTriggerProps =
+	(PartProps<'button', Api['getFirstTriggerProps']>) & { render?: RenderProp<'button'> };
+export type LastTriggerProps =
+	(PartProps<'button', Api['getLastTriggerProps']>) & { render?: RenderProp<'button'> };
+export type PrevTriggerProps =
+	(PartProps<'button', Api['getPrevTriggerProps']>) & { render?: RenderProp<'button'> };
+export type ItemProps =
+	(PartProps<'button', Api['getItemProps']>) & { render?: RenderProp<'button'> };
+export type EllipsisProps =
+	(PartProps<'div', Api['getEllipsisProps']>) & { render?: RenderProp<'div'> };
 
 export const Pagination = {
 	Root,

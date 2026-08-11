@@ -1,4 +1,11 @@
-import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
+import {
+	Context as RippleContext,
+	effect,
+	track,
+	createRefKey,
+	type Children,
+	type Tracked,
+} from 'ripple';
 
 import { useDialog } from '../components';
 import {
@@ -11,10 +18,12 @@ import {
 	useRootPresence,
 	usePresenceState,
 	PRESENCE_KEYS,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 	type PresenceState,
 } from '../binding-runtime.tsrx';
 
@@ -79,24 +88,36 @@ export function RootProvider(props: RootProviderProps) @{
 export function Content(props: ContentProps) @{
 	let &{ children, ref } = props;
 	const presence = usePresenceState(presenceContext);
+	const presenceRefKey = createRefKey();
+	let applyPresenceRef = (node: any) => {
+		presence.value.setNode(node);
+		if (typeof ref === 'function') ref(node);
+	};
 	const mergedProps = usePartProps(
 		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
 		props,
 	);
 	@if (!presence.value.unmounted) {
-		<div
-			{...mergedProps.value}
-			ref={(node) => {
-				presence.value.setNode(node);
-				if (typeof ref === 'function') ref(node);
-			}}
-		>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(
+				track(() => ({ ...mergedProps.value, [presenceRefKey]: applyPresenceRef })),
+				props.render,
+			);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value} ref={applyPresenceRef}>{children}</div>
+		}
 	}
 }
 export function Title(props: TitleProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
-	<h2 {...mergedProps.value}>{children}</h2>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<h2 {...mergedProps.value}>{children}</h2>
+	}
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children } = props;
@@ -112,30 +133,55 @@ export function Trigger(props: TriggerProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Backdrop(props: BackdropProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getBackdropProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
 	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	@if (!presence.value.unmounted) {
-		<div {...mergedProps.value}>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(mergedProps, props.render);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value}>{children}</div>
+		}
 	}
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCloseTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Description(props: DescriptionProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getDescriptionProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
@@ -158,13 +204,19 @@ export type RootProviderProps =
 		immediate?: boolean;
 		skipAnimationOnMount?: boolean;
 	};
-export type ContentProps = PartProps<'div', Api['getContentProps']>;
-export type TitleProps = PartProps<'h2', Api['getTitleProps']>;
-export type TriggerProps = PartProps<'button', Api['getTriggerProps']>;
-export type BackdropProps = PartProps<'div', Api['getBackdropProps']>;
-export type PositionerProps = PartProps<'div', Api['getPositionerProps']>;
-export type CloseTriggerProps = PartProps<'button', Api['getCloseTriggerProps']>;
-export type DescriptionProps = PartProps<'div', Api['getDescriptionProps']>;
+export type ContentProps =
+	(PartProps<'div', Api['getContentProps']>) & { render?: RenderProp<'div'> };
+export type TitleProps = (PartProps<'h2', Api['getTitleProps']>) & { render?: RenderProp<'h2'> };
+export type TriggerProps =
+	(PartProps<'button', Api['getTriggerProps']>) & { render?: RenderProp<'button'> };
+export type BackdropProps =
+	(PartProps<'div', Api['getBackdropProps']>) & { render?: RenderProp<'div'> };
+export type PositionerProps =
+	(PartProps<'div', Api['getPositionerProps']>) & { render?: RenderProp<'div'> };
+export type CloseTriggerProps =
+	(PartProps<'button', Api['getCloseTriggerProps']>) & { render?: RenderProp<'button'> };
+export type DescriptionProps =
+	(PartProps<'div', Api['getDescriptionProps']>) & { render?: RenderProp<'div'> };
 
 export const Dialog = {
 	Root,

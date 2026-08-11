@@ -6,6 +6,8 @@ import { DerivedContent } from './fixtures/derived-content.tsrx';
 import { DialogAutoId } from './fixtures/dialog-auto-id.tsrx';
 import { MenuOnSelect } from './fixtures/menu-on-select.tsrx';
 import { PresenceDialog } from './fixtures/presence-dialog.tsrx';
+import { RenderContent } from './fixtures/render-content.tsrx';
+import { RenderTrigger } from './fixtures/render-trigger.tsrx';
 import { SelectCollection } from './fixtures/select-collection.tsrx';
 import { TourContract } from './fixtures/tour-contract.tsrx';
 import { nextFrame, renderFixture, settle } from './render';
@@ -172,6 +174,89 @@ describe('Derived content fallbacks', () => {
 			expect(progressValue.textContent).toMatch(/\d/);
 			expect(progressValue.textContent).toMatch(/%$/);
 			expect(timerSeconds.textContent).toMatch(/^\d+$/);
+		} finally {
+			unmount();
+		}
+	});
+});
+
+describe('Composition: render prop (Base UI function form, not asChild)', () => {
+	test('Dialog.Trigger render swaps the element but keeps it wired to live machine state', async () => {
+		// Pre-fix: there was no render prop at all — a custom trigger element had no way to
+		// receive the machine's aria-haspopup/data-state attrs, headless or otherwise.
+		let dialog: ReturnType<typeof useDialog> | undefined;
+		const { target, unmount } = await renderFixture(RenderTrigger, {
+			onReady: (api: ReturnType<typeof useDialog>) => {
+				dialog = api;
+			},
+		});
+		try {
+			const trigger = target.querySelector('[data-testid="trigger"]') as HTMLAnchorElement;
+			expect(trigger.tagName).toBe('A');
+			expect(trigger.getAttribute('aria-haspopup')).toBe('dialog');
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+			// render itself must never leak onto the DOM as a literal attribute.
+			expect(trigger.hasAttribute('render')).toBe(false);
+
+			// Proves liveness through createRenderContent's proxy, not just a one-shot read:
+			// the render callback ran once, but reading `data-state` off its return value
+			// must still track the machine after open state changes.
+			dialog!.value.setOpen(true);
+			await settle();
+
+			expect(trigger.getAttribute('data-state')).toBe('open');
+		} finally {
+			unmount();
+		}
+	});
+
+	test('presence-gated Dialog.Content render mounts/unmounts with the gate and composes setNode with the caller ref', async () => {
+		// Pre-fix: no render prop, so a presence-gated part had no swap mechanism at all —
+		// this also exercises the verified ref contract (#3 in 04-render-migration.md): the
+		// presence machine's setNode and the caller's own `ref` prop are composed under one
+		// createRefKey() symbol, so a plain `{...contentProps}` spread onto an arbitrary
+		// custom element (no special ref handling on the consumer's part) still gets both to
+		// fire on the same DOM node.
+		let dialog: ReturnType<typeof useDialog> | undefined;
+		const refCalls: Array<HTMLElement | null> = [];
+		const { target, unmount } = await renderFixture(RenderContent, {
+			onReady: (api: ReturnType<typeof useDialog>) => {
+				dialog = api;
+			},
+			onRef: (node: HTMLElement | null) => {
+				refCalls.push(node);
+			},
+		});
+		try {
+			// lazyMount: closed on first render, so the render branch never mounted.
+			expect(target.querySelector('[data-testid="content"]')).toBeNull();
+			expect(refCalls).toEqual([]);
+
+			dialog!.value.setOpen(true);
+			await settle();
+
+			const content = target.querySelector('[data-testid="content"]') as HTMLElement;
+			expect(content).toBeTruthy();
+			expect(content.tagName).toBe('SECTION');
+			// Ripple's ref binder wraps a callback ref in an effect (verified against
+			// .scratch/ripple-upstream/packages/ripple/src/runtime/internal/client/blocks.js
+			// — ref()'s own doc comment: "invoked with the element on mount; if it returns a
+			// function, that function runs as the cleanup on unmount"), so a callback that
+			// itself reads a reactive value (applyPresenceRef reads presence.value) can
+			// re-fire more than once — every call here must still land on the same live node.
+			expect(refCalls.length).toBeGreaterThan(0);
+			expect(refCalls.every((node) => node === content)).toBe(true);
+
+			dialog!.value.setOpen(false);
+			await settle();
+			await nextFrame();
+
+			// unmountOnExit: the gate tore the render branch back down. A callback ref that
+			// never returns a cleanup function (ours doesn't) is never re-invoked with
+			// `null` on unmount — see the ref() doc comment above — so the DOM node
+			// actually disappearing is the correct proof the gate unmounted the render
+			// branch, not a trailing `null` ref call.
+			expect(target.querySelector('[data-testid="content"]')).toBeNull();
 		} finally {
 			unmount();
 		}

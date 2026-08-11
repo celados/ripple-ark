@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useQrCode;
@@ -39,12 +41,22 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function DownloadTrigger(props: DownloadTriggerProps) @{
 	let &{ children } = props;
@@ -60,31 +72,56 @@ export function DownloadTrigger(props: DownloadTriggerProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Overlay(props: OverlayProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getOverlayProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Frame(props: FrameProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getFrameProps' }, props);
-	<svg {...mergedProps.value}>{children}</svg>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<svg {...mergedProps.value}>{children}</svg>
+	}
 }
 export function Pattern(props: PatternProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getPatternProps' }, props);
-	<path {...mergedProps.value}>{children}</path>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<path {...mergedProps.value}>{children}</path>
+	}
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
-export type DownloadTriggerProps = PartProps<'button', Api['getDownloadTriggerProps']>;
-export type OverlayProps = PartProps<'div', Api['getOverlayProps']>;
-export type FrameProps = PartProps<'svg', Api['getFrameProps']>;
-export type PatternProps = PartProps<'path', Api['getPatternProps']>;
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+export type DownloadTriggerProps =
+	(PartProps<'button', Api['getDownloadTriggerProps']>) & { render?: RenderProp<'button'> };
+export type OverlayProps =
+	(PartProps<'div', Api['getOverlayProps']>) & { render?: RenderProp<'div'> };
+export type FrameProps = (PartProps<'svg', Api['getFrameProps']>) & { render?: RenderProp<'svg'> };
+export type PatternProps =
+	(PartProps<'path', Api['getPatternProps']>) & { render?: RenderProp<'path'> };
 
 export const QrCode = { Root, RootProvider, DownloadTrigger, Overlay, Frame, Pattern, Context };

@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootPresence,
 	usePresenceState,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 	type PresenceState,
 } from '../binding-runtime.tsrx';
 
@@ -42,12 +44,22 @@ export function Title(props: TitleProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
 	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
-	<h2 {...mergedProps.value}>{children || api.value.step?.title}</h2>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<h2 {...mergedProps.value}>{children || api.value.step?.title}</h2>
+	}
 }
 export function Spotlight(props: SpotlightProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getSpotlightProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ActionTrigger(props: ActionTriggerProps) @{
 	let &{ children } = props;
@@ -61,57 +73,107 @@ export function ActionTrigger(props: ActionTriggerProps) @{
 		},
 		props,
 	);
-	<button {...mergedProps.value}>{children || (props as any).action?.label}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children || (props as any).action?.label}</button>
+	}
 }
 export function ProgressText(props: ProgressTextProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
 	const mergedProps = usePartProps({ context, getter: 'getProgressTextProps' }, props);
-	<div {...mergedProps.value}>{children || api.value.getProgressText()}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children || api.value.getProgressText()}</div>
+	}
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getCloseTriggerProps' }, props);
-	<button {...mergedProps.value}>{children}</button>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<button {...mergedProps.value}>{children}</button>
+	}
 }
 export function Arrow(props: ArrowProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getArrowProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ArrowTip(props: ArrowTipProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getArrowTipProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Backdrop(props: BackdropProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getBackdropProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Description(props: DescriptionProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
 	const mergedProps = usePartProps({ context, getter: 'getDescriptionProps' }, props);
-	<div {...mergedProps.value}>{children || api.value.step?.description}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children || api.value.step?.description}</div>
+	}
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
 	const presence = usePresenceState(presenceContext);
 	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
 	@if (!presence.value.unmounted) {
-		<div {...mergedProps.value}>{children}</div>
+		@if (props.render) {
+			const Content = createRenderContent(mergedProps, props.render);
+			<{Content} />
+		} @else {
+			<div {...mergedProps.value}>{children}</div>
+		}
 	}
 }
 export function Content(props: ContentProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 
 export function Actions(props: { render: (actions: Tracked<AnyRecord[]>) => Children }) @{
@@ -141,18 +203,27 @@ export type RootProviderProps =
 		immediate?: boolean;
 		skipAnimationOnMount?: boolean;
 	} & ComponentProps;
-export type TitleProps = PartProps<'h2', Api['getTitleProps']>;
-export type SpotlightProps = PartProps<'div', Api['getSpotlightProps']>;
-export type ActionTriggerProps = PartProps<'button', Api['getActionTriggerProps']>;
-export type ProgressTextProps = PartProps<'div', Api['getProgressTextProps']>;
-export type CloseTriggerProps = PartProps<'button', Api['getCloseTriggerProps']>;
-export type ArrowProps = PartProps<'div', Api['getArrowProps']>;
-export type ArrowTipProps = PartProps<'div', Api['getArrowTipProps']>;
-export type BackdropProps = PartProps<'div', Api['getBackdropProps']>;
-export type DescriptionProps = PartProps<'div', Api['getDescriptionProps']>;
-export type ControlProps = ArkPartProps<'div'>;
-export type PositionerProps = PartProps<'div', Api['getPositionerProps']>;
-export type ContentProps = PartProps<'div', Api['getContentProps']>;
+export type TitleProps = (PartProps<'h2', Api['getTitleProps']>) & { render?: RenderProp<'h2'> };
+export type SpotlightProps =
+	(PartProps<'div', Api['getSpotlightProps']>) & { render?: RenderProp<'div'> };
+export type ActionTriggerProps =
+	(PartProps<'button', Api['getActionTriggerProps']>) & { render?: RenderProp<'button'> };
+export type ProgressTextProps =
+	(PartProps<'div', Api['getProgressTextProps']>) & { render?: RenderProp<'div'> };
+export type CloseTriggerProps =
+	(PartProps<'button', Api['getCloseTriggerProps']>) & { render?: RenderProp<'button'> };
+export type ArrowProps = (PartProps<'div', Api['getArrowProps']>) & { render?: RenderProp<'div'> };
+export type ArrowTipProps =
+	(PartProps<'div', Api['getArrowTipProps']>) & { render?: RenderProp<'div'> };
+export type BackdropProps =
+	(PartProps<'div', Api['getBackdropProps']>) & { render?: RenderProp<'div'> };
+export type DescriptionProps =
+	(PartProps<'div', Api['getDescriptionProps']>) & { render?: RenderProp<'div'> };
+export type ControlProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type PositionerProps =
+	(PartProps<'div', Api['getPositionerProps']>) & { render?: RenderProp<'div'> };
+export type ContentProps =
+	(PartProps<'div', Api['getContentProps']>) & { render?: RenderProp<'div'> };
 
 export const Tour = {
 	Root,

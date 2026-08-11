@@ -8,10 +8,12 @@ import {
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
+	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
+	type RenderProp,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useTreeView;
@@ -63,12 +65,22 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function BranchText(props: BranchTextProps) @{
 	let &{ children } = props;
@@ -76,7 +88,12 @@ export function BranchText(props: BranchTextProps) @{
 		{ context, getter: 'getBranchTextProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
 	let &{ children } = props;
@@ -84,12 +101,22 @@ export function ItemIndicator(props: ItemIndicatorProps) @{
 		{ context, getter: 'getItemIndicatorProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Tree(props: TreeProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getTreeProps' }, props);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
@@ -97,7 +124,12 @@ export function Item(props: ItemProps) @{
 		{ context, getter: 'getItemProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Branch(props: BranchProps) @{
 	let &{ children } = props;
@@ -105,7 +137,12 @@ export function Branch(props: BranchProps) @{
 		{ context, getter: 'getBranchProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function NodeCheckbox(props: NodeCheckboxProps) @{
 	let &{ children } = props;
@@ -113,7 +150,12 @@ export function NodeCheckbox(props: NodeCheckboxProps) @{
 		{ context, getter: 'getNodeCheckboxProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export function BranchTrigger(props: BranchTriggerProps) @{
 	let &{ children } = props;
@@ -121,7 +163,12 @@ export function BranchTrigger(props: BranchTriggerProps) @{
 		{ context, getter: 'getBranchTriggerProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function NodeRenameInput(props: NodeRenameInputProps) @{
 	let &{ children } = props;
@@ -129,7 +176,12 @@ export function NodeRenameInput(props: NodeRenameInputProps) @{
 		{ context, getter: 'getNodeRenameInputProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<input {...mergedProps.value} />
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<input {...mergedProps.value} />
+	}
 }
 export function BranchContent(props: BranchContentProps) @{
 	let &{ children } = props;
@@ -137,7 +189,12 @@ export function BranchContent(props: BranchContentProps) @{
 		{ context, getter: 'getBranchContentProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function BranchControl(props: BranchControlProps) @{
 	let &{ children } = props;
@@ -145,7 +202,12 @@ export function BranchControl(props: BranchControlProps) @{
 		{ context, getter: 'getBranchControlProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function BranchIndentGuide(props: BranchIndentGuideProps) @{
 	let &{ children } = props;
@@ -153,12 +215,22 @@ export function BranchIndentGuide(props: BranchIndentGuideProps) @{
 		{ context, getter: 'getBranchIndentGuideProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
 	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	<h3 {...mergedProps.value}>{children}</h3>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<h3 {...mergedProps.value}>{children}</h3>
+	}
 }
 export function BranchIndicator(props: BranchIndicatorProps) @{
 	let &{ children } = props;
@@ -166,7 +238,12 @@ export function BranchIndicator(props: BranchIndicatorProps) @{
 		{ context, getter: 'getBranchIndicatorProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<div {...mergedProps.value}>{children}</div>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<div {...mergedProps.value}>{children}</div>
+	}
 }
 export function ItemText(props: ItemTextProps) @{
 	let &{ children } = props;
@@ -174,7 +251,12 @@ export function ItemText(props: ItemTextProps) @{
 		{ context, getter: 'getItemTextProps', inheritedProps: treeViewNodeProps },
 		props,
 	);
-	<span {...mergedProps.value}>{children}</span>
+	@if (props.render) {
+		const Content = createRenderContent(mergedProps, props.render);
+		<{Content} />
+	} @else {
+		<span {...mergedProps.value}>{children}</span>
+	}
 }
 export const NodeContext = /*#__PURE__*/ createItemContext(context, treeViewNodeProps);
 export function NodeProvider(props: ArkPartProps & { indexPath: number[]; node: unknown }) @{
@@ -212,22 +294,24 @@ export function NodeCheckboxIndicator(props: {
 }
 export const Context = /*#__PURE__*/ createApiContext(context);
 
-export type RootProps = ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]>;
-export type RootProviderProps = ArkPartProps<'div'> & { value: ReturnType<Hook> };
-export type BranchTextProps = ArkPartProps<'span'>;
-export type ItemIndicatorProps = ArkPartProps<'div'>;
-export type TreeProps = PartProps<'div', Api['getTreeProps']>;
-export type ItemProps = ArkPartProps<'div'>;
-export type BranchProps = ArkPartProps<'div'>;
-export type NodeCheckboxProps = ArkPartProps<'span'>;
-export type BranchTriggerProps = ArkPartProps<'div'>;
-export type NodeRenameInputProps = ArkPartProps<'input'>;
-export type BranchContentProps = ArkPartProps<'div'>;
-export type BranchControlProps = ArkPartProps<'div'>;
-export type BranchIndentGuideProps = ArkPartProps<'div'>;
-export type LabelProps = PartProps<'h3', Api['getLabelProps']>;
-export type BranchIndicatorProps = ArkPartProps<'div'>;
-export type ItemTextProps = ArkPartProps<'span'>;
+export type RootProps =
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+export type RootProviderProps =
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+export type BranchTextProps = (ArkPartProps<'span'>) & { render?: RenderProp<'span'> };
+export type ItemIndicatorProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type TreeProps = (PartProps<'div', Api['getTreeProps']>) & { render?: RenderProp<'div'> };
+export type ItemProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type BranchProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type NodeCheckboxProps = (ArkPartProps<'span'>) & { render?: RenderProp<'span'> };
+export type BranchTriggerProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type NodeRenameInputProps = (ArkPartProps<'input'>) & { render?: RenderProp<'input'> };
+export type BranchContentProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type BranchControlProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type BranchIndentGuideProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type LabelProps = (PartProps<'h3', Api['getLabelProps']>) & { render?: RenderProp<'h3'> };
+export type BranchIndicatorProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
+export type ItemTextProps = (ArkPartProps<'span'>) & { render?: RenderProp<'span'> };
 
 export const TreeView = {
 	Root,
