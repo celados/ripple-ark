@@ -1,15 +1,17 @@
 import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
-
+import { mergeProps } from '@zag-js/core';
 import { useSelect } from '../components';
 import {
 	Part,
 	createApiContext,
 	createItemContext,
+	createPartId,
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
 	useRootPresence,
 	PRESENCE_KEYS,
+	splitProps,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -74,13 +76,25 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	useRootPresence(presenceContext, () => context.get()!.value.open, props);
+	useRootPresence(
+		presenceContext,
+		() => (props as AnyRecord).present === undefined
+			? context.get()!.value.open
+			: Boolean((props as AnyRecord).present),
+		props,
+	);
 	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
-	useRootPresence(presenceContext, () => context.get()!.value.open, props);
+	useRootPresence(
+		presenceContext,
+		() => (props as AnyRecord).present === undefined
+			? context.get()!.value.open
+			: Boolean((props as AnyRecord).present),
+		props,
+	);
 	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function List(props: ListProps) @{
@@ -115,12 +129,21 @@ export function Content(props: ContentProps) @{
 	>{children}</Part>
 }
 export function HiddenSelect(props: HiddenSelectProps) @{
-	let &{ children } = props;
-	<Part
-		tag="select"
-		options={{ context, getter: 'getHiddenSelectProps' }}
-		of={props}
-	>{children}</Part>
+	const api = context.get();
+	if (
+		!api
+	) throw new Error('Select.HiddenSelect must be rendered inside Select.Root or RootProvider');
+	<Part tag="select" options={{ context, getter: 'getHiddenSelectProps' }} of={props}>
+		@if (api.value.value.length === 0) {
+			<option value="" />
+		}
+		@for (const item of api.value.collection.items) {
+			<option
+				value={api.value.collection.getItemValue(item) ?? ''}
+				disabled={api.value.collection.getItemDisabled(item)}
+			>{api.value.collection.stringifyItem(item)}</option>
+		}
+	</Part>
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
@@ -154,14 +177,14 @@ export function ItemText(props: ItemTextProps) @{
 }
 export function ItemGroup(props: ItemGroupProps) @{
 	let &{ children } = props;
+	const autoId = createPartId('select-group');
 	<Part
 		tag="div"
 		options={{
 			context,
 			getter: 'getItemGroupProps',
-			propKeys: [
-				'id',
-			],
+			propKeys: ['id'],
+			propDefaults: { id: () => autoId },
 			provideProps: selectItemGroupProps,
 		}}
 		of={props}
@@ -169,11 +192,18 @@ export function ItemGroup(props: ItemGroupProps) @{
 }
 export function ItemGroupLabel(props: ItemGroupLabelProps) @{
 	let &{ children } = props;
-	<Part
-		tag="div"
-		options={{ context, getter: 'getItemGroupLabelProps', inheritedProps: selectItemGroupProps }}
-		of={props}
-	>{children}</Part>
+	const api = context.get();
+	const group = selectItemGroupProps.get();
+	if (
+		!api || !group
+	) throw new Error('Select.ItemGroupLabel must be rendered inside Select.ItemGroup');
+	const mergedProps = track(
+		() => mergeProps(
+			api.value.getItemGroupLabelProps({ htmlFor: group.value.id }),
+			splitProps(props, [])[1],
+		),
+	);
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
@@ -251,7 +281,7 @@ export type ControlProps =
 	(PartProps<'div', Api['getControlProps']>) & { render?: RenderProp<'div'> };
 export type ItemTextProps = (ArkPartProps<'span'>) & { render?: RenderProp<'span'> };
 export type ItemGroupProps =
-	(PartProps<'div', Api['getItemGroupProps']>) & { render?: RenderProp<'div'> };
+	(ArkPartProps<'div'> & { id?: string }) & { render?: RenderProp<'div'> };
 export type ItemGroupLabelProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
 export type ItemProps = (PartProps<'div', Api['getItemProps']>) & { render?: RenderProp<'div'> };
 export type ValueTextProps =

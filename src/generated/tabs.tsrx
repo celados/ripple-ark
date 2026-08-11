@@ -7,11 +7,15 @@ import {
 	createItemContext,
 	useRootProps,
 	useRootProviderProps,
+	usePartPresence,
+	provideRenderStrategy,
+	RENDER_STRATEGY_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
 	type RenderProp,
+	type PresenceState,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useTabs;
@@ -19,6 +23,7 @@ export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);
 
 export function Root(props: RootProps) @{
 	let &{ children } = props;
@@ -40,20 +45,29 @@ export function Root(props: RootProps) @{
 				'translations',
 				'value',
 			],
+			omitKeys: RENDER_STRATEGY_KEYS,
 
 			useMachine: useTabs as any,
 		},
 		props,
 	);
+	provideRenderStrategy(props);
 	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	const mergedProps = useRootProviderProps({ context, omitKeys: RENDER_STRATEGY_KEYS }, props);
+	provideRenderStrategy(props);
 	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Content(props: ContentProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
+
+	const presence = usePartPresence(() => api.value.value === (props as AnyRecord).value, {
+		immediate: true,
+	});
+	presenceContext.set(presence);
 	<Part
 		tag="div"
 		options={{
@@ -62,7 +76,12 @@ export function Content(props: ContentProps) @{
 			propKeys: [
 				'value',
 			],
+			presence,
+			omitKeys: ['ref'],
 		}}
+		presence={presence}
+		gate
+		composeRef
 		of={props}
 	>{children}</Part>
 }
@@ -93,9 +112,15 @@ export function List(props: ListProps) @{
 export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps =
-	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & {
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+	} & { render?: RenderProp<'div'> };
 export type RootProviderProps =
-	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & {
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+	} & { render?: RenderProp<'div'> };
 export type ContentProps =
 	(PartProps<'div', Api['getContentProps']>) & { render?: RenderProp<'div'> };
 export type TriggerProps =

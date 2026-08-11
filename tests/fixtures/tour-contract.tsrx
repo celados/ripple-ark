@@ -13,13 +13,19 @@ export function TourContract(props: { onReady: (tour: ReturnType<typeof useTour>
 				type: 'dialog',
 				title: 'Welcome',
 				description: 'This is the first step.',
+				backdrop: true,
+				arrow: true,
+				target: () => document.body,
 			},
 		],
 	});
 	props.onReady(tour);
-	<Tour.Root tour={tour}>
+	<Tour.Root tour={tour} lazyMount>
+		<Tour.Backdrop data-testid="tour-backdrop" />
+		<Tour.Spotlight data-testid="tour-spotlight" />
 		<Tour.Positioner>
 			<Tour.Content data-testid="tour-content">
+				<Tour.Arrow data-testid="tour-arrow" />
 				<Tour.Title data-testid="tour-title" />
 				<Tour.Description data-testid="tour-description" />
 				<button>Next</button>

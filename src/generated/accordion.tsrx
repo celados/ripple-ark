@@ -7,6 +7,8 @@ import {
 	createItemContext,
 	useRootProps,
 	useRootProviderProps,
+	provideRenderStrategy,
+	RENDER_STRATEGY_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -41,16 +43,19 @@ export function Root(props: RootProps) @{
 				'orientation',
 				'value',
 			],
+			omitKeys: RENDER_STRATEGY_KEYS,
 
 			useMachine: useAccordion as any,
 		},
 		props,
 	);
+	provideRenderStrategy(props);
 	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	const mergedProps = useRootProviderProps({ context, omitKeys: RENDER_STRATEGY_KEYS }, props);
+	provideRenderStrategy(props);
 	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
@@ -98,9 +103,15 @@ export const ItemContext = /*#__PURE__*/ createItemContext(context, accordionIte
 export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps =
-	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & {
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+	} & { render?: RenderProp<'div'> };
 export type RootProviderProps =
-	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & {
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+	} & { render?: RenderProp<'div'> };
 export type ItemIndicatorProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
 export type ItemContentProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
 export type ItemProps = (PartProps<'div', Api['getItemProps']>) & { render?: RenderProp<'div'> };

@@ -14,8 +14,16 @@ import {
 import { usePresence } from './components';
 
 type AnyRecord = Record<string, any>;
+let partIdCount = 0;
 type ChildrenProps = { children?: Children | Children[] };
 export type ComponentProps = ChildrenProps;
+
+export function createPartId(prefix: string): string {
+	// Ark's group parts require an id even when the caller omits one. Ripple has
+	// no hydration-stable useId yet, so this shares the root auto-id limitation
+	// tracked in .agents/backlog.md instead of leaving group semantics broken.
+	return `${prefix}-${++partIdCount}`;
+}
 
 type ElementType = keyof JSX.IntrinsicElements;
 type RemoveIndexSignature<T> =
@@ -34,7 +42,7 @@ export type PartProps<T extends ElementType, TGetter = never> =
 	Omit<NativePartProps<T>, keyof GetterProps<TGetter>> & GetterProps<TGetter> & OpenAttributes;
 
 // Base UI's function-form composition (https://base-ui.com/react/handbook/composition;
-// decision recorded in .agents/backlog.md "Part composition"), function form only — no
+// decision recorded in README.md "Composition"), function form only — no
 // asChild child-cloning, no `as` prop, no element-form `render={<X />}`. One alias shared
 // by every generated part/tagged-Root type instead of repeating the signature per part.
 // Omits the origin tag's own `ref` field and its `RefKey` symbol counterpart
@@ -71,6 +79,7 @@ export type PartOptions<TApi extends object> = {
 	context: BindingContext<TApi>;
 	getter?: Extract<keyof TApi, string>;
 	propKeys?: readonly string[];
+	propDefaults?: Record<string, () => unknown>;
 	// Presence-only: `ref` must be pulled out of localProps so the part's own
 	// composed ref (setNode + user ref) is the sole ref reaching the element.
 	omitKeys?: readonly string[];
@@ -80,7 +89,7 @@ export type PartOptions<TApi extends object> = {
 	// Presence layer: merged between the machine getter and localProps, mirroring
 	// upstream's mergeProps(getter, presenceLayer, localProps) order (e.g.
 	// Content's hidden/data-state, Trigger's aria-controls-only coupling).
-	presence?: Context<Tracked<PresenceState> | null>;
+	presence?: PresenceSource;
 	presenceProps?: (state: PresenceState) => AnyRecord;
 };
 
@@ -177,6 +186,28 @@ export type PresenceState = {
 	setNode(node: HTMLElement | null): void;
 };
 
+export type RenderStrategyProps = {
+	lazyMount?: boolean;
+	unmountOnExit?: boolean;
+};
+
+export type PresenceSource = Context<Tracked<PresenceState> | null> | Tracked<PresenceState>;
+
+const renderStrategyContext = /*#__PURE__*/ new Context<Tracked<RenderStrategyProps> | null>(null);
+
+export const RENDER_STRATEGY_KEYS = ['lazyMount', 'unmountOnExit'] as const;
+
+export function provideRenderStrategy(props: RenderStrategyProps): void {
+	renderStrategyContext.set(
+		track(
+			() => ({
+				lazyMount: props.lazyMount,
+				unmountOnExit: props.unmountOnExit,
+			}),
+		),
+	);
+}
+
 // Mirrors upstream presence/split-presence-props.ts + utils/render-strategy.ts:
 // the full prop surface Ark's Presence layer reserves on a tagged Root before
 // any localProps reach the DOM. `present` and `unmountOnExit`/`lazyMount` are
@@ -195,16 +226,14 @@ export const PRESENCE_KEYS = [
  * Builds the Zag presence machine for a Root/RootProvider and publishes its
  * derived state on `presenceContext`, mirroring presence.tsrx's PresenceRoot
  * (unmounted = lazyMount/unmountOnExit gating; presenceProps = hidden + data-state).
- * `present` always comes from machine state (open), never a user `present` prop —
- * upstream's mergeProps order lets machine state win in 10 of 12 roots; the other
- * two (select, floating-panel) invert the order, which reads as an upstream
- * inconsistency rather than intent, so this keeps the behavior uniform.
+ * The caller supplies the desired present source because upstream's merge order
+ * differs by Root; generated bindings preserve that order per component.
  */
-export function useRootPresence(
-	presenceContext: Context<Tracked<PresenceState> | null>,
+function createPresenceState(
 	present: () => boolean,
-	props: ChildrenProps,
-): void {
+	strategy: () => RenderStrategyProps,
+	props: { immediate?: boolean; onExitComplete?: () => void; skipAnimationOnMount?: boolean },
+) {
 	const machine = usePresence({
 		get present() {
 			return present();
@@ -222,22 +251,48 @@ export function useRootPresence(
 	});
 	const state = track(
 		() => ({
-			unmounted: !machine.value.present && !wasEverPresent.value &&
-				Boolean((props as AnyRecord).lazyMount) ||
-				Boolean((props as AnyRecord).unmountOnExit) && !machine.value.present &&
-					wasEverPresent.value,
+			unmounted: !machine.value.present && !wasEverPresent.value && Boolean(strategy().lazyMount) ||
+				Boolean(strategy().unmountOnExit) && !machine.value.present && wasEverPresent.value,
 			presenceProps: {
 				hidden: !machine.value.present,
+				// The desired state must flip before Zag's lingering `present` does so exit
+				// animations can select their closed-state styles while remaining mounted.
 				'data-state': machine.value.skip && (props as AnyRecord).skipAnimationOnMount
 					? undefined
-					: machine.value.present
+					: present()
 						? 'open'
 						: 'closed',
 			},
 			setNode: machine.value.setNode,
 		}),
 	);
+	return state;
+}
+
+export function useRootPresence(
+	presenceContext: Context<Tracked<PresenceState> | null>,
+	present: () => boolean,
+	props: ChildrenProps,
+): void {
+	const state = createPresenceState(
+		present,
+		() => props as RenderStrategyProps,
+		props as AnyRecord,
+	);
 	presenceContext.set(state);
+}
+
+export function usePartPresence(
+	present: () => boolean,
+	options: { immediate?: boolean } = {},
+): Tracked<PresenceState> {
+	const strategy = renderStrategyContext.get();
+	return createPresenceState(present, () => strategy?.value ?? {}, options);
+}
+
+function resolvePresence(source: PresenceSource | undefined) {
+	if (!source) return null;
+	return source instanceof Context ? usePresenceState(source) : source;
 }
 
 export function usePartProps<TApi extends object>(
@@ -245,6 +300,7 @@ export function usePartProps<TApi extends object>(
 	props: ChildrenProps,
 ) {
 	const api = useBindingContext(options.context);
+	const presenceState = resolvePresence(options.presence);
 	const machineProps = track(() => {
 		const [ownProps] = splitProps(props, options.propKeys ?? []);
 		const inheritedContexts =
@@ -253,22 +309,25 @@ export function usePartProps<TApi extends object>(
 				: options.inheritedProps
 					? [options.inheritedProps]
 					: [];
-		return Object.assign(
+		const merged = Object.assign(
 			{},
 			...inheritedContexts.map((inherited) => inherited.get()?.value ?? {}),
 			ownProps,
 		);
+		for (const [key, fallback] of Object.entries(options.propDefaults ?? {})) {
+			if ((ownProps as AnyRecord)[key] === undefined) merged[key] = fallback();
+		}
+		return merged;
 	});
 	options.provideProps?.set(machineProps);
 	return track(() => {
 		const getter = options.getter ? (api.value as AnyRecord)[options.getter] : undefined;
 		const [, localProps] = splitProps(props, options.propKeys ?? [], options.omitKeys);
-		const presenceState = options.presence?.get()?.value;
 		const presenceLayer =
 			presenceState
 				? (options.presenceProps
-					? options.presenceProps(presenceState)
-					: presenceState.presenceProps)
+					? options.presenceProps(presenceState.value)
+					: presenceState.value.presenceProps)
 				: undefined;
 		return mergeProps(
 			typeof getter === 'function' ? getter(machineProps.value) : {},
@@ -334,11 +393,14 @@ export type PartFrameProps = {
 	of: AnyRecord;
 	options?: PartOptions<AnyRecord>;
 	merged?: Tracked<AnyRecord>;
+	// Rare explicit element attributes that upstream applies after its merged
+	// spread (for example Tour.Backdrop's step-controlled `hidden`).
+	finalProps?: () => AnyRecord;
 	// Presence context for gate/composeRef — distinct from options.presence,
 	// which is the presenceProps *merge* channel: a part can gate without merging
 	// (Positioner) and merge without gating (aria-controls triggers); see
 	// presencePartBehaviors in generate-bindings.ts.
-	presence?: Context<Tracked<PresenceState> | null>;
+	presence?: PresenceSource;
 	gate?: boolean;
 	composeRef?: boolean;
 	children?: Children | Children[];
@@ -357,9 +419,12 @@ export type PartFrameProps = {
  */
 export function Part(props: PartFrameProps) @{
 	let &{ tag, of, gate, composeRef, children } = props;
-	const presence =
-		props.presence ? usePresenceState(props.presence) : null;
+	const presence = resolvePresence(props.presence);
 	const mergedProps = props.merged ?? usePartProps(props.options!, of);
+	const elementProps =
+		props.finalProps
+			? track(() => mergeProps(mergedProps.value, props.finalProps!()))
+			: mergedProps;
 	// Ref contract (verified against ripple's render.js + tsrx-ripple's "spreading
 	// into composite refs" test): a plain string `ref` key in a spread object gets
 	// NO special treatment, but apply_element_spread applies whatever function sits
@@ -386,17 +451,17 @@ export function Part(props: PartFrameProps) @{
 		@if (of.render) {
 			const Content = createRenderContent(
 				composeRef
-					? track(() => ({ ...mergedProps.value, [presenceRefKey]: applyRef }))
-					: mergedProps,
+					? track(() => ({ ...elementProps.value, [presenceRefKey]: applyRef }))
+					: elementProps,
 				of.render,
 			);
 			<{Content} />
 		} @else if (composeRef) {
-			<{tag} {...mergedProps.value} ref={applyRef}>{children}</{tag}>
+			<{tag} {...elementProps.value} ref={applyRef}>{children}</{tag}>
 		} @else if (children === undefined) {
-			<{tag} {...mergedProps.value} />
+			<{tag} {...elementProps.value} />
 		} @else {
-			<{tag} {...mergedProps.value}>{children}</{tag}>
+			<{tag} {...elementProps.value}>{children}</{tag}>
 		}
 	}
 }
@@ -413,14 +478,18 @@ export function createApiContext<TApi extends object>(context: BindingContext<TA
 export function createItemContext(
 	context: BindingContext,
 	propsContext: Context<Tracked<AnyRecord> | null>,
-	getter = 'getItemState',
+	getter: string | ((props: AnyRecord) => string) = 'getItemState',
 ) {
 	return function ItemContext(props: { render: (state: AnyRecord) => Children }) @{
 		let &{ render } = props;
 		const api = useBindingContext(context);
 		const itemProps = propsContext.get();
 		if (!itemProps) throw new Error('ItemContext must be rendered inside its Item');
-		const state = track(() => api.value[getter](itemProps.value));
+		const state = track(
+			() => api.value[typeof getter === 'function' ? getter(itemProps.value) : getter](
+				itemProps.value,
+			),
+		);
 		const liveState = createReactiveObject(state);
 		const Content = () => render(liveState);
 		<{Content} />

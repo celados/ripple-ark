@@ -2,6 +2,16 @@
 
 Known tails accepted with reasoning. Remove entries when resolved.
 
+## SSR/hydration-stable machine ids need a ripple-level useId (deferred 2026-08-11)
+
+`createMachineHook`'s auto id is a module-global counter: stable per instance lifetime,
+but a long-lived SSR process keeps counting across requests while each client load starts
+from 1, so hydrated DOM ids drift from the machine scope (`dialog:ark-5:content` server
+vs `dialog:ark-1:content` client; empirically confirmed by double-SSR during the 0.5.x
+codex review). A real fix needs tree-position-stable id generation from ripple itself
+(React useId equivalent); nothing ripple-ark can fake locally. Until then SSR consumers
+must pass explicit `id`s.
+
 ## Field ↔ control integration (deferred 2026-08-11)
 
 Upstream Ark wires `useFieldContext` into ~13 machine hooks (checkbox, select, combobox, editable, number-input, password-input, pin-input, rating-group, signature-pad, switch, tags-input, color-picker, file-upload): field ids map into machine `ids`, and `disabled`/`readOnly`/`invalid`/`required` plus `ariaDescribedby` flow into controls and hidden inputs. Our `field.tsrx` utility exists but keeps its context module-private, and generated components never consume it. Fix needs (1) `field.tsrx` exposing a consumable context contract, (2) a per-component ids/props mapping table in the generator or hook layer. Until then `Field.Root` + control composition renders but lacks the aria/ids/state wiring.

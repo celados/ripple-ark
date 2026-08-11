@@ -7,6 +7,8 @@ import {
 	createItemContext,
 	useRootProps,
 	useRootProviderProps,
+	provideRenderStrategy,
+	RENDER_STRATEGY_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -58,16 +60,19 @@ export function Root(props: RootProps) @{
 				'typeahead',
 				'scrollToIndexFn',
 			],
+			omitKeys: RENDER_STRATEGY_KEYS,
 
 			useMachine: useTreeView as any,
 		},
 		props,
 	);
+	provideRenderStrategy(props);
 	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	const mergedProps = useRootProviderProps({ context, omitKeys: RENDER_STRATEGY_KEYS }, props);
+	provideRenderStrategy(props);
 	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function BranchText(props: BranchTextProps) @{
@@ -210,9 +215,15 @@ export function NodeCheckboxIndicator(props: {
 export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps =
-	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'div'> };
+	ArkPartProps<'div'> & NonNullable<Parameters<Hook>[0]> & {
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+	} & { render?: RenderProp<'div'> };
 export type RootProviderProps =
-	ArkPartProps<'div'> & { value: ReturnType<Hook> } & { render?: RenderProp<'div'> };
+	ArkPartProps<'div'> & { value: ReturnType<Hook> } & {
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+	} & { render?: RenderProp<'div'> };
 export type BranchTextProps = (ArkPartProps<'span'>) & { render?: RenderProp<'span'> };
 export type ItemIndicatorProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
 export type TreeProps = (PartProps<'div', Api['getTreeProps']>) & { render?: RenderProp<'div'> };

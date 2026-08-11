@@ -1,5 +1,31 @@
 # ripple-ark
 
+## 0.6.0
+
+Parity fixes from a cross-model deep review against the Ark Solid sources.
+
+- Presence `data-state` now reads the desired open state while `hidden` keeps the
+  machine's lingering present, so CSS exit animations can select their closed-state
+  styles while the element stays mounted — previously exit animations never triggered.
+- Port the own-presence part class our detection missed (parts that build their own
+  presence machine instead of consuming the Root's): dialog/drawer/tour backdrops, tour
+  content and spotlight, tabs content, navigation-menu content/indicator/viewport. Roots
+  now provide render-strategy props to descendants, and a generator drift gate covers
+  this consumption form.
+- Rebuild Menu radio/checkbox option items and item groups: group value context,
+  `type`/`checked`/`onCheckedChange` composition into `getOptionItemProps`, label
+  association, and item-state contexts — radio items no longer render
+  `role="menuitemundefined"`.
+- `Select.HiddenSelect` renders the collection's `<option>` list (plus an empty option
+  when unselected) so native form submission works; `Select.ItemGroup`/`ItemGroupLabel`
+  get default ids and the correct `htmlFor` association.
+- Restore the upstream `present`-prop merge order for Select and FloatingPanel roots —
+  a user-supplied `present` overrides machine state there, matching Ark.
+- `Checkbox.Indicator` applies the upstream hidden rule for its
+  `indeterminate`/checked display modes.
+- Smoke suite grows to 20 tests, including a held-exit-animation assertion that pins the
+  `data-state` semantics.
+
 ## 0.5.0
 
 - Adopt Base UI's function-form `render` prop on every generated part, tagged Root, and

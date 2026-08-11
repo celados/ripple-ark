@@ -71,7 +71,13 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	useRootPresence(presenceContext, () => context.get()!.value.open, props);
+	useRootPresence(
+		presenceContext,
+		() => (props as AnyRecord).present === undefined
+			? context.get()!.value.open
+			: Boolean((props as AnyRecord).present),
+		props,
+	);
 	<>
 		{children}
 	</>
@@ -79,7 +85,13 @@ export function Root(props: RootProps) @{
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
-	useRootPresence(presenceContext, () => context.get()!.value.open, props);
+	useRootPresence(
+		presenceContext,
+		() => (props as AnyRecord).present === undefined
+			? context.get()!.value.open
+			: Boolean((props as AnyRecord).present),
+		props,
+	);
 	<>
 		{children}
 	</>

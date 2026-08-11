@@ -6,6 +6,8 @@ import {
 	createApiContext,
 	createItemContext,
 	useRootPresence,
+	usePartPresence,
+	provideRenderStrategy,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -24,6 +26,7 @@ const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> |
 export function Root(props: RootProps) @{
 	let &{ children } = props;
 	context.set(props.tour);
+	provideRenderStrategy(props);
 	useRootPresence(presenceContext, () => props.tour.value.open, props);
 	<>
 		{children}
@@ -32,6 +35,7 @@ export function Root(props: RootProps) @{
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	context.set(props.tour);
+	provideRenderStrategy(props);
 	useRootPresence(presenceContext, () => props.tour.value.open, props);
 	<>
 		{children}
@@ -46,7 +50,19 @@ export function Title(props: TitleProps) @{
 }
 export function Spotlight(props: SpotlightProps) @{
 	let &{ children } = props;
-	<Part tag="div" options={{ context, getter: 'getSpotlightProps' }} of={props}>{children}</Part>
+	const api = context.get()!;
+
+	const presence = usePartPresence(() => api.value.open);
+
+	<Part
+		tag="div"
+		options={{ context, getter: 'getSpotlightProps', presence, omitKeys: ['ref'] }}
+		presence={presence}
+		gate
+		composeRef
+		finalProps={() => ({ hidden: !api.value.open || !api.value.step?.target?.() })}
+		of={props}
+	>{children}</Part>
 }
 export function ActionTrigger(props: ActionTriggerProps) @{
 	let &{ children } = props;
@@ -81,7 +97,11 @@ export function CloseTrigger(props: CloseTriggerProps) @{
 }
 export function Arrow(props: ArrowProps) @{
 	let &{ children } = props;
-	<Part tag="div" options={{ context, getter: 'getArrowProps' }} of={props}>{children}</Part>
+	const api = context.get();
+	if (!api) throw new Error('Tour.Arrow must be rendered inside Tour.Root or RootProvider');
+	@if (api.value.step?.arrow) {
+		<Part tag="div" options={{ context, getter: 'getArrowProps' }} of={props}>{children}</Part>
+	}
 }
 export function ArrowTip(props: ArrowTipProps) @{
 	let &{ children } = props;
@@ -89,7 +109,19 @@ export function ArrowTip(props: ArrowTipProps) @{
 }
 export function Backdrop(props: BackdropProps) @{
 	let &{ children } = props;
-	<Part tag="div" options={{ context, getter: 'getBackdropProps' }} of={props}>{children}</Part>
+	const api = context.get()!;
+
+	const presence = usePartPresence(() => api.value.open);
+
+	<Part
+		tag="div"
+		options={{ context, getter: 'getBackdropProps', presence, omitKeys: ['ref'] }}
+		presence={presence}
+		gate
+		composeRef
+		finalProps={() => ({ hidden: !api.value.step?.backdrop })}
+		of={props}
+	>{children}</Part>
 }
 export function Description(props: DescriptionProps) @{
 	let &{ children } = props;
@@ -114,7 +146,18 @@ export function Positioner(props: PositionerProps) @{
 }
 export function Content(props: ContentProps) @{
 	let &{ children } = props;
-	<Part tag="div" options={{ context, getter: 'getContentProps' }} of={props}>{children}</Part>
+	const api = context.get()!;
+
+	const presence = usePartPresence(() => api.value.open);
+
+	<Part
+		tag="div"
+		options={{ context, getter: 'getContentProps', presence, omitKeys: ['ref'] }}
+		presence={presence}
+		gate
+		composeRef
+		of={props}
+	>{children}</Part>
 }
 
 export function Actions(props: { render: (actions: Tracked<AnyRecord[]>) => Children }) @{

@@ -7,16 +7,22 @@ import {
 	type Tracked,
 } from 'ripple';
 import { mergeProps } from '@zag-js/core';
+import type {
+	ItemGroupProps as ZagItemGroupProps,
+	OptionItemProps as ZagOptionItemProps,
+} from '@zag-js/menu';
 import { useMenu } from '../components';
 import {
 	Part,
 	createApiContext,
 	createItemContext,
+	createPartId,
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
 	useRootPresence,
 	PRESENCE_KEYS,
+	splitProps,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -32,6 +38,7 @@ type AnyRecord = Record<string, any>;
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
 const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);
 const menuTriggerItemProps = /*#__PURE__*/ new RippleContext<Tracked<AnyRecord> | null>(null);
+const menuItemGroupProps = /*#__PURE__*/ new RippleContext<Tracked<AnyRecord> | null>(null);
 const menuItemProps = /*#__PURE__*/ new RippleContext<Tracked<Record<string, any>> | null>(null);
 
 export function Root(props: RootProps) @{
@@ -115,21 +122,26 @@ export function ArrowTip(props: ArrowTipProps) @{
 }
 export function RadioItem(props: RadioItemProps) @{
 	let &{ children } = props;
-	<Part
-		tag="div"
-		options={{
-			context,
-			getter: 'getOptionItemProps',
-			propKeys: [
-				'closeOnSelect',
-				'disabled',
-				'value',
-				'valueText',
-			],
-			provideProps: menuItemProps,
-		}}
-		of={props}
-	>{children}</Part>
+	const api = context.get();
+	const group = menuItemGroupProps.get();
+	if (!api || !group) throw new Error('Menu.RadioItem must be rendered inside Menu.RadioItemGroup');
+	const optionProps = track(() => {
+		const [partial] = splitProps(props, ['closeOnSelect', 'disabled', 'value', 'valueText']);
+		return {
+			...partial,
+			type: 'radio',
+			checked: group.value.value === partial.value,
+			onCheckedChange: () => group.value.onValueChange?.({ value: partial.value }),
+		};
+	});
+	menuItemProps.set(optionProps);
+	const mergedProps = track(
+		() => mergeProps(
+			api.value.getOptionItemProps(optionProps.value as any),
+			splitProps(props, ['closeOnSelect', 'disabled', 'value', 'valueText'])[1],
+		),
+	);
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function TriggerItem(props: TriggerItemProps) @{
 	let &{ children, render: _render, ...localProps } = props;
@@ -197,14 +209,15 @@ export function Content(props: ContentProps) @{
 }
 export function ItemGroup(props: ItemGroupProps) @{
 	let &{ children } = props;
+	const autoId = createPartId('menu-group');
 	<Part
 		tag="div"
 		options={{
 			context,
 			getter: 'getItemGroupProps',
-			propKeys: [
-				'id',
-			],
+			propKeys: ['id'],
+			propDefaults: { id: () => autoId },
+			provideProps: menuItemGroupProps,
 		}}
 		of={props}
 	>{children}</Part>
@@ -215,16 +228,15 @@ export function Indicator(props: IndicatorProps) @{
 }
 export function RadioItemGroup(props: RadioItemGroupProps) @{
 	let &{ children } = props;
+	const autoId = createPartId('menu-radio-group');
 	<Part
 		tag="div"
 		options={{
 			context,
 			getter: 'getItemGroupProps',
-			propKeys: [
-				'id',
-				'onValueChange',
-				'value',
-			],
+			propKeys: ['id', 'onValueChange', 'value'],
+			propDefaults: { id: () => autoId },
+			provideProps: menuItemGroupProps,
 		}}
 		of={props}
 	>{children}</Part>
@@ -253,11 +265,18 @@ export function ItemIndicator(props: ItemIndicatorProps) @{
 }
 export function ItemGroupLabel(props: ItemGroupLabelProps) @{
 	let &{ children } = props;
-	<Part
-		tag="div"
-		options={{ context, getter: 'getItemGroupLabelProps' }}
-		of={props}
-	>{children}</Part>
+	const api = context.get();
+	const group = menuItemGroupProps.get();
+	if (
+		!api || !group
+	) throw new Error('Menu.ItemGroupLabel must be rendered inside Menu.ItemGroup or RadioItemGroup');
+	const mergedProps = track(
+		() => mergeProps(
+			api.value.getItemGroupLabelProps({ htmlFor: group.value.id }),
+			splitProps(props, [])[1],
+		),
+	);
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function ContextTrigger(props: ContextTriggerProps) @{
 	let &{ children } = props;
@@ -280,25 +299,42 @@ export function ItemText(props: ItemTextProps) @{
 }
 export function CheckboxItem(props: CheckboxItemProps) @{
 	let &{ children } = props;
-	<Part
-		tag="div"
-		options={{
-			context,
-			getter: 'getOptionItemProps',
-			propKeys: [
+	const api = context.get();
+	if (!api) throw new Error('Menu.CheckboxItem must be rendered inside Menu.Root or RootProvider');
+	const optionProps = track(
+		() => ({
+			...splitProps(props, [
 				'checked',
 				'closeOnSelect',
 				'disabled',
 				'onCheckedChange',
 				'value',
 				'valueText',
-			],
-			provideProps: menuItemProps,
-		}}
-		of={props}
-	>{children}</Part>
+			])[0],
+			type: 'checkbox',
+		}),
+	);
+	menuItemProps.set(optionProps);
+	const mergedProps = track(
+		() => mergeProps(
+			api.value.getOptionItemProps(optionProps.value as any),
+			splitProps(props, [
+				'checked',
+				'closeOnSelect',
+				'disabled',
+				'onCheckedChange',
+				'value',
+				'valueText',
+			])[1],
+		),
+	);
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
-export const ItemContext = /*#__PURE__*/ createItemContext(context, menuItemProps);
+export const ItemContext = /*#__PURE__*/ createItemContext(
+	context,
+	menuItemProps,
+	(props) => props.type ? 'getOptionItemState' : 'getItemState',
+);
 
 export const Context = /*#__PURE__*/ createApiContext(context);
 
@@ -323,7 +359,9 @@ export type RootProviderProps =
 export type ArrowTipProps =
 	(PartProps<'div', Api['getArrowTipProps']>) & { render?: RenderProp<'div'> };
 export type RadioItemProps =
-	(PartProps<'div', Api['getOptionItemProps']>) & { render?: RenderProp<'div'> };
+	(ArkPartProps<'div'> & Omit<ZagOptionItemProps, 'type' | 'checked' | 'onCheckedChange'>) & {
+		render?: RenderProp<'div'>;
+	};
 export type TriggerItemProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
 export type TriggerProps =
 	(PartProps<'button', Api['getTriggerProps']>) & { render?: RenderProp<'button'> };
@@ -331,24 +369,29 @@ export type ItemProps = (PartProps<'div', Api['getItemProps']>) & { render?: Ren
 export type ContentProps =
 	(PartProps<'div', Api['getContentProps']>) & { render?: RenderProp<'div'> };
 export type ItemGroupProps =
-	(PartProps<'div', Api['getItemGroupProps']>) & { render?: RenderProp<'div'> };
+	(ArkPartProps<'div'> & Omit<ZagItemGroupProps, 'id'> & { id?: string }) & {
+		render?: RenderProp<'div'>;
+	};
 export type IndicatorProps =
 	(PartProps<'div', Api['getIndicatorProps']>) & { render?: RenderProp<'div'> };
 export type RadioItemGroupProps =
-	(PartProps<'div', Api['getItemGroupProps']>) & { render?: RenderProp<'div'> };
+	(ArkPartProps<'div'> & {
+		id?: string;
+		value?: string;
+		onValueChange?: (details: { value: string }) => void;
+	}) & { render?: RenderProp<'div'> };
 export type ArrowProps = (PartProps<'div', Api['getArrowProps']>) & { render?: RenderProp<'div'> };
 export type PositionerProps =
 	(PartProps<'div', Api['getPositionerProps']>) & { render?: RenderProp<'div'> };
 export type ItemIndicatorProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
-export type ItemGroupLabelProps =
-	(PartProps<'div', Api['getItemGroupLabelProps']>) & { render?: RenderProp<'div'> };
+export type ItemGroupLabelProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
 export type ContextTriggerProps =
 	(PartProps<'button', Api['getContextTriggerProps']>) & { render?: RenderProp<'button'> };
 export type SeparatorProps =
 	(PartProps<'hr', Api['getSeparatorProps']>) & { render?: RenderProp<'hr'> };
 export type ItemTextProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
 export type CheckboxItemProps =
-	(PartProps<'div', Api['getOptionItemProps']>) & { render?: RenderProp<'div'> };
+	(ArkPartProps<'div'> & Omit<ZagOptionItemProps, 'type'>) & { render?: RenderProp<'div'> };
 
 export const Menu = {
 	Root,

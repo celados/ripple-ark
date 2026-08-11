@@ -2,13 +2,17 @@ import { describe, expect, test, vi } from 'vitest';
 
 import type { useDialog, useTour } from '../src/components';
 import { CheckboxGroupSmoke } from './fixtures/checkbox-group.tsrx';
+import { CheckboxIndicators } from './fixtures/checkbox-indicator.tsrx';
 import { DerivedContent } from './fixtures/derived-content.tsrx';
 import { DialogAutoId } from './fixtures/dialog-auto-id.tsrx';
 import { MenuOnSelect } from './fixtures/menu-on-select.tsrx';
+import { MenuOptions } from './fixtures/menu-options.tsrx';
+import { OwnPresence } from './fixtures/own-presence.tsrx';
 import { PresenceDialog } from './fixtures/presence-dialog.tsrx';
 import { RenderContent } from './fixtures/render-content.tsrx';
 import { RenderTrigger } from './fixtures/render-trigger.tsrx';
 import { SelectCollection } from './fixtures/select-collection.tsrx';
+import { SelectSemantics } from './fixtures/select-semantics.tsrx';
 import { TourContract } from './fixtures/tour-contract.tsrx';
 import { nextFrame, renderFixture, settle } from './render';
 
@@ -84,6 +88,65 @@ describe('Menu.Item onSelect (issue #3)', () => {
 	});
 });
 
+describe('Menu option and group semantics', () => {
+	test('radio items expose the option role and update aria-checked through their group', async () => {
+		const { target, unmount } = await renderFixture(MenuOptions);
+		try {
+			const itemA = target.querySelector('[data-testid="radio-a"]') as HTMLElement;
+			const itemB = target.querySelector('[data-testid="radio-b"]') as HTMLElement;
+			const group = target.querySelector('[data-testid="menu-radio-group"]') as HTMLElement;
+			const label = target.querySelector('[data-testid="menu-group-label"]') as HTMLElement;
+			const checkbox = target.querySelector('[data-testid="checkbox-item"]') as HTMLElement;
+			const itemGroup = target.querySelector('[data-testid="menu-item-group"]') as HTMLElement;
+			const itemGroupLabel = target.querySelector(
+				'[data-testid="menu-item-group-label"]'
+			) as HTMLElement;
+			expect(itemA.getAttribute('role')).toBe('menuitemradio');
+			expect(itemA.getAttribute('aria-checked')).toBe('true');
+			expect(itemB.getAttribute('aria-checked')).toBe('false');
+			expect(group.getAttribute('aria-labelledby')).toBe(label.id);
+			expect(checkbox.getAttribute('role')).toBe('menuitemcheckbox');
+			expect(checkbox.getAttribute('aria-checked')).toBe('false');
+			expect(itemGroup.getAttribute('aria-labelledby')).toBe(itemGroupLabel.id);
+
+			itemB.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+			itemB.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+			await settle();
+
+			expect(itemA.getAttribute('aria-checked')).toBe('false');
+			expect(itemB.getAttribute('aria-checked')).toBe('true');
+
+			checkbox.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+			checkbox.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+			await settle();
+			expect(checkbox.getAttribute('aria-checked')).toBe('true');
+		} finally {
+			unmount();
+		}
+	});
+});
+
+describe('Select form, group, and present semantics', () => {
+	test('HiddenSelect renders selected options, groups label correctly, and user present wins', async () => {
+		const { target, unmount } = await renderFixture(SelectSemantics);
+		try {
+			const select = target.querySelector('[data-testid="hidden-select"]') as HTMLSelectElement;
+			expect([...select.options].map((option) => option.value)).toEqual(['apple', 'banana']);
+			expect(select.value).toBe('apple');
+			expect(select.options[0].selected).toBe(true);
+			expect(select.options[1].disabled).toBe(true);
+
+			const group = target.querySelector('[data-testid="select-group"]') as HTMLElement;
+			const label = target.querySelector('[data-testid="select-group-label"]') as HTMLElement;
+			expect(group.getAttribute('aria-labelledby')).toBe(label.id);
+			expect(target.querySelector('[data-testid="forced-select-content"]')).not.toBeNull();
+			expect(target.querySelector('[data-testid="forced-floating-content"]')).not.toBeNull();
+		} finally {
+			unmount();
+		}
+	});
+});
+
 describe('Presence (lazyMount / unmountOnExit)', () => {
 	test('lazyMount defers the first mount and unmountOnExit removes Content again on close', async () => {
 		let dialog: ReturnType<typeof useDialog> | undefined;
@@ -112,6 +175,40 @@ describe('Presence (lazyMount / unmountOnExit)', () => {
 			unmount();
 		}
 	});
+
+	test('exit animation keeps Content mounted with data-state=closed until animationend', async () => {
+		let dialog: ReturnType<typeof useDialog> | undefined;
+		const styleSpy = vi.spyOn(globalThis, 'getComputedStyle').mockImplementation((element) => {
+			return {
+				get animationName() {
+					return element.getAttribute('data-state') === 'closed' ? 'exit' : 'enter';
+				},
+				animationDuration: '1s',
+				display: 'block',
+			} as CSSStyleDeclaration;
+		});
+		const { target, unmount } = await renderFixture(PresenceDialog, {
+			onReady: (api: ReturnType<typeof useDialog>) => {
+				dialog = api;
+			},
+		});
+		try {
+			dialog!.value.setOpen(true);
+			await settle();
+			await nextFrame();
+
+			dialog!.value.setOpen(false);
+			await settle();
+			await nextFrame();
+
+			const content = target.querySelector('[data-testid="content"]') as HTMLElement;
+			expect(content).toBeTruthy();
+			expect(content.getAttribute('data-state')).toBe('closed');
+		} finally {
+			styleSpy.mockRestore();
+			unmount();
+		}
+	});
 });
 
 describe('Checkbox.Group', () => {
@@ -137,8 +234,98 @@ describe('Checkbox.Group', () => {
 	});
 });
 
+describe('Checkbox.Indicator', () => {
+	test('hidden follows checked or indeterminate according to the Indicator mode', async () => {
+		const { target, unmount } = await renderFixture(CheckboxIndicators);
+		try {
+			expect(
+				(target.querySelector('[data-testid="checked-indicator"]') as HTMLElement).hidden
+			).toBe(false);
+			expect(
+				(target.querySelector('[data-testid="checked-indeterminate-indicator"]') as HTMLElement)
+					.hidden
+			).toBe(true);
+			expect(
+				(target.querySelector('[data-testid="indeterminate-indicator"]') as HTMLElement).hidden
+			).toBe(false);
+		} finally {
+			unmount();
+		}
+	});
+});
+
+describe('part-owned presence', () => {
+	test('backdrops/navigation parts lazy-mount and tabs content mounts only after selection', async () => {
+		const OriginalResizeObserver = window.ResizeObserver;
+		class ResizeObserverStub {
+			observe() {}
+			unobserve() {}
+			disconnect() {}
+		}
+		window.ResizeObserver = ResizeObserverStub as any;
+		let dialog: any;
+		let drawer: any;
+		let navigation: any;
+		let tabs: any;
+		const dialogBackdropRefs: HTMLElement[] = [];
+		const { target, unmount } = await renderFixture(OwnPresence, {
+			onDialog: (api: any) => {
+				dialog = api;
+			},
+			onDrawer: (api: any) => {
+				drawer = api;
+			},
+			onNavigation: (api: any) => {
+				navigation = api;
+			},
+			onTabs: (api: any) => {
+				tabs = api;
+			},
+			onDialogBackdropRef: (node: HTMLElement | null) => {
+				if (node) dialogBackdropRefs.push(node);
+			},
+		});
+		try {
+			expect(target.querySelector('[data-testid="dialog-backdrop"]')).toBeNull();
+			expect(target.querySelector('[data-testid="drawer-backdrop"]')).toBeNull();
+			expect(target.querySelector('[data-testid="navigation-content"]')).toBeNull();
+			expect(target.querySelector('[data-testid="navigation-indicator"]')).toBeNull();
+			expect(target.querySelector('[data-testid="navigation-viewport"]')).toBeNull();
+			expect(target.querySelector('[data-testid="tab-a"]')).not.toBeNull();
+			expect(target.querySelector('[data-testid="tab-b"]')).toBeNull();
+
+			dialog.value.setOpen(true);
+			drawer.value.setOpen(true);
+			navigation.value.setValue('home');
+			tabs.value.setValue('b');
+			await settle();
+
+			expect(target.querySelector('[data-testid="dialog-backdrop"]')).not.toBeNull();
+			expect((target.querySelector('[data-testid="dialog-backdrop"]') as HTMLElement).tagName).toBe(
+				'SECTION'
+			);
+			expect(dialogBackdropRefs.length).toBeGreaterThan(0);
+			expect(
+				dialogBackdropRefs.every(
+					(node) => node === target.querySelector('[data-testid="dialog-backdrop"]')
+				)
+			).toBe(true);
+			expect(target.querySelector('[data-testid="drawer-backdrop"]')).not.toBeNull();
+			expect(target.querySelector('[data-testid="navigation-content"]')).not.toBeNull();
+			expect(target.querySelector('[data-testid="navigation-indicator"]')).not.toBeNull();
+			expect(target.querySelector('[data-testid="navigation-viewport"]')).not.toBeNull();
+			expect(target.querySelector('[data-testid="tab-b"]')).not.toBeNull();
+		} finally {
+			unmount();
+			window.ResizeObserver = OriginalResizeObserver;
+		}
+	});
+});
+
 describe('Tour instance contract', () => {
 	test('Root renders the externally-created tour instance, and starting it populates Title', async () => {
+		const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+		HTMLElement.prototype.scrollIntoView = () => {};
 		let tour: ReturnType<typeof useTour> | undefined;
 		// Pre-fix: Root ignored the `tour` prop and called useRootProps/useMachine itself,
 		// creating a second, disconnected machine — calling .start() on the instance the
@@ -149,15 +336,25 @@ describe('Tour instance contract', () => {
 			},
 		});
 		try {
-			const title = target.querySelector('[data-testid="tour-title"]') as HTMLElement;
-			expect(title.textContent).not.toBe('Welcome');
+			expect(target.querySelector('[data-testid="tour-content"]')).toBeNull();
 
 			tour!.value.start();
 			await settle();
 
+			const title = target.querySelector('[data-testid="tour-title"]') as HTMLElement;
 			expect(title.textContent).toBe('Welcome');
+			expect(target.querySelector('[data-testid="tour-backdrop"]')).not.toBeNull();
+			expect((target.querySelector('[data-testid="tour-backdrop"]') as HTMLElement).hidden).toBe(
+				false
+			);
+			expect(target.querySelector('[data-testid="tour-spotlight"]')).not.toBeNull();
+			expect((target.querySelector('[data-testid="tour-spotlight"]') as HTMLElement).hidden).toBe(
+				false
+			);
+			expect(target.querySelector('[data-testid="tour-arrow"]')).not.toBeNull();
 		} finally {
 			unmount();
+			HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
 		}
 	});
 });

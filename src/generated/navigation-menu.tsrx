@@ -1,4 +1,11 @@
-import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
+import {
+	Context as RippleContext,
+	effect,
+	track,
+	Portal,
+	type Children,
+	type Tracked,
+} from 'ripple';
 
 import { useNavigationMenu } from '../components';
 import {
@@ -7,11 +14,15 @@ import {
 	createItemContext,
 	useRootProps,
 	useRootProviderProps,
+	usePartPresence,
+	provideRenderStrategy,
+	RENDER_STRATEGY_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
 	type PartProps,
 	type RenderProp,
+	type PresenceState,
 } from '../binding-runtime.tsrx';
 
 type Hook = typeof useNavigationMenu;
@@ -19,6 +30,7 @@ export type Api = ReturnType<Hook>['value'];
 type AnyRecord = Record<string, any>;
 
 const context = /*#__PURE__*/ new RippleContext<Tracked<Api> | null>(null);
+const presenceContext = /*#__PURE__*/ new RippleContext<Tracked<PresenceState> | null>(null);
 
 const navigationMenuViewportProps = /*#__PURE__*/ new RippleContext<
 	Tracked<Record<string, any>> | null
@@ -46,23 +58,39 @@ export function Root(props: RootProps) @{
 				'translations',
 				'value',
 			],
+			omitKeys: RENDER_STRATEGY_KEYS,
 
 			useMachine: useNavigationMenu as any,
 		},
 		props,
 	);
+	provideRenderStrategy(props);
 	<Part tag="nav" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
-	const mergedProps = useRootProviderProps({ context }, props);
+	const mergedProps = useRootProviderProps({ context, omitKeys: RENDER_STRATEGY_KEYS }, props);
+	provideRenderStrategy(props);
 	<Part tag="nav" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Viewport(props: ViewportProps) @{
 	let &{ children } = props;
+	const api = context.get()!;
+
+	const presence = usePartPresence(() => api.value.open);
+
 	<Part
 		tag="div"
-		options={{ context, getter: 'getViewportProps', inheritedProps: navigationMenuViewportProps }}
+		options={{
+			context,
+			getter: 'getViewportProps',
+			inheritedProps: navigationMenuViewportProps,
+			presence,
+			omitKeys: ['ref'],
+		}}
+		presence={presence}
+		gate
+		composeRef
 		of={props}
 	>{children}</Part>
 }
@@ -72,7 +100,18 @@ export function List(props: ListProps) @{
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
-	<Part tag="div" options={{ context, getter: 'getIndicatorProps' }} of={props}>{children}</Part>
+	const api = context.get()!;
+
+	const presence = usePartPresence(() => api.value.open);
+	presenceContext.set(presence);
+	<Part
+		tag="div"
+		options={{ context, getter: 'getIndicatorProps', presence, omitKeys: ['ref'] }}
+		presence={presence}
+		gate
+		composeRef
+		of={props}
+	>{children}</Part>
 }
 export function Link(props: LinkProps) @{
 	let &{ children } = props;
@@ -99,11 +138,54 @@ export function ViewportPositioner(props: ViewportPositionerProps) @{
 }
 export function Content(props: ContentProps) @{
 	let &{ children } = props;
-	<Part
-		tag="div"
-		options={{ context, getter: 'getContentProps', inheritedProps: navigationMenuItemProps }}
-		of={props}
-	>{children}</Part>
+	const api = context.get()!;
+	const itemProps = navigationMenuItemProps.get();
+	const presence = usePartPresence(
+		() => api.value.value === ((props as AnyRecord).value ?? itemProps?.value.value),
+	);
+	presenceContext.set(presence);
+	const contentProps = track(
+		() => ({
+			value: (props as AnyRecord).value ?? itemProps?.value.value,
+		}),
+	);
+	@if (api.value.isViewportRendered && api.value.getViewportNode()) {
+		<>
+			<div {...api.value.getViewportProxyProps(contentProps.value)} />
+			<div {...api.value.getTriggerProxyProps(contentProps.value)} />
+			<Portal target={api.value.getViewportNode()!}>
+				<Part
+					tag="div"
+					options={{
+						context,
+						getter: 'getContentProps',
+						inheritedProps: navigationMenuItemProps,
+						presence,
+						omitKeys: ['ref'],
+					}}
+					presence={presence}
+					gate
+					composeRef
+					of={props}
+				>{children}</Part>
+			</Portal>
+		</>
+	} @else {
+		<Part
+			tag="div"
+			options={{
+				context,
+				getter: 'getContentProps',
+				inheritedProps: navigationMenuItemProps,
+				presence,
+				omitKeys: ['ref'],
+			}}
+			presence={presence}
+			gate
+			composeRef
+			of={props}
+		>{children}</Part>
+	}
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children } = props;
@@ -137,9 +219,15 @@ export function Arrow(props: ArrowProps) @{
 export const Context = /*#__PURE__*/ createApiContext(context);
 
 export type RootProps =
-	ArkPartProps<'nav'> & NonNullable<Parameters<Hook>[0]> & { render?: RenderProp<'nav'> };
+	ArkPartProps<'nav'> & NonNullable<Parameters<Hook>[0]> & {
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+	} & { render?: RenderProp<'nav'> };
 export type RootProviderProps =
-	ArkPartProps<'nav'> & { value: ReturnType<Hook> } & { render?: RenderProp<'nav'> };
+	ArkPartProps<'nav'> & { value: ReturnType<Hook> } & {
+		lazyMount?: boolean;
+		unmountOnExit?: boolean;
+	} & { render?: RenderProp<'nav'> };
 export type ViewportProps = (ArkPartProps<'div'>) & { render?: RenderProp<'div'> };
 export type ListProps = (PartProps<'div', Api['getListProps']>) & { render?: RenderProp<'div'> };
 export type IndicatorProps =

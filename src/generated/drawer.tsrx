@@ -10,6 +10,8 @@ import {
 	useRootProps,
 	useRootProviderProps,
 	useRootPresence,
+	usePartPresence,
+	provideRenderStrategy,
 	PRESENCE_KEYS,
 	type ArkPartProps,
 	type ComponentProps,
@@ -75,6 +77,7 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
+	provideRenderStrategy(props);
 	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<>
 		{children}
@@ -83,6 +86,7 @@ export function Root(props: RootProps) @{
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
+	provideRenderStrategy(props);
 	useRootPresence(presenceContext, () => context.get()!.value.open, props);
 	<>
 		{children}
@@ -104,7 +108,18 @@ export function Positioner(props: PositionerProps) @{
 }
 export function Backdrop(props: BackdropProps) @{
 	let &{ children } = props;
-	<Part tag="div" options={{ context, getter: 'getBackdropProps' }} of={props}>{children}</Part>
+	const api = context.get()!;
+
+	const presence = usePartPresence(() => api.value.open);
+
+	<Part
+		tag="div"
+		options={{ context, getter: 'getBackdropProps', presence, omitKeys: ['ref'] }}
+		presence={presence}
+		gate
+		composeRef
+		of={props}
+	>{children}</Part>
 }
 export function IndentBackground(props: IndentBackgroundProps) @{
 	let &{ children } = props;

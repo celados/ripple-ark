@@ -120,15 +120,16 @@ export function Label(props: LabelProps) @{
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
+	const api = context.get();
+	if (
+		!api
+	) throw new Error('Checkbox.Indicator must be rendered inside Checkbox.Root or RootProvider');
 	<Part
 		tag="div"
-		options={{
-			context,
-			getter: 'getIndicatorProps',
-			propKeys: [
-				'indeterminate',
-			],
-		}}
+		options={{ context, getter: 'getIndicatorProps', propKeys: ['indeterminate'] }}
+		finalProps={() => ({
+			hidden: !(((props as AnyRecord).indeterminate ? api.value.indeterminate : api.value.checked)),
+		})}
 		of={props}
 	>{children}</Part>
 }
