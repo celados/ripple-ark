@@ -11,13 +11,23 @@ export default defineConfig({
 		globals: true,
 		environment: 'jsdom',
 		css: false,
+		server: {
+			deps: {
+				// Vitest externalizes node_modules packages by default, so ripple-zag's dist
+				// would import `ripple` through Node's own resolution (server build, its own
+				// scheduler) while the mounted tree runs the vite-resolved browser build.
+				// Machines then register their mount effect in a scheduler nothing flushes
+				// and silently drop every event. Inlining routes ripple-zag through vite so
+				// both sides share one ripple runtime.
+				inline: [/@celados\/ripple-zag/],
+			},
+		},
 	},
 	resolve: {
 		conditions: ['development', 'browser'],
-		// @celados/ripple-zag is a linked workspace package with its own nested node_modules/ripple.
-		// Without deduping, `useMachine`'s internal effect()/Context calls run against a second
-		// `ripple` module instance whose `active_component` global never gets set by our mounted
-		// tree, so every machine hook throws "effect() must be called within an active context".
+		// Belt-and-braces with server.deps.inline: any nested/linked copy of ripple must
+		// still collapse to the single vite-resolved instance, or `active_component` and
+		// the effect scheduler split across realms.
 		dedupe: ['ripple'],
 	},
 });
