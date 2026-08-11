@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useToggle } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -38,32 +36,16 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part tag="button" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part tag="button" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getIndicatorProps' }} of={props}>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

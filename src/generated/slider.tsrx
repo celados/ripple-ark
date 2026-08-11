@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useSlider } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -61,110 +59,62 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<label {...mergedProps.value}>{children}</label>
-	}
+	<Part tag="label" options={{ context, getter: 'getLabelProps' }} of={props}>{children}</Part>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getHiddenInputProps', inheritedProps: sliderThumbProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<input {...mergedProps.value} />
-	}
+	<Part
+		tag="input"
+		options={{ context, getter: 'getHiddenInputProps', inheritedProps: sliderThumbProps }}
+		of={props}
+	/>
 }
 export function Track(props: TrackProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTrackProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getTrackProps' }} of={props}>{children}</Part>
 }
 export function MarkerGroup(props: MarkerGroupProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getMarkerGroupProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getMarkerGroupProps' }} of={props}>{children}</Part>
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
-	const mergedProps = usePartProps({ context, getter: 'getValueTextProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children || api.value.value.join(',')}</span>
-	}
+	<Part tag="span" options={{ context, getter: 'getValueTextProps' }} of={props}>
+		{children || api.value.value.join(',')}
+	</Part>
 }
 export function Range(props: RangeProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getRangeProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getRangeProps' }} of={props}>{children}</Part>
 }
 export function Marker(props: MarkerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="span"
+		options={{
 			context,
 			getter: 'getMarkerProps',
 			propKeys: [
 				'value',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Thumb(props: ThumbProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="div"
+		options={{
 			context,
 			getter: 'getThumbProps',
 			propKeys: [
@@ -172,42 +122,25 @@ export function Thumb(props: ThumbProps) @{
 				'name',
 			],
 			provideProps: sliderThumbProps,
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function DraggingIndicator(props: DraggingIndicatorProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
 	const thumbProps = sliderThumbProps.get()!;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getDraggingIndicatorProps', inheritedProps: sliderThumbProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>
-			{children || api.value.getThumbValue(thumbProps.value.index)}
-		</span>
-	}
+	<Part
+		tag="span"
+		options={{ context, getter: 'getDraggingIndicatorProps', inheritedProps: sliderThumbProps }}
+		of={props}
+	>
+		{children || api.value.getThumbValue(thumbProps.value.index)}
+	</Part>
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getControlProps' }} of={props}>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

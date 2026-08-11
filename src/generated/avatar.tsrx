@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useAvatar } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -37,42 +35,19 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Fallback(props: FallbackProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getFallbackProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part tag="span" options={{ context, getter: 'getFallbackProps' }} of={props}>{children}</Part>
 }
 export function Image(props: ImageProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getImageProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<img {...mergedProps.value} />
-	}
+	<Part tag="img" options={{ context, getter: 'getImageProps' }} of={props} />
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

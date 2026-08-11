@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useSplitter } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -52,37 +50,26 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function ResizeTriggerIndicator(props: ResizeTriggerIndicatorProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, inheritedProps: splitterResizeTriggerProps }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, inheritedProps: splitterResizeTriggerProps }}
+		of={props}
+	>{children}</Part>
 }
 export function ResizeTrigger(props: ResizeTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="button"
+		options={{
 			context,
 			getter: 'getResizeTriggerProps',
 			propKeys: [
@@ -90,34 +77,23 @@ export function ResizeTrigger(props: ResizeTriggerProps) @{
 				'id',
 			],
 			provideProps: splitterResizeTriggerProps,
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Panel(props: PanelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="div"
+		options={{
 			context,
 			getter: 'getPanelProps',
 			propKeys: [
 				'id',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

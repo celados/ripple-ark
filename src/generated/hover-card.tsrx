@@ -1,24 +1,14 @@
-import {
-	Context as RippleContext,
-	effect,
-	track,
-	createRefKey,
-	type Children,
-	type Tracked,
-} from 'ripple';
+import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
 import { useHoverCard } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
 	useRootPresence,
-	usePresenceState,
 	PRESENCE_KEYS,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -78,79 +68,46 @@ export function RootProvider(props: RootProviderProps) @{
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="button"
+		options={{
 			context,
 			getter: 'getTriggerProps',
 			propKeys: [
 				'value',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Content(props: ContentProps) @{
-	let &{ children, ref } = props;
-	const presence = usePresenceState(presenceContext);
-	const presenceRefKey = createRefKey();
-	let applyPresenceRef = (node: any) => {
-		presence.value.setNode(node);
-		if (typeof ref === 'function') ref(node);
-	};
-	const mergedProps = usePartProps(
-		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
-		props,
-	);
-	@if (!presence.value.unmounted) {
-		@if (props.render) {
-			const Content = createRenderContent(
-				track(() => ({ ...mergedProps.value, [presenceRefKey]: applyPresenceRef })),
-				props.render,
-			);
-			<{Content} />
-		} @else {
-			<div {...mergedProps.value} ref={applyPresenceRef}>{children}</div>
-		}
-	}
+	let &{ children } = props;
+	<Part
+		tag="div"
+		options={{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] }}
+		presence={presenceContext}
+		gate
+		composeRef
+		of={props}
+	>{children}</Part>
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
-	const presence = usePresenceState(presenceContext);
-	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	@if (!presence.value.unmounted) {
-		@if (props.render) {
-			const Content = createRenderContent(mergedProps, props.render);
-			<{Content} />
-		} @else {
-			<div {...mergedProps.value}>{children}</div>
-		}
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getPositionerProps' }}
+		presence={presenceContext}
+		gate
+		of={props}
+	>{children}</Part>
 }
 export function Arrow(props: ArrowProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getArrowProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getArrowProps' }} of={props}>{children}</Part>
 }
 export function ArrowTip(props: ArrowTipProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getArrowTipProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getArrowTipProps' }} of={props}>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

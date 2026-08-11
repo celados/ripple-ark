@@ -1,24 +1,14 @@
-import {
-	Context as RippleContext,
-	effect,
-	track,
-	createRefKey,
-	type Children,
-	type Tracked,
-} from 'ripple';
+import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 
 import { useDatePicker } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
 	useRootPresence,
-	usePresenceState,
 	PRESENCE_KEYS,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -91,88 +81,51 @@ export function Root(props: RootProps) @{
 		props,
 	);
 	useRootPresence(presenceContext, () => context.get()!.value.open, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context, omitKeys: PRESENCE_KEYS }, props);
 	useRootPresence(presenceContext, () => context.get()!.value.open, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function WeekNumberCell(props: WeekNumberCellProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getWeekNumberCellProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<td {...mergedProps.value}>{children}</td>
-	}
+	<Part
+		tag="td"
+		options={{ context, getter: 'getWeekNumberCellProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function TableHead(props: TableHeadProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTableHeadProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<thead {...mergedProps.value}>{children}</thead>
-	}
+	<Part tag="thead" options={{ context, getter: 'getTableHeadProps' }} of={props}>{children}</Part>
 }
 export function TableRow(props: TableRowProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTableRowProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<tr {...mergedProps.value}>{children}</tr>
-	}
+	<Part tag="tr" options={{ context, getter: 'getTableRowProps' }} of={props}>{children}</Part>
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part tag="span" options={{ context }} of={props}>{children}</Part>
 }
 export function ViewControl(props: ViewControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getViewControlProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getViewControlProps' }} of={props}>{children}</Part>
 }
 export function ViewTrigger(props: ViewTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getViewTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part
+		tag="button"
+		options={{ context, getter: 'getViewTriggerProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function TableCell(props: TableCellProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="td"
+		options={{
 			context,
 			propKeys: [
 				'disabled',
@@ -180,258 +133,161 @@ export function TableCell(props: TableCellProps) @{
 				'visibleRange',
 				'columns',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<td {...mergedProps.value}>{children}</td>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getControlProps' }} of={props}>{children}</Part>
 }
 export function Content(props: ContentProps) @{
-	let &{ children, ref } = props;
-	const presence = usePresenceState(presenceContext);
-	const presenceRefKey = createRefKey();
-	let applyPresenceRef = (node: any) => {
-		presence.value.setNode(node);
-		if (typeof ref === 'function') ref(node);
-	};
-	const mergedProps = usePartProps(
-		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
-		props,
-	);
-	@if (!presence.value.unmounted) {
-		@if (props.render) {
-			const Content = createRenderContent(
-				track(() => ({ ...mergedProps.value, [presenceRefKey]: applyPresenceRef })),
-				props.render,
-			);
-			<{Content} />
-		} @else {
-			<div {...mergedProps.value} ref={applyPresenceRef}>{children}</div>
-		}
-	}
+	let &{ children } = props;
+	<Part
+		tag="div"
+		options={{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] }}
+		presence={presenceContext}
+		gate
+		composeRef
+		of={props}
+	>{children}</Part>
 }
 export function WeekNumberHeaderCell(props: WeekNumberHeaderCellProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getWeekNumberHeaderCellProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<th {...mergedProps.value}>{children}</th>
-	}
+	<Part
+		tag="th"
+		options={{ context, getter: 'getWeekNumberHeaderCellProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<label {...mergedProps.value}>{children}</label>
-	}
+	<Part tag="label" options={{ context, getter: 'getLabelProps' }} of={props}>{children}</Part>
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part tag="button" options={{ context, getter: 'getTriggerProps' }} of={props}>{children}</Part>
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
-	const presence = usePresenceState(presenceContext);
-	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	@if (!presence.value.unmounted) {
-		@if (props.render) {
-			const Content = createRenderContent(mergedProps, props.render);
-			<{Content} />
-		} @else {
-			<div {...mergedProps.value}>{children}</div>
-		}
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getPositionerProps' }}
+		presence={presenceContext}
+		gate
+		of={props}
+	>{children}</Part>
 }
 export function TableCellTrigger(props: TableCellTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context }} of={props}>{children}</Part>
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part
+		tag="button"
+		options={{ context, getter: 'getClearTriggerProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function TableHeader(props: TableHeaderProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTableHeaderProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<th {...mergedProps.value}>{children}</th>
-	}
+	<Part tag="th" options={{ context, getter: 'getTableHeaderProps' }} of={props}>{children}</Part>
 }
 export function NextTrigger(props: NextTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getNextTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part
+		tag="button"
+		options={{ context, getter: 'getNextTriggerProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function MonthSelect(props: MonthSelectProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getMonthSelectProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<select {...mergedProps.value}>{children}</select>
-	}
+	<Part
+		tag="select"
+		options={{ context, getter: 'getMonthSelectProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function PresetTrigger(props: PresetTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="button"
+		options={{
 			context,
 			getter: 'getPresetTriggerProps',
 			propKeys: [
 				'value',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Table(props: TableProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="table"
+		options={{
 			context,
 			getter: 'getTableProps',
 			propKeys: [
 				'columns',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<table {...mergedProps.value}>{children}</table>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function PrevTrigger(props: PrevTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getPrevTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part
+		tag="button"
+		options={{ context, getter: 'getPrevTriggerProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function Input(props: InputProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="input"
+		options={{
 			context,
 			getter: 'getInputProps',
 			propKeys: [
 				'index',
 				'fixOnBlur',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<input {...mergedProps.value} />
-	}
+		}}
+		of={props}
+	/>
 }
 export function YearSelect(props: YearSelectProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getYearSelectProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<select {...mergedProps.value}>{children}</select>
-	}
+	<Part
+		tag="select"
+		options={{ context, getter: 'getYearSelectProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function RangeText(props: RangeTextProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getRangeTextProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getRangeTextProps' }} of={props}>{children}</Part>
 }
 export function TableBody(props: TableBodyProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTableBodyProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<tbody {...mergedProps.value}>{children}</tbody>
-	}
+	<Part tag="tbody" options={{ context, getter: 'getTableBodyProps' }} of={props}>{children}</Part>
 }
 export function View(props: ViewProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="div"
+		options={{
 			context,
 			propKeys: [
 				'view',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

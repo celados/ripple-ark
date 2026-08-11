@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useSwitch } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -47,62 +45,27 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<label {...mergedProps.value}>{children}</label>
-	}
+	<Part tag="label" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<label {...mergedProps.value}>{children}</label>
-	}
+	<Part tag="label" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part tag="span" options={{ context, getter: 'getControlProps' }} of={props}>{children}</Part>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part tag="span" options={{ context, getter: 'getLabelProps' }} of={props}>{children}</Part>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<input {...mergedProps.value} />
-	}
+	<Part tag="input" options={{ context, getter: 'getHiddenInputProps' }} of={props} />
 }
 export function Thumb(props: ThumbProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getThumbProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part tag="span" options={{ context, getter: 'getThumbProps' }} of={props}>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

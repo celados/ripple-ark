@@ -2,13 +2,10 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useTour } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootPresence,
-	usePresenceState,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -43,137 +40,81 @@ export function RootProvider(props: RootProviderProps) @{
 export function Title(props: TitleProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
-	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<h2 {...mergedProps.value}>{children || api.value.step?.title}</h2>
-	}
+	<Part tag="h2" options={{ context, getter: 'getTitleProps' }} of={props}>
+		{children || api.value.step?.title}
+	</Part>
 }
 export function Spotlight(props: SpotlightProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getSpotlightProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getSpotlightProps' }} of={props}>{children}</Part>
 }
 export function ActionTrigger(props: ActionTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="button"
+		options={{
 			context,
 			getter: 'getActionTriggerProps',
 			propKeys: [
 				'action',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children || (props as any).action?.label}</button>
-	}
+		}}
+		of={props}
+	>
+		{children || (props as any).action?.label}
+	</Part>
 }
 export function ProgressText(props: ProgressTextProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
-	const mergedProps = usePartProps({ context, getter: 'getProgressTextProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children || api.value.getProgressText()}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getProgressTextProps' }} of={props}>
+		{children || api.value.getProgressText()}
+	</Part>
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getCloseTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part
+		tag="button"
+		options={{ context, getter: 'getCloseTriggerProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function Arrow(props: ArrowProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getArrowProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getArrowProps' }} of={props}>{children}</Part>
 }
 export function ArrowTip(props: ArrowTipProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getArrowTipProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getArrowTipProps' }} of={props}>{children}</Part>
 }
 export function Backdrop(props: BackdropProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getBackdropProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getBackdropProps' }} of={props}>{children}</Part>
 }
 export function Description(props: DescriptionProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
-	const mergedProps = usePartProps({ context, getter: 'getDescriptionProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children || api.value.step?.description}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getDescriptionProps' }} of={props}>
+		{children || api.value.step?.description}
+	</Part>
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context }} of={props}>{children}</Part>
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
-	const presence = usePresenceState(presenceContext);
-	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	@if (!presence.value.unmounted) {
-		@if (props.render) {
-			const Content = createRenderContent(mergedProps, props.render);
-			<{Content} />
-		} @else {
-			<div {...mergedProps.value}>{children}</div>
-		}
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getPositionerProps' }}
+		presence={presenceContext}
+		gate
+		of={props}
+	>{children}</Part>
 }
 export function Content(props: ContentProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getContentProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getContentProps' }} of={props}>{children}</Part>
 }
 
 export function Actions(props: { render: (actions: Tracked<AnyRecord[]>) => Children }) @{

@@ -2,13 +2,12 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useTimer } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -44,32 +43,16 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getControlProps' }} of={props}>{children}</Part>
 }
 export function Item(props: ItemProps) @{
 	const api = context.get()!;
@@ -83,51 +66,33 @@ export function Item(props: ItemProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{(api.value.formattedTime as any)[(props as any).type]}</div>
-	}
+	<Part
+		tag="div"
+		merged={mergedProps}
+		of={props}
+	>{(api.value.formattedTime as any)[(props as any).type]}</Part>
 }
 export function Separator(props: SeparatorProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getSeparatorProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getSeparatorProps' }} of={props}>{children}</Part>
 }
 export function ActionTrigger(props: ActionTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="button"
+		options={{
 			context,
 			getter: 'getActionTriggerProps',
 			propKeys: [
 				'action',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Area(props: AreaProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getAreaProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getAreaProps' }} of={props}>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

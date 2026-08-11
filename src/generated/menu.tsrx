@@ -3,23 +3,20 @@ import {
 	effect,
 	track,
 	untrack,
-	createRefKey,
 	type Children,
 	type Tracked,
 } from 'ripple';
 import { mergeProps } from '@zag-js/core';
 import { useMenu } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
 	useRootPresence,
-	usePresenceState,
 	PRESENCE_KEYS,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -114,18 +111,13 @@ export function RootProvider(props: RootProviderProps) @{
 }
 export function ArrowTip(props: ArrowTipProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getArrowTipProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getArrowTipProps' }} of={props}>{children}</Part>
 }
 export function RadioItem(props: RadioItemProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="div"
+		options={{
 			context,
 			getter: 'getOptionItemProps',
 			propKeys: [
@@ -135,32 +127,22 @@ export function RadioItem(props: RadioItemProps) @{
 				'valueText',
 			],
 			provideProps: menuItemProps,
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function TriggerItem(props: TriggerItemProps) @{
 	let &{ children, render: _render, ...localProps } = props;
 	const triggerProps = menuTriggerItemProps.get();
 	const mergedProps = track(() => mergeProps(triggerProps?.value ?? {}, localProps));
 	menuItemProps.set(track(() => ({ value: mergedProps.value['data-value'] })));
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="button"
+		options={{
 			context,
 			getter: 'getTriggerProps',
 			propKeys: [
@@ -168,15 +150,9 @@ export function Trigger(props: TriggerProps) @{
 			],
 			presence: presenceContext,
 			presenceProps: (state) => ({ 'aria-controls': state.unmounted && null }),
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
@@ -206,70 +182,42 @@ export function Item(props: ItemProps) @{
 			onSelect,
 		});
 	});
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Content(props: ContentProps) @{
-	let &{ children, ref } = props;
-	const presence = usePresenceState(presenceContext);
-	const presenceRefKey = createRefKey();
-	let applyPresenceRef = (node: any) => {
-		presence.value.setNode(node);
-		if (typeof ref === 'function') ref(node);
-	};
-	const mergedProps = usePartProps(
-		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
-		props,
-	);
-	@if (!presence.value.unmounted) {
-		@if (props.render) {
-			const Content = createRenderContent(
-				track(() => ({ ...mergedProps.value, [presenceRefKey]: applyPresenceRef })),
-				props.render,
-			);
-			<{Content} />
-		} @else {
-			<div {...mergedProps.value} ref={applyPresenceRef}>{children}</div>
-		}
-	}
+	let &{ children } = props;
+	<Part
+		tag="div"
+		options={{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] }}
+		presence={presenceContext}
+		gate
+		composeRef
+		of={props}
+	>{children}</Part>
 }
 export function ItemGroup(props: ItemGroupProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="div"
+		options={{
 			context,
 			getter: 'getItemGroupProps',
 			propKeys: [
 				'id',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getIndicatorProps' }} of={props}>{children}</Part>
 }
 export function RadioItemGroup(props: RadioItemGroupProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="div"
+		options={{
 			context,
 			getter: 'getItemGroupProps',
 			propKeys: [
@@ -277,99 +225,64 @@ export function RadioItemGroup(props: RadioItemGroupProps) @{
 				'onValueChange',
 				'value',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Arrow(props: ArrowProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getArrowProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getArrowProps' }} of={props}>{children}</Part>
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
-	const presence = usePresenceState(presenceContext);
-	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	@if (!presence.value.unmounted) {
-		@if (props.render) {
-			const Content = createRenderContent(mergedProps, props.render);
-			<{Content} />
-		} @else {
-			<div {...mergedProps.value}>{children}</div>
-		}
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getPositionerProps' }}
+		presence={presenceContext}
+		gate
+		of={props}
+	>{children}</Part>
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemIndicatorProps', inheritedProps: menuItemProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getItemIndicatorProps', inheritedProps: menuItemProps }}
+		of={props}
+	>{children}</Part>
 }
 export function ItemGroupLabel(props: ItemGroupLabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getItemGroupLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getItemGroupLabelProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function ContextTrigger(props: ContextTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getContextTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part
+		tag="button"
+		options={{ context, getter: 'getContextTriggerProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function Separator(props: SeparatorProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getSeparatorProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<hr {...mergedProps.value} />
-	}
+	<Part tag="hr" options={{ context, getter: 'getSeparatorProps' }} of={props} />
 }
 export function ItemText(props: ItemTextProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemTextProps', inheritedProps: menuItemProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getItemTextProps', inheritedProps: menuItemProps }}
+		of={props}
+	>{children}</Part>
 }
 export function CheckboxItem(props: CheckboxItemProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="div"
+		options={{
 			context,
 			getter: 'getOptionItemProps',
 			propKeys: [
@@ -381,15 +294,9 @@ export function CheckboxItem(props: CheckboxItemProps) @{
 				'valueText',
 			],
 			provideProps: menuItemProps,
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export const ItemContext = /*#__PURE__*/ createItemContext(context, menuItemProps);
 

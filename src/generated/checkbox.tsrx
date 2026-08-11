@@ -2,14 +2,12 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { anatomy } from '@zag-js/checkbox';
 import { useCheckbox } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
 	splitProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -66,115 +64,73 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<label {...mergedProps.value}>{children}</label>
-	}
+	<Part tag="label" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<label {...mergedProps.value}>{children}</label>
-	}
+	<Part tag="label" merged={mergedProps} of={props}>{children}</Part>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<input {...mergedProps.value} />
-	}
+	<Part tag="input" options={{ context, getter: 'getHiddenInputProps' }} of={props} />
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getControlProps' }} of={props}>{children}</Part>
 }
 export function GroupProvider(props: GroupProviderProps) @{
 	let &{ children, value } = props;
 	checkboxGroupContext.set(value);
-	const localProps = track(
-		() => splitProps(props, [
-			'value',
-		])[1],
+	const mergedProps = track(
+		() => ({
+			role: 'group',
+			...splitProps(props, [
+				'value',
+			])[1],
+			...checkboxGroupAnatomyAttrs,
+		}),
 	);
-	@if (props.render) {
-		const Content = createRenderContent(
-			track(() => ({ role: 'group', ...localProps.value, ...checkboxGroupAnatomyAttrs })),
-			props.render,
-		);
-		<{Content} />
-	} @else {
-		<div role="group" {...localProps.value} {...checkboxGroupAnatomyAttrs}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Group(props: GroupProps) @{
 	let &{ children } = props;
 	const group = useCheckboxGroup(props);
 	checkboxGroupContext.set(group);
-	const localProps = track(
-		() => splitProps(props, [
-			'defaultValue',
-			'value',
-			'onValueChange',
-			'disabled',
-			'invalid',
-			'readOnly',
-			'name',
-			'maxSelectedValues',
-		])[1],
+	const mergedProps = track(
+		() => ({
+			role: 'group',
+			...splitProps(props, [
+				'defaultValue',
+				'value',
+				'onValueChange',
+				'disabled',
+				'invalid',
+				'readOnly',
+				'name',
+				'maxSelectedValues',
+			])[1],
+			...checkboxGroupAnatomyAttrs,
+		}),
 	);
-	@if (props.render) {
-		const Content = createRenderContent(
-			track(() => ({ role: 'group', ...localProps.value, ...checkboxGroupAnatomyAttrs })),
-			props.render,
-		);
-		<{Content} />
-	} @else {
-		<div role="group" {...localProps.value} {...checkboxGroupAnatomyAttrs}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part tag="span" options={{ context, getter: 'getLabelProps' }} of={props}>{children}</Part>
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="div"
+		options={{
 			context,
 			getter: 'getIndicatorProps',
 			propKeys: [
 				'indeterminate',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 
 export type UseCheckboxGroupProps = {

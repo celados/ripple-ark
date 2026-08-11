@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useDateInput } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -68,78 +66,39 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Segment(props: SegmentProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getSegmentProps', inheritedProps: dateInputSegmentGroupProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part
+		tag="span"
+		options={{ context, getter: 'getSegmentProps', inheritedProps: dateInputSegmentGroupProps }}
+		of={props}
+	>{children}</Part>
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getControlProps' }} of={props}>{children}</Part>
 }
 export function SegmentGroup(props: SegmentGroupProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getSegmentGroupProps', provideProps: dateInputSegmentGroupProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getSegmentGroupProps', provideProps: dateInputSegmentGroupProps }}
+		of={props}
+	>{children}</Part>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<label {...mergedProps.value}>{children}</label>
-	}
+	<Part tag="label" options={{ context, getter: 'getLabelProps' }} of={props}>{children}</Part>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<input {...mergedProps.value} />
-	}
+	<Part tag="input" options={{ context, getter: 'getHiddenInputProps' }} of={props} />
 }
 
 export function SegmentContext(props: { render: (segment: AnyRecord) => Children }) @{

@@ -1,24 +1,15 @@
-import {
-	Context as RippleContext,
-	effect,
-	track,
-	createRefKey,
-	type Children,
-	type Tracked,
-} from 'ripple';
+import { Context as RippleContext, effect, track, type Children, type Tracked } from 'ripple';
 import { mergeProps } from '@zag-js/core';
 import { useFloatingPanel } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
 	useRootPresence,
 	usePresenceState,
 	PRESENCE_KEYS,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -95,104 +86,61 @@ export function RootProvider(props: RootProviderProps) @{
 }
 export function Title(props: TitleProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTitleProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<h2 {...mergedProps.value}>{children}</h2>
-	}
+	<Part tag="h2" options={{ context, getter: 'getTitleProps' }} of={props}>{children}</Part>
 }
 export function ResizeTrigger(props: ResizeTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="div"
+		options={{
 			context,
 			getter: 'getResizeTriggerProps',
 			propKeys: [
 				'axis',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function DragTrigger(props: DragTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getDragTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getDragTriggerProps' }} of={props}>{children}</Part>
 }
 export function StageTrigger(props: StageTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="button"
+		options={{
 			context,
 			getter: 'getStageTriggerProps',
 			propKeys: [
 				'stage',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Header(props: HeaderProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getHeaderProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getHeaderProps' }} of={props}>{children}</Part>
 }
 export function Body(props: BodyProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getBodyProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getBodyProps' }} of={props}>{children}</Part>
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getControlProps' }} of={props}>{children}</Part>
 }
 export function Positioner(props: PositionerProps) @{
 	let &{ children } = props;
-	const presence = usePresenceState(presenceContext);
-	const mergedProps = usePartProps({ context, getter: 'getPositionerProps' }, props);
-	@if (!presence.value.unmounted) {
-		@if (props.render) {
-			const Content = createRenderContent(mergedProps, props.render);
-			<{Content} />
-		} @else {
-			<div {...mergedProps.value}>{children}</div>
-		}
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getPositionerProps' }}
+		presence={presenceContext}
+		gate
+		of={props}
+	>{children}</Part>
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children, render: _render, ...localProps } = props;
@@ -211,46 +159,26 @@ export function Trigger(props: TriggerProps) @{
 			localProps,
 		);
 	});
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part tag="button" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Content(props: ContentProps) @{
-	let &{ children, ref } = props;
-	const presence = usePresenceState(presenceContext);
-	const presenceRefKey = createRefKey();
-	let applyPresenceRef = (node: any) => {
-		presence.value.setNode(node);
-		if (typeof ref === 'function') ref(node);
-	};
-	const mergedProps = usePartProps(
-		{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] },
-		props,
-	);
-	@if (!presence.value.unmounted) {
-		@if (props.render) {
-			const Content = createRenderContent(
-				track(() => ({ ...mergedProps.value, [presenceRefKey]: applyPresenceRef })),
-				props.render,
-			);
-			<{Content} />
-		} @else {
-			<div {...mergedProps.value} ref={applyPresenceRef}>{children}</div>
-		}
-	}
+	let &{ children } = props;
+	<Part
+		tag="div"
+		options={{ context, getter: 'getContentProps', presence: presenceContext, omitKeys: ['ref'] }}
+		presence={presenceContext}
+		gate
+		composeRef
+		of={props}
+	>{children}</Part>
 }
 export function CloseTrigger(props: CloseTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getCloseTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part
+		tag="button"
+		options={{ context, getter: 'getCloseTriggerProps' }}
+		of={props}
+	>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

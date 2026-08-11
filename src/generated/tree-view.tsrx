@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useTreeView } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -65,198 +63,115 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function BranchText(props: BranchTextProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getBranchTextProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part
+		tag="span"
+		options={{ context, getter: 'getBranchTextProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export function ItemIndicator(props: ItemIndicatorProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemIndicatorProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getItemIndicatorProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export function Tree(props: TreeProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTreeProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getTreeProps' }} of={props}>{children}</Part>
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getItemProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export function Branch(props: BranchProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getBranchProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getBranchProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export function NodeCheckbox(props: NodeCheckboxProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getNodeCheckboxProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part
+		tag="span"
+		options={{ context, getter: 'getNodeCheckboxProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export function BranchTrigger(props: BranchTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getBranchTriggerProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getBranchTriggerProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export function NodeRenameInput(props: NodeRenameInputProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getNodeRenameInputProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<input {...mergedProps.value} />
-	}
+	<Part
+		tag="input"
+		options={{ context, getter: 'getNodeRenameInputProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	/>
 }
 export function BranchContent(props: BranchContentProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getBranchContentProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getBranchContentProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export function BranchControl(props: BranchControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getBranchControlProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getBranchControlProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export function BranchIndentGuide(props: BranchIndentGuideProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getBranchIndentGuideProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getBranchIndentGuideProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<h3 {...mergedProps.value}>{children}</h3>
-	}
+	<Part tag="h3" options={{ context, getter: 'getLabelProps' }} of={props}>{children}</Part>
 }
 export function BranchIndicator(props: BranchIndicatorProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getBranchIndicatorProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getBranchIndicatorProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export function ItemText(props: ItemTextProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemTextProps', inheritedProps: treeViewNodeProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part
+		tag="span"
+		options={{ context, getter: 'getItemTextProps', inheritedProps: treeViewNodeProps }}
+		of={props}
+	>{children}</Part>
 }
 export const NodeContext = /*#__PURE__*/ createItemContext(context, treeViewNodeProps);
 export function NodeProvider(props: ArkPartProps & { indexPath: number[]; node: unknown }) @{

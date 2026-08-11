@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useRadioGroup } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -50,27 +48,18 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="label"
+		options={{
 			context,
 			getter: 'getItemProps',
 			propKeys: [
@@ -79,74 +68,40 @@ export function Item(props: ItemProps) @{
 				'invalid',
 			],
 			provideProps: segmentGroupItemProps,
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<label {...mergedProps.value}>{children}</label>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function ItemControl(props: ItemControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemControlProps', inheritedProps: segmentGroupItemProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getItemControlProps', inheritedProps: segmentGroupItemProps }}
+		of={props}
+	>{children}</Part>
 }
 export function ItemText(props: ItemTextProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemTextProps', inheritedProps: segmentGroupItemProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part
+		tag="span"
+		options={{ context, getter: 'getItemTextProps', inheritedProps: segmentGroupItemProps }}
+		of={props}
+	>{children}</Part>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part tag="span" options={{ context, getter: 'getLabelProps' }} of={props}>{children}</Part>
 }
 export function Indicator(props: IndicatorProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getIndicatorProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getIndicatorProps' }} of={props}>{children}</Part>
 }
 export function ItemHiddenInput(props: ItemHiddenInputProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemHiddenInputProps', inheritedProps: segmentGroupItemProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<input {...mergedProps.value} />
-	}
+	<Part
+		tag="input"
+		options={{ context, getter: 'getItemHiddenInputProps', inheritedProps: segmentGroupItemProps }}
+		of={props}
+	/>
 }
 export const ItemContext = /*#__PURE__*/ createItemContext(context, segmentGroupItemProps);
 

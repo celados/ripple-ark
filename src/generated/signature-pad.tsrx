@@ -2,13 +2,12 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useSignaturePad } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
 	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -47,102 +46,61 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function Guide(props: GuideProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getGuideProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getGuideProps' }} of={props}>{children}</Part>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="input"
+		options={{
 			context,
 			getter: 'getHiddenInputProps',
 			propKeys: [
 				'value',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<input {...mergedProps.value} />
-	}
+		}}
+		of={props}
+	/>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<label {...mergedProps.value}>{children}</label>
-	}
+	<Part tag="label" options={{ context, getter: 'getLabelProps' }} of={props}>{children}</Part>
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part
+		tag="button"
+		options={{ context, getter: 'getClearTriggerProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function Control(props: ControlProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getControlProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getControlProps' }} of={props}>{children}</Part>
 }
 export function Segment(props: SegmentProps) @{
 	let &{ children } = props;
 	const api = context.get();
 	if (!api) throw new Error('SignaturePad.Segment must be rendered inside SignaturePad.Root');
 	const mergedProps = usePartProps({ context, getter: 'getSegmentProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<svg {...mergedProps.value}>
-			<title>Signature</title>
-			@for (const path of api.value.paths) {
-				<path {...api.value.getSegmentPathProps({ path })} />
-			}
-			@if (api.value.currentPath) {
-				<path {...api.value.getSegmentPathProps({ path: api.value.currentPath })} />
-			}
-			{children}
-		</svg>
-	}
+	<Part tag="svg" merged={mergedProps} of={props}>
+		<title>Signature</title>
+		@for (const path of api.value.paths) {
+			<path {...api.value.getSegmentPathProps({ path })} />
+		}
+		@if (api.value.currentPath) {
+			<path {...api.value.getSegmentPathProps({ path: api.value.currentPath })} />
+		}
+		{children}
+	</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

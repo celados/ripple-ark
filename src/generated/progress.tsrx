@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useProgress } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -45,112 +43,65 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function CircleRange(props: CircleRangeProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getCircleRangeProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<circle {...mergedProps.value}>{children}</circle>
-	}
+	<Part
+		tag="circle"
+		options={{ context, getter: 'getCircleRangeProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function View(props: ViewProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="span"
+		options={{
 			context,
 			getter: 'getViewProps',
 			propKeys: [
 				'state',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Range(props: RangeProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getRangeProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getRangeProps' }} of={props}>{children}</Part>
 }
 export function CircleTrack(props: CircleTrackProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getCircleTrackProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<circle {...mergedProps.value}>{children}</circle>
-	}
+	<Part
+		tag="circle"
+		options={{ context, getter: 'getCircleTrackProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function ValueText(props: ValueTextProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
-	const mergedProps = usePartProps({ context, getter: 'getValueTextProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children || api.value.percentAsString}</span>
-	}
+	<Part tag="span" options={{ context, getter: 'getValueTextProps' }} of={props}>
+		{children || api.value.percentAsString}
+	</Part>
 }
 export function Track(props: TrackProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTrackProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getTrackProps' }} of={props}>{children}</Part>
 }
 export function Circle(props: CircleProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getCircleProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<svg {...mergedProps.value}>{children}</svg>
-	}
+	<Part tag="svg" options={{ context, getter: 'getCircleProps' }} of={props}>{children}</Part>
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<span {...mergedProps.value}>{children}</span>
-	}
+	<Part tag="span" options={{ context, getter: 'getLabelProps' }} of={props}>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

@@ -43,12 +43,17 @@ Every sync decision routes through this taxonomy:
 
 ## Composition contract
 
-Parts compose via Base UI's **function-form `render` prop only** (README "Composition";
-runtime: `RenderProp`/`createRenderContent` in binding-runtime, ref delivery via a
-`createRefKey()` entry in the props object so a plain spread carries the composed ref).
+Parts compose via Base UI's **function-form `render` prop only** (README "Composition").
 Never port Ark/Radix `asChild`, an `as` prop, or Base UI's element-form `render={<X />}`
 from upstream — strip them when syncing; `splitProps` drops `render` globally so it can
 never leak to the DOM or a machine.
+
+All element rendering routes through binding-runtime's **`Part` frame**: it owns the
+render branch, presence gate, composed ref (`createRefKey()` symbol entry so a plain
+spread carries it), and void-tag handling. Generated declarations state only what varies
+— `tag`, `options={...}` (Part runs `usePartProps`) or `merged={...}` (bespoke bodies
+precompute the Tracked), `gate`/`composeRef` flags, children. Never emit inline
+render/presence branches in a template or override — extend `Part` instead.
 
 ## Sync procedure
 

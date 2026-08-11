@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 
 import { useQrCode } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -41,27 +39,18 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function DownloadTrigger(props: DownloadTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="button"
+		options={{
 			context,
 			getter: 'getDownloadTriggerProps',
 			propKeys: [
@@ -69,45 +58,21 @@ export function DownloadTrigger(props: DownloadTriggerProps) @{
 				'mimeType',
 				'quality',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Overlay(props: OverlayProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getOverlayProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" options={{ context, getter: 'getOverlayProps' }} of={props}>{children}</Part>
 }
 export function Frame(props: FrameProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getFrameProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<svg {...mergedProps.value}>{children}</svg>
-	}
+	<Part tag="svg" options={{ context, getter: 'getFrameProps' }} of={props}>{children}</Part>
 }
 export function Pattern(props: PatternProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getPatternProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<path {...mergedProps.value}>{children}</path>
-	}
+	<Part tag="path" options={{ context, getter: 'getPatternProps' }} of={props}>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

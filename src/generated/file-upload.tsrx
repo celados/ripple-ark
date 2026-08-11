@@ -2,13 +2,11 @@ import { Context as RippleContext, effect, track, type Children, type Tracked } 
 import { mergeProps } from '@zag-js/core';
 import { useFileUpload } from '../components';
 import {
+	Part,
 	createApiContext,
 	createItemContext,
-	useExternalPartProps,
-	usePartProps,
 	useRootProps,
 	useRootProviderProps,
-	createRenderContent,
 	type ArkPartProps,
 	type ComponentProps,
 	type GetterProps,
@@ -65,71 +63,52 @@ export function Root(props: RootProps) @{
 		},
 		props,
 	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function RootProvider(props: RootProviderProps) @{
 	let &{ children } = props;
 	const mergedProps = useRootProviderProps({ context }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part tag="div" merged={mergedProps} of={props}>{children}</Part>
 }
 export function ItemSizeText(props: ItemSizeTextProps) @{
 	let &{ children } = props;
 	const api = context.get()!;
 	const itemProps = fileUploadItemProps.get()!;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemSizeTextProps', inheritedProps: fileUploadItemProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children || api.value.getFileSize(itemProps.value.file)}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getItemSizeTextProps', inheritedProps: fileUploadItemProps }}
+		of={props}
+	>
+		{children || api.value.getFileSize(itemProps.value.file)}
+	</Part>
 }
 export function Dropzone(props: DropzoneProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="div"
+		options={{
 			context,
 			getter: 'getDropzoneProps',
 			propKeys: [
 				'disableClick',
 			],
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function ClearTrigger(props: ClearTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getClearTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part
+		tag="button"
+		options={{ context, getter: 'getClearTriggerProps' }}
+		of={props}
+	>{children}</Part>
 }
 export function Item(props: ItemProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="li"
+		options={{
 			context,
 			getter: 'getItemProps',
 			propKeys: [
@@ -137,82 +116,50 @@ export function Item(props: ItemProps) @{
 			],
 			provideProps: fileUploadItemProps,
 			inheritedProps: fileUploadItemGroupProps,
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<li {...mergedProps.value}>{children}</li>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function HiddenInput(props: HiddenInputProps) @{
-	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getHiddenInputProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<input {...mergedProps.value} />
-	}
+	<Part tag="input" options={{ context, getter: 'getHiddenInputProps' }} of={props} />
 }
 export function ItemName(props: ItemNameProps) @{
 	let &{ children } = props;
 	const itemProps = fileUploadItemProps.get()!;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemNameProps', inheritedProps: fileUploadItemProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children || itemProps.value.file.name}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getItemNameProps', inheritedProps: fileUploadItemProps }}
+		of={props}
+	>
+		{children || itemProps.value.file.name}
+	</Part>
 }
 export function ItemPreview(props: ItemPreviewProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemPreviewProps', inheritedProps: fileUploadItemProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<div {...mergedProps.value}>{children}</div>
-	}
+	<Part
+		tag="div"
+		options={{ context, getter: 'getItemPreviewProps', inheritedProps: fileUploadItemProps }}
+		of={props}
+	>{children}</Part>
 }
 export function ItemGroup(props: ItemGroupProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{
+	<Part
+		tag="ul"
+		options={{
 			context,
 			getter: 'getItemGroupProps',
 			propKeys: [
 				'type',
 			],
 			provideProps: fileUploadItemGroupProps,
-		},
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<ul {...mergedProps.value}>{children}</ul>
-	}
+		}}
+		of={props}
+	>{children}</Part>
 }
 export function Trigger(props: TriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getTriggerProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part tag="button" options={{ context, getter: 'getTriggerProps' }} of={props}>{children}</Part>
 }
 export function ItemPreviewImage(props: ItemPreviewImageProps) @{
 	let &{ children, render: _render, ...localProps } = props;
@@ -237,36 +184,20 @@ export function ItemPreviewImage(props: ItemPreviewImageProps) @{
 		),
 	);
 	@if (url.value) {
-		@if (props.render) {
-			const Content = createRenderContent(mergedProps, props.render);
-			<{Content} />
-		} @else {
-			<img {...mergedProps.value} />
-		}
+		<Part tag="img" merged={mergedProps} of={props} />
 	}
 }
 export function Label(props: LabelProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps({ context, getter: 'getLabelProps' }, props);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<label {...mergedProps.value}>{children}</label>
-	}
+	<Part tag="label" options={{ context, getter: 'getLabelProps' }} of={props}>{children}</Part>
 }
 export function ItemDeleteTrigger(props: ItemDeleteTriggerProps) @{
 	let &{ children } = props;
-	const mergedProps = usePartProps(
-		{ context, getter: 'getItemDeleteTriggerProps', inheritedProps: fileUploadItemProps },
-		props,
-	);
-	@if (props.render) {
-		const Content = createRenderContent(mergedProps, props.render);
-		<{Content} />
-	} @else {
-		<button {...mergedProps.value}>{children}</button>
-	}
+	<Part
+		tag="button"
+		options={{ context, getter: 'getItemDeleteTriggerProps', inheritedProps: fileUploadItemProps }}
+		of={props}
+	>{children}</Part>
 }
 
 export const Context = /*#__PURE__*/ createApiContext(context);

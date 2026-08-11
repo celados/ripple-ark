@@ -1,5 +1,14 @@
 import { mergeProps } from '@zag-js/core';
-import { Context, effect, track, type Children, type RefKey, type Tracked } from 'ripple';
+import {
+	Context,
+	createRefKey,
+	effect,
+	track,
+	type Children,
+	type DynamicElementType,
+	type RefKey,
+	type Tracked,
+} from 'ripple';
 // components.ts does not import this module, so pulling usePresence in here
 // stays acyclic — see presence.tsrx for the standalone Presence.Root sibling.
 import { usePresence } from './components';
@@ -30,8 +39,8 @@ export type PartProps<T extends ElementType, TGetter = never> =
 // by every generated part/tagged-Root type instead of repeating the signature per part.
 // Omits the origin tag's own `ref` field and its `RefKey` symbol counterpart
 // (deviation from the spec's literal `JSX.IntrinsicElements[T] & Record<string, any>`):
-// the verified ref contract (#3, see presencePartDeclaration in generate-bindings.ts)
-// never puts the composed ref on the string `ref` key — presence parts omit it and
+// the verified ref contract (see Part below) never puts the composed ref on the
+// string `ref` key — presence parts omit it and
 // ride a createRefKey() symbol instead, non-presence parts pass through an
 // element-agnostic callback — so typing `ref`/`[RefKey]` as the origin tag's own
 // `RefValue<HTMLDivElement>` etc. is a lie that breaks the feature's entire point
@@ -316,6 +325,80 @@ export function createRenderContent<TProps extends object>(
 ) {
 	const liveProps = createReactiveObject(props);
 	return () => render(liveProps);
+}
+
+export type PartFrameProps = {
+	tag: DynamicElementType;
+	// The part's consumer-facing props: the source of `render`, `ref`, and (for
+	// the options form) everything usePartProps splits.
+	of: AnyRecord;
+	options?: PartOptions<AnyRecord>;
+	merged?: Tracked<AnyRecord>;
+	// Presence context for gate/composeRef — distinct from options.presence,
+	// which is the presenceProps *merge* channel: a part can gate without merging
+	// (Positioner) and merge without gating (aria-controls triggers); see
+	// presencePartBehaviors in generate-bindings.ts.
+	presence?: Context<Tracked<PresenceState> | null>;
+	gate?: boolean;
+	composeRef?: boolean;
+	children?: Children | Children[];
+};
+
+/**
+ * The one element frame every generated part and tagged Root/RootProvider
+ * renders through: resolves merged props (usePartProps unless the caller
+ * precomputed them), applies the presence gate and composed ref, and branches
+ * Base UI's function-form render. Exists so ~200 generated call sites stay one
+ * declarative line each instead of repeating this machinery.
+ *
+ * The void-tag contract rides on `children`: a self-closed `<Part />` receives
+ * no children block at all, so `children === undefined` selects the childless
+ * element form — the generator only self-closes for void tags.
+ */
+export function Part(props: PartFrameProps) @{
+	let &{ tag, of, gate, composeRef, children } = props;
+	const presence =
+		props.presence ? usePresenceState(props.presence) : null;
+	const mergedProps = props.merged ?? usePartProps(props.options!, of);
+	// Ref contract (verified against ripple's render.js + tsrx-ripple's "spreading
+	// into composite refs" test): a plain string `ref` key in a spread object gets
+	// NO special treatment, but apply_element_spread applies whatever function sits
+	// under a createRefKey() symbol — and that survives being re-spread through a
+	// consumer's rest-props forwarding, so a render consumer needs no special
+	// handling. Key and callback are composed once at setup: ripple caches ref
+	// effects by symbol+function identity, so recreating either per update would
+	// tear down and re-create the DOM ref binding on every reactive props change.
+	const presenceRefKey = createRefKey();
+	// `let` (not const): the compiler lowers a bare-identifier ref={x} attribute
+	// with an unconditional write-back setter, so the target must stay assignable
+	// even though ripple never fires that setter for a function value. `node: any`
+	// because this one callback must satisfy both setNode(HTMLElement | null) and
+	// whatever narrower element type each part's own `ref` prop declares. ripple
+	// only runs a *returned* function as ref cleanup and never re-invokes with
+	// `null` — not returning one preserves pre-Part behavior (see backlog:
+	// "Presence composed ref doesn't forward a user ref's cleanup").
+	let applyRef = (node: any) => {
+		presence?.value.setNode(node);
+		const userRef = of.ref;
+		if (typeof userRef === 'function') userRef(node);
+	};
+	@if (!gate || !presence!.value.unmounted) {
+		@if (of.render) {
+			const Content = createRenderContent(
+				composeRef
+					? track(() => ({ ...mergedProps.value, [presenceRefKey]: applyRef }))
+					: mergedProps,
+				of.render,
+			);
+			<{Content} />
+		} @else if (composeRef) {
+			<{tag} {...mergedProps.value} ref={applyRef}>{children}</{tag}>
+		} @else if (children === undefined) {
+			<{tag} {...mergedProps.value} />
+		} @else {
+			<{tag} {...mergedProps.value}>{children}</{tag}>
+		}
+	}
 }
 
 export function createApiContext<TApi extends object>(context: BindingContext<TApi>) {
