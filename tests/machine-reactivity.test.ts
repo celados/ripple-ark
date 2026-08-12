@@ -265,6 +265,53 @@ describe('dismissable layer (issue #6)', () => {
 		}
 	});
 
+	// Reported from a browser run (issue #6): once a parked layer above the menu is *removed*,
+	// outside press stays dead for the rest of the session — a layer that no longer exists keeps
+	// outside-detection disabled.
+	test('outside press survives a layer above the menu being removed again', async () => {
+		const onInteractOutside = vi.fn();
+		let handle!: { showLayer(value: boolean): void };
+		const { target, unmount } = await renderFixture(MenuWithStandingLayer, {
+			initialLayer: false,
+			onInteractOutside,
+			onReady: (h: { showLayer(value: boolean): void }) => {
+				handle = h;
+			},
+		});
+
+		const outside = document.createElement('button');
+		document.body.appendChild(outside);
+
+		try {
+			const trigger = target.querySelector('[data-testid="trigger"]') as HTMLElement;
+			const content = target.querySelector('[data-testid="content"]') as HTMLElement;
+
+			trigger.click();
+			await settle();
+			await nextFrame();
+			expect(content.getAttribute('data-state')).toBe('open');
+
+			handle.showLayer(true);
+			await settle();
+			await nextFrame();
+			handle.showLayer(false);
+			await settle();
+			await nextFrame();
+			expect(target.querySelector('[data-testid="standing-layer"]')).toBeNull();
+
+			outside.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+			outside.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+			await settle();
+			await nextFrame();
+
+			expect(onInteractOutside).toHaveBeenCalled();
+			expect(content.getAttribute('data-state')).toBe('closed');
+		} finally {
+			outside.remove();
+			unmount();
+		}
+	});
+
 	test('the positioner receives popper positioning styles while open', async () => {
 		const { target, unmount } = await renderFixture(MenuDismissable, {});
 
