@@ -55,3 +55,15 @@ found and characterized (a layer mounted above an open menu deafens Escape by
 and does not explain the reported outside-press failure. The reporting app's Menu usage
 was never committed, so no failing code survives to bisect. Reopen with a runnable repro
 that states dev-server vs built-dist and browser.
+
+## @zag-js/dismissable 1.x leaves stale layer metadata on removed nodes (deferred 2026-08-12)
+
+`layer-stack.ts` `syncLayers()` stamps `--layer-index` / `--nested-layer-count` / `data-nested` /
+`data-has-nested` on `layer.node`, but `remove()` calls `clearLayerStyleMirror` only for
+`styleTargets` — `layer.node` is never cleared (one call site, verified in 1.43.0). A
+dismissed-but-still-mounted content node therefore keeps the attributes until it is opened again, so
+consumer CSS keyed on them styles the wrong state, and the DOM mirror cannot be read as a picture of
+the live stack. Inert to zag's own arbitration (`isTopMost` reads the in-memory array). Not patched
+from here: `@zag-js/dismissable@2.0.0-next.1` already replaces the mirror with `onLayerChange`
+snapshots whose `remove()` publishes a terminal `active: false`, so this resolves on the 2.x upgrade.
+Surfaced by celados/ripple-ark#6.
