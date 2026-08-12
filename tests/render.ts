@@ -10,6 +10,18 @@ if (typeof window !== 'undefined' && !('visualViewport' in window)) {
 	(window as unknown as { visualViewport: undefined }).visualViewport = undefined;
 }
 
+// Same class of jsdom gap: @floating-ui/dom's autoUpdate constructs a ResizeObserver
+// unconditionally, so every popper-backed machine (menu, popover, tooltip, select…) throws out of
+// its trackPositioning effect and never writes the resolved --x/--y. A no-op observer is enough —
+// jsdom reports zero-size rects anyway, so resize callbacks would carry nothing.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+	globalThis.ResizeObserver = class {
+		observe() {}
+		unobserve() {}
+		disconnect() {}
+	} as unknown as typeof ResizeObserver;
+}
+
 // Mirrors @celados/ripple-zag's tests/render.ts renderMachine helper, adapted to mount a
 // TSRX component tree (not a bare machine) and hand back a live DOM container.
 export async function renderFixture(Component: any, props: Record<string, unknown> = {}) {

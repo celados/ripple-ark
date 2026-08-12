@@ -41,3 +41,17 @@ Upstream merges group item props inside `useCheckbox`; our hooks (`components.ts
 ## ripple-zag: useMachine still crashes without id (external, 2026-08-11)
 
 Issue #2's root fix belongs in `@celados/ripple-zag` `useMachine` (auto id fallback). ripple-ark now injects ids in `createMachineHook`, which resolves it for all ark components, but direct ripple-zag consumers still crash. Transfer the issue once ripple-zag has issues enabled.
+
+## Issue #6 not reproducible in-repo; needs an app-side repro (deferred 2026-08-12)
+
+`tests/machine-reactivity.test.ts` covers both reported symptoms at the exact reported
+versions (ripple-ark 0.6.0 / ripple-zag 0.4.1 / @zag-js/* 1.43.0 / ripple 0.3.118) across
+9 shapes — controlled `open` as Tracked box and as raw value, driven both from the initial
+state and after a trigger-initiated open; Escape and outside-press entering "open" at mount
+and via transition; and a co-mounted standing dismissable layer. All pass, so neither
+symptom is an adapter defect on any path the harness can reach. One real mechanism was
+found and characterized (a layer mounted above an open menu deafens Escape by
+`@zag-js/dismissable`'s `isTopMost` gate) but it is upstream, framework-agnostic behavior
+and does not explain the reported outside-press failure. The reporting app's Menu usage
+was never committed, so no failing code survives to bisect. Reopen with a runnable repro
+that states dev-server vs built-dist and browser.

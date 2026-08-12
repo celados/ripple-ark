@@ -46,7 +46,7 @@
 	"scripts": {
 		"build": "tsrx-tsc --noEmit",
 		"typecheck": "tsrx-tsc --noEmit",
-		"test": "vitest run tests/exports.test.ts tests/smoke.test.ts",
+		"test": "vitest run tests/exports.test.ts tests/smoke.test.ts tests/machine-reactivity.test.ts",
 		"lint": "eslint .",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
