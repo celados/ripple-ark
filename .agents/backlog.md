@@ -63,7 +63,10 @@ that states dev-server vs built-dist and browser.
 `styleTargets` — `layer.node` is never cleared (one call site, verified in 1.43.0). A
 dismissed-but-still-mounted content node therefore keeps the attributes until it is opened again, so
 consumer CSS keyed on them styles the wrong state, and the DOM mirror cannot be read as a picture of
-the live stack. Inert to zag's own arbitration (`isTopMost` reads the in-memory array). Not patched
-from here: `@zag-js/dismissable@2.0.0-next.1` already replaces the mirror with `onLayerChange`
-snapshots whose `remove()` publishes a terminal `active: false`, so this resolves on the 2.x upgrade.
+the live stack. Inert to zag's own arbitration (`isTopMost` reads the in-memory array).
+
+No upgrade resolves this today: 1.43.0 *is* `latest`, and the redesign that fixes it
+(`onLayerChange` snapshots whose `remove()` publishes a terminal `active: false`) ships only in
+`2.0.0-next.1` on the `next` tag. The 1.x line is still taking feature releases (1.42.0, 1.43.0 both
+landed after 2.0.0-next.0), so a 1.x fix is worth asking upstream for rather than waiting on v2 GA.
 Surfaced by celados/ripple-ark#6.
