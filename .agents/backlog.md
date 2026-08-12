@@ -65,8 +65,7 @@ dismissed-but-still-mounted content node therefore keeps the attributes until it
 consumer CSS keyed on them styles the wrong state, and the DOM mirror cannot be read as a picture of
 the live stack. Inert to zag's own arbitration (`isTopMost` reads the in-memory array).
 
-No upgrade resolves this today: 1.43.0 *is* `latest`, and the redesign that fixes it
-(`onLayerChange` snapshots whose `remove()` publishes a terminal `active: false`) ships only in
-`2.0.0-next.1` on the `next` tag. The 1.x line is still taking feature releases (1.42.0, 1.43.0 both
-landed after 2.0.0-next.0), so a 1.x fix is worth asking upstream for rather than waiting on v2 GA.
-Surfaced by celados/ripple-ark#6.
+No released version fixes it: 1.43.0 *is* `latest`, and the redesign that supersedes it ships only in
+`2.0.0-next.1` on the `next` tag. Filed upstream against the 1.x line as chakra-ui/zag#3269 (one-line
+fix plus a regression test); drop this entry once that lands and we pick up the release. Surfaced by
+celados/ripple-ark#6. The v2 upgrade itself is tracked in celados/ripple-ark#7.
